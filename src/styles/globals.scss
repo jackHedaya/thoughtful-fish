@@ -1,5 +1,5 @@
 @import 'colors.scss';
-@import 'navbar.module.scss';
+@import 'navbar.scss';
 
 @import './fonts/sitara.scss';
 
@@ -9,6 +9,7 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  caret-color: $signature-red;
 }
 
 a {
@@ -22,6 +23,20 @@ a {
 
 .app {
   display: grid;
+  width: 100vw;
+  height: 100vh;
 
   grid-template-columns: auto 1fr;
+  column-gap: 40px;
+}
+
+.content {
+  padding-top: 15px;
+}
+
+.page-title {
+  font-family: Sitara;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 2.4em;
 }
