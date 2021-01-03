@@ -6,14 +6,12 @@ import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined'
 import ShowChartOutlinedIcon from '@material-ui/icons/ShowChartOutlined'
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined'
 
-import '../styles/navbar.module.scss'
-
 export default function Navbar() {
   return (
     <div className="nav">
-      <NavItem Icon={HomeOutlinedIcon} to="home" />
-      <NavItem Icon={ShowChartOutlinedIcon} to="chart" />
-      <NavItem Icon={SearchOutlinedIcon} to="option-hacker" />
+      <NavItem Icon={HomeOutlinedIcon} to="/home" />
+      <NavItem Icon={ShowChartOutlinedIcon} to="/chart" />
+      <NavItem Icon={SearchOutlinedIcon} to="/option-hacker" />
     </div>
   )
 }
