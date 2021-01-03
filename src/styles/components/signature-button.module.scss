@@ -1,0 +1,21 @@
+@import '../colors.scss';
+
+.button {
+  background: $soft-gray;
+  border: 1px solid $signature-red;
+  padding: 2px 16px;
+  box-sizing: border-box;
+  border-radius: 30px;
+
+  font-family: Sitara;
+  font-style: normal;
+  font-weight: bold;
+  text-align: center;
+  color: $signature-red;
+
+  &:hover {
+    color: white;
+    background: $signature-red;
+    cursor: pointer;
+  }
+}
