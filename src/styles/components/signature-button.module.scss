@@ -13,6 +13,7 @@
   text-align: center;
   color: $signature-red;
 
+  &.fill,
   &:hover {
     color: white;
     background: $signature-red;
