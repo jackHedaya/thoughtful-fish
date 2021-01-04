@@ -1,0 +1,25 @@
+@import '../colors.scss';
+
+.accordion {
+  background: $soft-gray;
+  border: 0.5px solid $signature-red;
+  border-radius: 5px;
+  
+  .summary {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      font-family: Sitara;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 25px;
+    }
+
+    .icon {
+      display: block;
+    }
+  }
+}
