@@ -3,7 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from '@material-ui/core'
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
@@ -11,6 +11,7 @@ import s from '../styles/components/signature-accordion.module.scss'
 
 type SignatureAccordionProps = {
   expanded?: boolean
+  style?: CSSProperties
   onChange?: (b: boolean) => void
   title: string
   children: ReactNode
@@ -31,7 +32,7 @@ export default function SignatureAccordion(props: SignatureAccordionProps) {
       >
         <div className={s.title}>{props.title}</div>
       </AccordionSummary>
-      <AccordionDetails>{props.children}</AccordionDetails>
+      <AccordionDetails style={props.style}>{props.children}</AccordionDetails>
     </Accordion>
   )
 }
