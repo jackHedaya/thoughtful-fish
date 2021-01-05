@@ -1,9 +1,10 @@
 @import '../colors.scss';
 
 .listbox {
+  position: absolute;
   display: inline-block;
-  min-width: 50%;
-  width: auto;
+  width: 40%;
+  min-width: auto;
   background-color: white;
   transform: translate(0, -2px);
 
