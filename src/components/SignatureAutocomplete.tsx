@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import useAutocomplete from '@material-ui/lab/useAutocomplete'
-import { TextField } from '@material-ui/core'
+import { TextField, TextFieldProps } from '@material-ui/core'
 
 import s from '../styles/components/signature-autocomplete.module.scss'
 
@@ -8,12 +8,13 @@ type SignatureAutocomplete = {
   options: { group: string; value: string }[]
   title: string
   className?: string
+  style: CSSProperties
+  TextFieldProps?: TextFieldProps
 }
 
 export default function SignatureAutocomplete(props: SignatureAutocomplete) {
   const {
     getRootProps,
-    getInputLabelProps,
     getInputProps,
     getListboxProps,
     getOptionProps,
@@ -26,7 +27,7 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
   })
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={props.style}>
       <div {...getRootProps()}>
         <TextField
           {...getInputProps()}
@@ -35,6 +36,7 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
           }`}
           label={props.title}
           variant="outlined"
+          {...props.TextFieldProps}
         />
       </div>
       <div>
