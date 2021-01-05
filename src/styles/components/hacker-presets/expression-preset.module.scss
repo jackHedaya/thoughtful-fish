@@ -1,0 +1,22 @@
+.watchlistSection {
+  display: flex;
+  width: 100%;
+  padding-bottom: 75px;
+
+  .watchlistOrList {
+    margin-right: 10px;
+    min-width: 110px;
+    max-width: 150px;
+  }
+
+  .selectWatchlist {
+    width: 100%;
+    flex: 1;
+  }
+}
+
+.nextButton {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+}
