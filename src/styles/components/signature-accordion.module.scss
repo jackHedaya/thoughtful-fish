@@ -1,6 +1,7 @@
 @import '../colors.scss';
 
 .accordion {
+  display: block;
   background: $soft-gray;
   border: 0.5px solid $signature-red;
   border-radius: 5px;
