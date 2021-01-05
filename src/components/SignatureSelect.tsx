@@ -30,10 +30,12 @@ export default function SignatureSelect(props: SignatureSelectProps) {
   const { items } = props
 
   return (
-    <FormControl variant="outlined" style={props.style}>
-      <InputLabel>
-        {props.label}
-      </InputLabel>
+    <FormControl
+      variant="outlined"
+      style={props.style}
+      className={props.className}
+    >
+      <InputLabel>{props.label}</InputLabel>
       <Select
         value={props.value}
         onChange={(e) => props.onChange(e.target.value as any)}
