@@ -10,6 +10,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     palette: {
       primary: { main: '#ff6767' },
     },
+    typography: {
+      button: {
+        textTransform: 'none',
+      },
+    },
   })
 
   return (
