@@ -1,0 +1,38 @@
+@import '../colors.scss';
+
+.listbox {
+  display: inline-block;
+  min-width: 50%;
+  width: auto;
+  background-color: white;
+  transform: translate(0, -2px);
+
+  border: 2px solid $signature-red;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top: none;
+  padding: 10px;
+
+  .groupTitle {
+    font-family: Sitara;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 10px;
+  }
+
+  .watchlistName {
+    font-family: Sitara;
+    font-weight: normal;
+    font-size: 15px;
+    padding: 3px 10px;
+    border-radius: 5px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgba($signature-red, 0.08);
+    }
+  }
+}
+.noneFound {
+  border-bottom-left-radius: 15px !important;
+}
