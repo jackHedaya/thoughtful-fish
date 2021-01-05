@@ -8,7 +8,7 @@ type SignatureAutocomplete = {
   options: { group: string; value: string }[]
   title: string
   className?: string
-  style: CSSProperties
+  style?: CSSProperties
   TextFieldProps?: TextFieldProps
 }
 
@@ -26,7 +26,7 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
   })
 
   return (
-    <div style={props.style}>
+    <div style={props.style} className={props.className}>
       <div {...getRootProps()}>
         <TextField
           {...getInputProps()}
