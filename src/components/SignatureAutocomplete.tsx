@@ -20,7 +20,6 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
     getOptionProps,
     groupedOptions,
   } = useAutocomplete({
-    id: 'use-autocomplete-demo',
     options: props.options,
     groupBy: (x) => x.group,
     getOptionLabel: (x) => x.value,
