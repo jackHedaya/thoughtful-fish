@@ -1,6 +1,7 @@
+import { Dispatch, SetStateAction, useState } from 'react'
 import { IconButton, IconButtonProps, Tooltip } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
-import { Dispatch, SetStateAction, useState } from 'react'
+
 import { ExpressionPreset } from '../components/HackerPresets/ExpressionPreset'
 import SignatureRadio from '../components/SignatureRadio'
 
@@ -13,25 +14,74 @@ const PRESET_TO_COMPONENT = {
 export default function OptionHacker() {
   const [preset, setPreset] = useState('Expression')
 
-  const PresetComponent = PRESET_TO_COMPONENT[preset]
+  const PresetComponent: (props: {
+    navigationButtons: (props: { [key: string]: any }) => JSX.Element
+  }) => JSX.Element = PRESET_TO_COMPONENT[preset]
 
   return (
-    <div className="content">
+    <div className={s.content}>
       <div className="page-title">Option Hacker</div>
       <div className={s.hacker}>
         <div className={s.controls}>
           <PresetSetup preset={preset} setPreset={setPreset} />
-          <PresetComponent />
+          <PresetComponent navigationButtons={NavigationButtons} />
         </div>
-        <div className={s.instructions}></div>
-      </div>
-      <div style={{ paddingBottom: '20px' }}>
-        <IconButton className={`${s.navButton} ${s.back}`} disabled>
-          <ArrowBack />
-        </IconButton>
-        <IconButton className={s.navButton}>
-          <ArrowForward />
-        </IconButton>
+        <div className={s.instructions}>
+          <h2>How to use</h2>
+          <div className={s.how}>
+            The Option Hacker will screen all the options given that satisfy one
+            or multiple expressions.{' '}
+          </div>
+          <h2>Example</h2>
+          <div className={s.example}>
+            <Tooltip
+              title={`This will find all options in the given list whose price is less
+              than 25% of underlying price`}
+            >
+              <div className={s.textfield}>
+                <span>{'(option.mark / underlying.mark < 0.25'}</span>
+              </div>
+            </Tooltip>
+            <Tooltip
+              title={`This will find all options in the given list who have more than 120 days until expiration`}
+            >
+              <div className={s.textfield}>
+                <span>{'option.daysToExpiration > 120'}</span>
+              </div>
+            </Tooltip>
+          </div>
+          <i>Hover over example to see explanation</i>
+          <h2>Variables</h2>
+          <div className={s.vars}>
+            <h3>Option</h3>
+            <div className={s.list}>
+              <code>mark</code>
+              <code>last</code>
+              <code>daysToExpiration</code>
+              <code>mark</code>
+              <code>last</code>
+              <code>daysToExpiration</code>
+              <code>mark</code>
+              <code>last</code>
+              <code>daysToExpiration</code>
+            </div>
+            <h3>Underlying</h3>
+            <div className={s.list}>
+              <code>mark</code>
+              <code>last</code>
+              <code>close</code>
+              <code>open</code>
+              <code>mark</code>
+              <code>last</code>
+              <code>close</code>
+              <code>open</code>
+              <code>mark</code>
+              <code>last</code>
+              <code>close</code>
+              <code>open</code>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

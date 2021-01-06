@@ -1,12 +1,16 @@
 @import '../colors.scss';
 
+.content {
+  padding: 20px 40px;
+}
+
 .hacker {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
 
   .controls {
-    flex: 0.4;
+    flex: 0.45;
 
     .preset {
       margin-bottom: 20px;
@@ -17,13 +21,85 @@
         font-family: Sitara;
         font-style: normal;
         font-weight: bold;
-
-        margin-bottom: 2px;
       }
     }
   }
 
   .instructions {
+    flex: 0.5;
+    border: 2px dashed $soft-black;
+    background-color: $soft-dark-gray;
+    padding: 15px;
+    min-height: 50vh;
+    max-height: 80vh;
+    overflow-y: scroll;
+
+    .how {
+      margin-top: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    i {
+      display: block;
+      margin-left: 10px;
+      margin-bottom: 20px;
+      font-size: 0.7em;
+    }
+
+    div {
+      margin-bottom: 20px;
+    }
+
+    .example {
+      .textfield {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+
+        border: 2px solid $soft-black;
+        padding: 10px 12px;
+        border-radius: 10px;
+        text-align: left;
+        max-width: 350px;
+        opacity: 0.5;
+      }
+    }
+
+    .vars {
+      margin-top: 20px;
+
+      h3 {
+        display: block;
+        clear: both;
+        margin-top: 10px;
+      }
+
+      .list {
+        margin-top: 10px;
+        clear: both;
+        overflow: auto;
+
+        code {
+          font-size: 0.9em;
+          margin: 0.5em;
+          color: $signature-red;
+          border-radius: 5px;
+          border: 1px solid $signature-red;
+          padding: 3px 5px;
+          background-color: rgba($signature-red, 0.01);
+
+          float: left;
+
+          &::first-line {
+            padding-left: 100px;
+          }
+          // clear: left;
+        }
+      }
+    }
   }
 }
 
@@ -35,34 +111,38 @@
   }
 }
 
-.navButton {
-  width: 50px !important;
-  border: 2px solid $signature-red !important;
-  margin-top: 20px !important;
+.buttonWrapper {
+  margin-top: 20px;
+  padding-bottom: 20px;
 
-  &:first-of-type {
-    margin-right: 10px;
-  }
+  .navButton {
+    width: 50px !important;
+    border: 2px solid $signature-red !important;
 
-  &:disabled {
-    @include disabled();
-  }
-
-  svg {
-    color: $signature-red;
-    width: 100%;
-    height: 100%;
-  }
-
-  &.back {
-    border: 2px solid gray !important;
-
-    svg {
-      color: gray;
+    &:first-of-type {
+      margin-right: 10px;
     }
 
     &:disabled {
       @include disabled();
+    }
+
+    svg {
+      color: $signature-red;
+      width: 100%;
+      height: 100%;
+    }
+
+    &.back {
+      border: 2px solid gray !important;
+
+      svg {
+        color: gray;
+      }
+
+      &:disabled {
+        @include disabled();
+      }
     }
   }
 }
