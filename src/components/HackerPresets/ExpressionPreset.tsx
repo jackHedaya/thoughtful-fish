@@ -101,7 +101,7 @@ export function ExpressionPreset() {
         }
       >
         {state.expressions.map((value, i) => (
-          <div className={s.expression}>
+          <div className={s.expression} key={`Expression/${i}`}>
             <TextField
               className={s.textfield}
               value={value}
@@ -127,11 +127,22 @@ export function ExpressionPreset() {
         <Button
           className={s.addExpressionButton}
           size="small"
-          disableRipple
           onClick={() => dispatch({ type: 'add_expression', expression: '' })}
         >
           Add Expression
         </Button>
+        <SignatureButton
+          className={s.nextButton}
+          onClick={() => {
+            dispatch({
+              type: 'set_accordion_open',
+              accordion: 'expressions',
+              open: false,
+            })
+          }}
+        >
+          Finish
+        </SignatureButton>
       </SignatureAccordion>
     </div>
   )
