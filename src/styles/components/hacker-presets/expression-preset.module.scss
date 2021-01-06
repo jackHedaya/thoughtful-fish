@@ -2,6 +2,7 @@
 
 .watchlistSection {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
   padding-bottom: 75px;
 
@@ -9,11 +10,11 @@
     margin-right: 10px;
     min-width: 110px;
     max-width: 150px;
+    flex: 0 0 33.333%;
   }
 
   .selectWatchlist {
-    width: 100%;
-    flex: 1;
+    flex: 1 0 auto;
   }
 }
 
