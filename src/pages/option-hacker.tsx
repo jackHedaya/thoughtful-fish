@@ -1,3 +1,5 @@
+import { IconButton } from '@material-ui/core'
+import { ArrowBack, ArrowForward } from '@material-ui/icons'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { ExpressionPreset } from '../components/HackerPresets/ExpressionPreset'
 import SignatureRadio from '../components/SignatureRadio'
@@ -22,6 +24,14 @@ export default function OptionHacker() {
           <PresetComponent />
         </div>
         <div className={s.instructions}></div>
+      </div>
+      <div style={{ paddingBottom: '20px' }}>
+        <IconButton className={`${s.navButton} ${s.back}`} disabled>
+          <ArrowBack />
+        </IconButton>
+        <IconButton className={s.navButton}>
+          <ArrowForward />
+        </IconButton>
       </div>
     </div>
   )
