@@ -147,7 +147,7 @@ export function ExpressionPreset(props: {
           Finish
         </SignatureButton>
       </SignatureAccordion>
-      <props.navigationButtons />
+      <props.navigationButtons BackButtonProps={{ disabled: true }} />
     </div>
   )
 }
