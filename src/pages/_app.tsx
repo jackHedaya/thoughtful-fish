@@ -15,6 +15,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         textTransform: 'none',
       },
     },
+    props: {
+      MuiButtonBase: {
+        disableRipple: true,
+      },
+    },
   })
 
   return (
