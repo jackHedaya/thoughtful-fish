@@ -19,12 +19,18 @@ export default function ExpressionPreset(props: PresetProps) {
 
   const [state, dispatch] = useExpressionPresetState()
 
+  function onNext() {
+    dispatch({ type: 'prepare_for_send' })
+
+    if (state.tickers.length > 0) props.onComplete(state)
+  }
+
   return (
     <div>
       <SignatureAccordion
         title="Setup"
         style={{ position: 'relative' }}
-        expanded={state.accordionsOpen.setup}
+        expanded={state._accordionsOpen.setup}
         onChange={(_, b) =>
           dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })
         }
@@ -63,9 +69,9 @@ export default function ExpressionPreset(props: PresetProps) {
               placeholder="Comma seperated list"
               variant="outlined"
               inputProps={{
-                autocomplete: 'new-password',
+                autoComplete: 'new-password',
                 form: {
-                  autocomplete: 'off',
+                  autoComplete: 'off',
                 },
               }}
             />
@@ -92,7 +98,7 @@ export default function ExpressionPreset(props: PresetProps) {
       <SignatureAccordion
         title="Expressions"
         style={{ position: 'relative', display: 'block' }}
-        expanded={state.accordionsOpen.expressions}
+        expanded={state._accordionsOpen.expressions}
         onChange={(_, b) =>
           dispatch({
             type: 'set_accordion_open',
@@ -147,9 +153,7 @@ export default function ExpressionPreset(props: PresetProps) {
       </SignatureAccordion>
       <props.navigationButtons
         BackButtonProps={{ disabled: true }}
-        onNext={() => {
-          if (state.tickers.length > 0) props.onComplete(state)
-        }}
+        onNext={onNext}
       />
     </div>
   )

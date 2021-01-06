@@ -22,31 +22,40 @@ export default function OptionHacker() {
   const router = useRouter()
 
   const [preset, setPreset] = useState('Expression')
-  const [sendData, setSendData] = useState<PresetState>()
+  const [sendData, setSendData] = useState<{ [key: string]: any }>()
 
   const _PresetComponent = PRESET_TO_COMPONENT[preset]
 
   const [willTransition, setWillTransition] = useState(false)
 
-  function slidOut() {}
+  function cleanState(data: PresetState) {
+    return Object.entries(data).reduce((acc, [key, val]) => {
+      if (key[0] !== '_') acc[key] = val
+      return acc
+    }, {})
+  }
+
+  function getResults() {
+    router.push({
+      pathname: '/option-hacker/results',
+      query: encodeURIComponent(JSON.stringify(sendData)),
+    })
+  }
 
   return (
-    <div className={s.content}>
+    <div className="content">
       <div className="page-title">Option Hacker</div>
-      <Slide
-        direction="right"
-        in={!willTransition}
-        onExit={slidOut}
-        mountOnEnter
-        unmountOnExit
-      >
+      <Slide direction="right" in={!willTransition} onExit={getResults}>
         <div className={s.hacker}>
           <div className={s.controls}>
             <PresetSetup preset={preset} setPreset={setPreset} />
             <div>
               <_PresetComponent
                 navigationButtons={NavigationButtons}
-                onComplete={(d: PresetState) => setSendData(d)}
+                onComplete={(d: PresetState) => {
+                  setSendData(cleanState(d))
+                  setWillTransition(true)
+                }}
               />
             </div>
           </div>

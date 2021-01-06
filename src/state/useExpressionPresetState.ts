@@ -5,7 +5,7 @@ type Expression = string
 export type ExpressionPresetState = {
   tickers: string[]
   expressions: Expression[]
-  accordionsOpen: {
+  _accordionsOpen: {
     setup: boolean
     expressions: boolean
   }
@@ -20,10 +20,11 @@ type Action =
   | { type: 'set_expression_at_index'; index: number; value: string }
   | {
       type: 'set_accordion_open'
-      accordion: keyof ExpressionPresetState['accordionsOpen']
+      accordion: keyof ExpressionPresetState['_accordionsOpen']
       open: boolean
     }
   | { type: 'set_tickers'; tickers: string[] }
+  | { type: 'prepare_for_send' }
 
 function reducer(
   state: ExpressionPresetState,
@@ -55,13 +56,15 @@ function reducer(
     case 'set_accordion_open':
       return {
         ...state,
-        accordionsOpen: {
-          ...state.accordionsOpen,
+        _accordionsOpen: {
+          ...state._accordionsOpen,
           [action.accordion]: action.open,
         },
       }
     case 'set_tickers':
       return { ...state, tickers: action.tickers }
+    case 'prepare_for_send':
+      return { ...state, tickers: state.tickers.filter((x) => x.trim() !== '') }
     default:
       throw new Error()
   }
@@ -71,6 +74,6 @@ export default function () {
   return useReducer(reducer, {
     tickers: [],
     expressions: [''],
-    accordionsOpen: { setup: true, expressions: false },
+    _accordionsOpen: { setup: true, expressions: false },
   })
 }
