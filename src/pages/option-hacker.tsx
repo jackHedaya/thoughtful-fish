@@ -119,7 +119,7 @@ export function NavigationButtons(props: {
     <div className={s.buttonWrapper}>
       <IconButton
         {...props.BackButtonProps}
-        onClick={() => props.onBack()}
+        onClick={props.onBack}
         className={`${s.navButton} ${s.back} ${
           props.BackButtonProps?.className || ''
         }`}
@@ -128,7 +128,7 @@ export function NavigationButtons(props: {
       </IconButton>
       <IconButton
         {...props.NextButtonProps}
-        onClick={() => props.onBack()}
+        onClick={props.onBack}
         className={`${s.navButton} ${props.NextButtonProps?.className || ''}`}
       >
         <ArrowForward />
