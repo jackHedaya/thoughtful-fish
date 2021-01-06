@@ -3,6 +3,7 @@
 .nav {
   background-color: $signature-red;
   box-shadow: 6px 0px 6px #DADADA;
+  z-index: 1000;
 
   .item {
     width: 60px;
