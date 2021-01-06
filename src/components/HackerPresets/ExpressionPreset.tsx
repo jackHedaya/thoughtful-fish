@@ -10,8 +10,11 @@ import SignatureSelect from '../SignatureSelect'
 import useExpressionPresetState from '../../state/useExpressionPresetState'
 
 import s from '../../styles/components/hacker-presets/expression-preset.module.scss'
+import { NavigationButtons } from '../../pages/option-hacker'
 
-export function ExpressionPreset() {
+export function ExpressionPreset(props: {
+  navigationButtons: typeof NavigationButtons
+}) {
   const [watchlistOrList, setWatchlistOrList] = useState<'Watchlist' | 'List'>(
     'Watchlist'
   )
@@ -144,6 +147,7 @@ export function ExpressionPreset() {
           Finish
         </SignatureButton>
       </SignatureAccordion>
+      <props.navigationButtons />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { IconButton } from '@material-ui/core'
+import { IconButton, IconButtonProps, Tooltip } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { ExpressionPreset } from '../components/HackerPresets/ExpressionPreset'
@@ -51,6 +51,38 @@ function PresetSetup(props: {
         onSelect={(i) => setPreset(i)}
         selectedElement={preset}
       />
+    </div>
+  )
+}
+
+export function NavigationButtons(props: {
+  onNext?: () => void
+  onBack?: () => void
+  WrapperProps?: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  >
+  NextButtonProps?: IconButtonProps
+  BackButtonProps?: IconButtonProps
+}) {
+  return (
+    <div className={s.buttonWrapper}>
+      <IconButton
+        {...props.BackButtonProps}
+        onClick={() => props.onBack()}
+        className={`${s.navButton} ${s.back} ${
+          props.BackButtonProps?.className || ''
+        }`}
+      >
+        <ArrowBack />
+      </IconButton>
+      <IconButton
+        {...props.NextButtonProps}
+        onClick={() => props.onBack()}
+        className={`${s.navButton} ${props.NextButtonProps?.className || ''}`}
+      >
+        <ArrowForward />
+      </IconButton>
     </div>
   )
 }
