@@ -63,7 +63,7 @@ export default function OptionHacker() {
               than 25% of underlying price`}
               >
                 <div className={s.textfield}>
-                  <span>{'(option.mark / underlying.mark < 0.25'}</span>
+                  <span>{'option.mark / underlying.mark < 0.25'}</span>
                 </div>
               </Tooltip>
               <Tooltip
