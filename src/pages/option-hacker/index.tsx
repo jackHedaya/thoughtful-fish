@@ -164,7 +164,7 @@ export function NavigationButtons(props: NavigationButtonProps) {
       </IconButton>
       <IconButton
         {...props.NextButtonProps}
-        onClick={props.onBack}
+        onClick={props.onNext}
         className={`${s.navButton} ${props.NextButtonProps?.className || ''}`}
       >
         <ArrowForward />
