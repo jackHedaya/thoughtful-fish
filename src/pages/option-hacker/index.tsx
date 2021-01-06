@@ -2,41 +2,51 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 import { IconButton, IconButtonProps, Slide, Tooltip } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
 
-import { ExpressionPreset } from '../../components/HackerPresets/ExpressionPreset'
+import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
 import SignatureRadio from '../../components/SignatureRadio'
 
 import s from '../../styles/pages/option-hacker.module.scss'
+import { useRouter } from 'next/router'
+import { PresetState } from '../../state/types'
 
-const PRESET_TO_COMPONENT: { [k: string]: PresetComponentType } = {
+const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
   Expression: ExpressionPreset,
 }
 
-type PresetComponentType = (props: {
-  navigationButtons: (props: { [key: string]: any }) => JSX.Element
-  onComplete: (tickers: string[]) => void
-  // ref: React.ForwardRef<unknown
-}) => JSX.Element
+export type PresetProps = {
+  navigationButtons: (props: NavigationButtonProps) => JSX.Element
+  onComplete: (state: PresetState) => void
+}
 
 export default function OptionHacker() {
+  const router = useRouter()
+
   const [preset, setPreset] = useState('Expression')
-  const [tickers, setTickers] = useState<string[]>([])
+  const [sendData, setSendData] = useState<PresetState>()
 
   const _PresetComponent = PRESET_TO_COMPONENT[preset]
-  // const PresetComponent = React.forwardRef((p, r) => (
-  //   <_PresetComponent {...p} ref={r} />
-  // ))
+
+  const [willTransition, setWillTransition] = useState(false)
+
+  function slidOut() {}
 
   return (
     <div className={s.content}>
       <div className="page-title">Option Hacker</div>
-      <Slide direction="right" in={true} mountOnEnter unmountOnExit>
+      <Slide
+        direction="right"
+        in={!willTransition}
+        onExit={slidOut}
+        mountOnEnter
+        unmountOnExit
+      >
         <div className={s.hacker}>
           <div className={s.controls}>
             <PresetSetup preset={preset} setPreset={setPreset} />
             <div>
               <_PresetComponent
                 navigationButtons={NavigationButtons}
-                onComplete={(tickers: string[]) => setTickers(tickers)}
+                onComplete={(d: PresetState) => setSendData(d)}
               />
             </div>
           </div>
@@ -120,7 +130,7 @@ function PresetSetup(props: {
   )
 }
 
-export function NavigationButtons(props: {
+type NavigationButtonProps = {
   onNext?: () => void
   onBack?: () => void
   WrapperProps?: React.DetailedHTMLProps<
@@ -129,7 +139,9 @@ export function NavigationButtons(props: {
   >
   NextButtonProps?: IconButtonProps
   BackButtonProps?: IconButtonProps
-}) {
+}
+
+export function NavigationButtons(props: NavigationButtonProps) {
   return (
     <div className={s.buttonWrapper}>
       <IconButton

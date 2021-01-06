@@ -2,7 +2,7 @@ import { useReducer } from 'react'
 
 type Expression = string
 
-type ExpressionPresetState = {
+export type ExpressionPresetState = {
   tickers: string[]
   expressions: Expression[]
   accordionsOpen: {

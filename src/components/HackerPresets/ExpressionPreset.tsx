@@ -6,16 +6,13 @@ import SignatureAccordion from '../SignatureAccordion'
 import SignatureAutocomplete from '../SignatureAutocomplete'
 import SignatureButton from '../SignatureButton'
 import SignatureSelect from '../SignatureSelect'
-import { NavigationButtons } from '../../pages/option-hacker'
+import { PresetProps } from '../../pages/option-hacker'
 
 import useExpressionPresetState from '../../state/useExpressionPresetState'
 
 import s from '../../styles/components/hacker-presets/expression-preset.module.scss'
 
-export function ExpressionPreset(props: {
-  navigationButtons: typeof NavigationButtons
-  onComplete: (tickers: string[]) => void
-}) {
+export default function ExpressionPreset(props: PresetProps) {
   const [watchlistOrList, setWatchlistOrList] = useState<'Watchlist' | 'List'>(
     'Watchlist'
   )
@@ -151,7 +148,7 @@ export function ExpressionPreset(props: {
       <props.navigationButtons
         BackButtonProps={{ disabled: true }}
         onNext={() => {
-          if (state.tickers.length > 0) props.onComplete(state.tickers)
+          if (state.tickers.length > 0) props.onComplete(state)
         }}
       />
     </div>
