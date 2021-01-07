@@ -1,0 +1,50 @@
+@import '../colors.scss';
+
+$content-indent: 20px;
+
+.resultsTitle {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  margin-left: $content-indent;
+}
+
+.results {
+  // position: relative;
+  padding-left: $content-indent;
+
+  width: 100%;
+  height: 80%;
+
+  .loader,
+  .errorMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+
+
+    color: $signature-red;
+    text-align: center;
+  }
+
+  table {
+    border-collapse: separate;
+
+    th,
+    td {
+      border: 1px solid $soft-black;
+      padding: 10px 15px;
+    }
+
+    th {
+      color: $signature-red;
+    }
+
+    td {
+      &.symbol:hover {
+        cursor: pointer;
+        color: $signature-red;
+      }
+    }
+  }
+}
