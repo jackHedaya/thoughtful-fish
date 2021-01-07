@@ -18,6 +18,8 @@ export type PresetProps = {
   onComplete: (state: PresetState) => void
 }
 
+type SendData = PresetState & { preset: string }
+
 export default function OptionHacker() {
   const router = useRouter()
 
@@ -28,8 +30,12 @@ export default function OptionHacker() {
 
   const [willTransition, setWillTransition] = useState(false)
 
-  function cleanState(data: PresetState) {
-    return Object.entries(data).reduce((acc, [key, val]) => {
+  /**
+   * Cleans state by removing all UI variables prepended with an _
+   * @param data
+   */
+  function cleanState(data: SendData) {
+    return Object.entries(data).reduce<Partial<SendData>>((acc, [key, val]) => {
       if (key[0] !== '_') acc[key] = val
       return acc
     }, {})
@@ -53,7 +59,7 @@ export default function OptionHacker() {
               <_PresetComponent
                 navigationButtons={NavigationButtons}
                 onComplete={(d: PresetState) => {
-                  setSendData(cleanState(d))
+                  setSendData(cleanState({ preset, ...d }))
                   setWillTransition(true)
                 }}
               />
