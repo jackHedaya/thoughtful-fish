@@ -1,6 +1,8 @@
 // Core
-import React, { useEffect } from 'react'
-import initAnimation from './core'
+import React, { useEffect, useRef } from 'react'
+import Background from './core'
+
+import s from '../../styles/components/bubble-background.module.scss'
 
 type BubbleBackgroundProps = {
   /**
@@ -16,42 +18,44 @@ type BubbleBackgroundProps = {
 }
 
 export default function BubbleBackground(props: BubbleBackgroundProps) {
-  const { id = 'wd-floating-bubbles', color = '0,0,0' } = props
+  const { id = 'wd-floating-bubbles', color = 'black' } = props
 
   let resizeTimeout = null
+
+  const ref = useRef()
+
+  let background: Background
 
   /*
    * Initialises the core JS that controls the animation
    *
    */
-  const init = () => {
-    if (resizeTimeout) return
-
-    resizeTimeout = setTimeout(() => {
-      initAnimation(id, color)
-
-      resizeTimeout = null
-    }, 5000)
-  }
 
   useEffect(() => {
-    init()
+    background = new Background(id, color)
 
-    window.addEventListener('resize', init)
+    // Figure out resizing here
 
-    return () => window.removeEventListener('resize', init)
+    // const resizeCanvas = flexCanvas(ref.current)
+    // window.addEventListener('resize', resizeCanvas)
+    // return () => window.removeEventListener('resize', resizeCanvas)
   }, [])
 
   return (
-    <canvas
-      id={id}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-      }}
-    />
+    <div id={s.container}>
+      <div>
+        <canvas
+          id={id}
+          ref={ref}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+          }}
+        />
+      </div>
+    </div>
   )
 }
