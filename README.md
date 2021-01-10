@@ -1,34 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Thoughtful Fish
 
-## Getting Started
+The beautiful portal to help you invest
 
-First, run the development server:
+## Development
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+### Install needed dependencies
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `$ brew install mkcert nss`
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Setup repository
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+- `$ git clone https://github.com/jackHedaya/thoughtful-fish`
+- `$ cd thoughtful-fish && yarn`
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Setup development server
 
-## Learn More
+These steps are needed to configure SSL on localhost
 
-To learn more about Next.js, take a look at the following resources:
+- `$ mkcert -install`
+- `$ cd dev-server && mkcert localhost`
+- `$ cp "$(mkcert -CAROOT)/rootCA.pem" ./`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Configure `.env.local`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- `$ touch .env.local`
+- Populate `.env.local` with `CONSUMER_KEY`, `NEXTAUTH_URL="https://localhost:3000/"` and `NODE_TLS_REJECT_UNAUTHORIZED=0`
 
-## Deploy on Vercel
+### Running
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+_Make sure you are in root folder at this point_
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `$ yarn dev`
