@@ -38,7 +38,7 @@ class Bubble {
     // this.maxWidth = canvasWidth
     // this.maxHeight = canvasHeight
 
-    if (this.posY < -100 || this.posX < 0 || this.posX > this.maxWidth + 100) {
+    if (this.posY < -100 || this.posX < -100 || this.posX > this.maxWidth + 100) {
       if (this.timeout) return
 
       this.timeout = setTimeout(() => {
