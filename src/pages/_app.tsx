@@ -1,11 +1,15 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import type { AppProps } from 'next/app'
+import { useRouter } from 'next/router'
 
 import Navbar from '../components/Navbar'
 
 import '../styles/globals.scss'
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter()
+  const isLoginPage = router.asPath === '/login'
+
   const theme = createMuiTheme({
     palette: {
       primary: { main: '#ff6767' },
@@ -24,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <div className="app">
-      <Navbar />
+      {!isLoginPage && <Navbar />}
       <ThemeProvider theme={theme}>
         <Component {...pageProps} />
       </ThemeProvider>
