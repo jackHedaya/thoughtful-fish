@@ -3,7 +3,6 @@ import NextAuth from 'next-auth'
 
 const TOKEN_ENDPOINT = 'https://api.tdameritrade.com/v1/oauth2/token'
 
-
 export default function (req: NextApiRequest, res: NextApiResponse) {
   NextAuth(req, res, {
     providers: [
@@ -29,7 +28,10 @@ export default function (req: NextApiRequest, res: NextApiResponse) {
       },
     ],
     pages: {
-      signIn: '/auth/sign-in'
+      signIn: '/login',
+    },
+    jwt: {
+      secret: process.env.JWT_SIGNING_PRIVATE_KEY,
     },
   })
 }
