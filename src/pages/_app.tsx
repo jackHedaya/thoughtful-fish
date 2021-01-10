@@ -1,4 +1,5 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
+import { Provider } from 'next-auth/client'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 
@@ -29,9 +30,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div className="app">
       {!isLoginPage && <Navbar />}
-      <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <Provider session={pageProps.session}>
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </Provider>
     </div>
   )
 }
