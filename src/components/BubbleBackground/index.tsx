@@ -1,4 +1,6 @@
-// Core
+// Sourced from https://github.com/webdocgroup/Bubbles
+
+
 import React, { useEffect, useRef } from 'react'
 import Background from './core'
 
