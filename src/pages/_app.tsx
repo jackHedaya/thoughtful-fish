@@ -9,7 +9,7 @@ import '../styles/globals.scss'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
-  const isLoginPage = router.asPath === '/login'
+  const isLoginPage = router.asPath.startsWith('/login')
 
   const theme = createMuiTheme({
     palette: {
