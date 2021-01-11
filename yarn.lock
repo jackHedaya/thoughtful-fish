@@ -255,10 +255,10 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.6.tgz#f4c7ec43e81b319a9815115031709f26987891f0"
   integrity sha512-3c+yGKvVP5Y9TYBEibGNR+kLtijnj7mYrXRg+WpFb2X9xm04g/DXYkfg4hmzJQosc9snFNUPkbYIhu+KAm6jJw==
 
-"@types/next-auth@^3.1.19":
-  version "3.1.19"
-  resolved "https://registry.yarnpkg.com/@types/next-auth/-/next-auth-3.1.19.tgz#3744eb765aa7d62b868f44d78891ba9db39c6a93"
-  integrity sha512-ilWteGkZ1P+xfm2kwJbP9T8mPwNi3oGT4IADeZwf4888ZpM0WrQNSwWC5SLadqT5iEtwM1DG5TB8QzbBFxjTSg==
+"@types/next-auth@^3.1.20":
+  version "3.1.20"
+  resolved "https://registry.yarnpkg.com/@types/next-auth/-/next-auth-3.1.20.tgz#09f3b7220c2d380de80b82b6ffe6fa9f841f2255"
+  integrity sha512-mQqxwPSxpUtX94+iIUxOa6D6kcfVSvCCIQO0WjMHhzIAgASmxTqq2x7dT6sZDfmQeVrZh4KWjvnOXuVcgApAMA==
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
@@ -2949,10 +2949,10 @@ neo-async@^2.5.0, neo-async@^2.6.1, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-next-auth@^3.2.0-canary.16:
-  version "3.2.0-canary.16"
-  resolved "https://registry.yarnpkg.com/next-auth/-/next-auth-3.2.0-canary.16.tgz#4e3c9b308fc282c8aeed51c4a06a8a259673508b"
-  integrity sha512-yCJaNMQe10LNqqT5NJo3DLY8JMozBEC5sHKhNEqYkXnrSL/Ls42C5XcJxIFKg6/VzZn4NO5G1ygZIg8D+dQIhQ==
+next-auth@^3.2.0-canary.20:
+  version "3.2.0-canary.20"
+  resolved "https://registry.yarnpkg.com/next-auth/-/next-auth-3.2.0-canary.20.tgz#c9aa49719db37bc50ff43c945a932df59b9767dc"
+  integrity sha512-hAMYolumHQ2NdT4oBOFYFaQlfWQwMwtZpui+4pptL6rbrnvWtXaX8XUYkPV0OqiXXwJbGlKjgGRl6QDHUS48Vw==
   dependencies:
     crypto-js "^4.0.0"
     faunadb "^3.0.1"
