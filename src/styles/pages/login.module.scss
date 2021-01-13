@@ -11,11 +11,16 @@
     border: 1px solid $signature-red;
     background-color: rgba(120, 120, 120, 0.05);
 
-    padding: 50px;
+    padding: 40px 40px;
 
     left: 50%;
     top: 40%;
     transform: translate(-50%, -50%);
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
 
     h3 {
       text-align: center;
@@ -24,7 +29,7 @@
 
     .button {
       display: block;
-      // background-color: $positive-green;
+      margin: auto;
       color: white;
       width: 200px;
 

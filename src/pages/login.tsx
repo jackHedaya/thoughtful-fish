@@ -28,6 +28,7 @@ export default function Login({ providers }: LoginProps) {
     <div className={s.login}>
       <Bubbles color="#ff6767" />
       <Paper className={s.main}>
+        <h2>We're excited to have you here</h2>
         <h3>Sign in with</h3>
         <div
           className={s.button}
