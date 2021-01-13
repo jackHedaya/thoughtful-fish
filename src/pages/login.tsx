@@ -1,4 +1,5 @@
 import { Paper } from '@material-ui/core'
+import { NextPageContext } from 'next'
 import { providers, signIn } from 'next-auth/client'
 
 import dynamic from 'next/dynamic'
@@ -19,9 +20,11 @@ type LoginProps = {
       callbackUrl: string
     }
   }
+
+  didError: boolean
 }
 
-export default function Login({ providers }: LoginProps) {
+export default function Login({ providers, didError }: LoginProps) {
   const tdProvider = providers['td']
 
   return (
@@ -37,14 +40,18 @@ export default function Login({ providers }: LoginProps) {
         >
           <img src="/ameritrade-logo.png" />
         </div>
+        {didError && <div className={s.error}>Something went wrong</div>}
       </Paper>
     </div>
   )
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx: NextPageContext) {
+  const q = ctx.query
+
   return {
     props: {
+      didError: !!q.error,
       providers: await providers(),
     },
   }
