@@ -1,31 +1,18 @@
-import { Paper } from '@material-ui/core'
 import { NextPageContext } from 'next'
-import { providers, signIn } from 'next-auth/client'
-
+import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
+import { Paper } from '@material-ui/core'
 
 const Bubbles = dynamic(() => import('../components/BubbleBackground'), {
   ssr: false,
 })
 
 import s from '../styles/pages/login.module.scss'
+import getSession from '../services/getSession'
 
-type LoginProps = {
-  providers: {
-    [provider: string]: {
-      id: string
-      name: string
-      type: string
-      signinUrl: string
-      callbackUrl: string
-    }
-  }
-
-  didError: boolean
-}
-
-export default function Login({ providers, didError }: LoginProps) {
-  const tdProvider = providers['td']
+export default function Login() {
+  const Router = useRouter()
+  const didError = !!Router.query.error
 
   return (
     <div className={s.login}>
@@ -35,8 +22,7 @@ export default function Login({ providers, didError }: LoginProps) {
         <h3>Sign in with</h3>
         <div
           className={s.button}
-          onClick={() => signIn(tdProvider.id)}
-          key={tdProvider.name}
+          onClick={() => Router.push('/api/auth/redirect')}
         >
           <img src="/ameritrade-logo.png" />
         </div>
@@ -47,12 +33,15 @@ export default function Login({ providers, didError }: LoginProps) {
 }
 
 export async function getServerSideProps(ctx: NextPageContext) {
-  const q = ctx.query
+  const session = getSession(ctx)
 
-  return {
-    props: {
-      didError: !!q.error,
-      providers: await providers(),
-    },
-  }
+  if (session)
+    return {
+      redirect: {
+        destination: ctx.query.route || '/home',
+        permanent: false,
+      },
+    }
+
+  return { props: {} }
 }
