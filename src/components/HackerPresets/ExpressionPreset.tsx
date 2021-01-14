@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField, Tooltip } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 
 import SignatureAccordion from '../SignatureAccordion'
@@ -155,6 +155,67 @@ export default function ExpressionPreset(props: PresetProps) {
         BackButtonProps={{ disabled: true }}
         onNext={onNext}
       />
+    </div>
+  )
+}
+
+export function InstructionPanel() {
+  return (
+    <div className={s.instructions}>
+      <h2>How to use</h2>
+      <div className={s.how}>
+        The Option Hacker will screen all the options given that satisfy one or
+        multiple expressions.{' '}
+      </div>
+      <h2>Example</h2>
+      <div className={s.example}>
+        <Tooltip
+          title={`This will find all options in the given list whose price is less
+        than 25% of underlying price`}
+        >
+          <div className={s.textfield}>
+            <span>{'option.mark / underlying.mark < 0.25'}</span>
+          </div>
+        </Tooltip>
+        <Tooltip
+          title={`This will find all options in the given list who have more than 120 days until expiration`}
+        >
+          <div className={s.textfield}>
+            <span>{'option.daysToExpiration > 120'}</span>
+          </div>
+        </Tooltip>
+      </div>
+      <i>Hover over example to see explanation</i>
+      <h2>Variables</h2>
+      <div className={s.vars}>
+        <h3>Option</h3>
+        <div className={s.list}>
+          <code>mark</code>
+          <code>last</code>
+          <code>daysToExpiration</code>
+          <code>mark</code>
+          <code>last</code>
+          <code>daysToExpiration</code>
+          <code>mark</code>
+          <code>last</code>
+          <code>daysToExpiration</code>
+        </div>
+        <h3>Underlying</h3>
+        <div className={s.list}>
+          <code>mark</code>
+          <code>last</code>
+          <code>close</code>
+          <code>open</code>
+          <code>mark</code>
+          <code>last</code>
+          <code>close</code>
+          <code>open</code>
+          <code>mark</code>
+          <code>last</code>
+          <code>close</code>
+          <code>open</code>
+        </div>
+      </div>
     </div>
   )
 }
