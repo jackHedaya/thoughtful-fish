@@ -22,7 +22,8 @@ export default function ExpressionPreset(props: PresetProps) {
   function onNext() {
     dispatch({ type: 'prepare_for_send' })
 
-    if (state.tickers.length > 0) props.onComplete(state)
+    if (state.tickers.length > 0 && state.targetPrice !== undefined)
+      props.onComplete(state)
   }
 
   return (
@@ -52,10 +53,12 @@ export default function ExpressionPreset(props: PresetProps) {
                 { group: "jackehedaya's Watchlists", value: 'World' },
                 { group: "john's Watchlists", value: 'World' },
               ]}
+              TextFieldProps={{ required: true }}
             />
           ) : (
             <TextField
               className={s.selectWatchlist}
+              required
               value={state.tickers.join(',')}
               onChange={(e) =>
                 dispatch({
@@ -119,6 +122,7 @@ export default function ExpressionPreset(props: PresetProps) {
             variant="outlined"
             label="Target Price"
             placeholder="Target Price"
+            required
           />
           <TextField
             // Likely due to the field being empty

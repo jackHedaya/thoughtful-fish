@@ -52,6 +52,7 @@ export default function ExpressionPreset(props: PresetProps) {
                 { group: "jackehedaya's Watchlists", value: 'World' },
                 { group: "john's Watchlists", value: 'World' },
               ]}
+              TextFieldProps={{ required: true }}
             />
           ) : (
             <TextField
@@ -74,6 +75,7 @@ export default function ExpressionPreset(props: PresetProps) {
                   autoComplete: 'off',
                 },
               }}
+              required
             />
           )}
         </div>
