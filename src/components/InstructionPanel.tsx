@@ -6,8 +6,8 @@ const PRESET_TO_COMPONENT = {
   TargetPrice: TP,
 }
 
-export default function InstructionPanel(props: { presetName: string }) {
-  const Component = PRESET_TO_COMPONENT[props.presetName]
+export default function InstructionPanel(props: { preset: string }) {
+  const Component = PRESET_TO_COMPONENT[props.preset]
 
   return <Component />
 }
