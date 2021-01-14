@@ -1,35 +1,36 @@
 import { useReducer } from 'react'
+import { PresetActionBase, presetReducerBase } from './presetBase'
 
 type Expression = string
+
+type Accordions = {
+  setup: boolean
+  expressions: boolean
+}
 
 export type ExpressionPresetState = {
   tickers: string[]
   expressions: Expression[]
-  _accordionsOpen: {
-    setup: boolean
-    expressions: boolean
-  }
+  _accordionsOpen: Accordions
 }
 
 type Action =
+  | PresetActionBase<ExpressionPresetState>
   | {
       type: 'add_expression'
       expression: Expression
     }
   | { type: 'remove_expression_at_index'; index: number }
   | { type: 'set_expression_at_index'; index: number; value: string }
-  | {
-      type: 'set_accordion_open'
-      accordion: keyof ExpressionPresetState['_accordionsOpen']
-      open: boolean
-    }
-  | { type: 'set_tickers'; tickers: string[] }
-  | { type: 'prepare_for_send' }
 
 function reducer(
   state: ExpressionPresetState,
   action: Action
 ): ExpressionPresetState {
+  const defaultReducer = presetReducerBase(action, state)
+
+  if (defaultReducer) return defaultReducer
+
   switch (action.type) {
     case 'add_expression':
       return {
@@ -70,7 +71,7 @@ function reducer(
   }
 }
 
-export default function () {
+export default function presetReducer() {
   return useReducer(reducer, {
     tickers: [],
     expressions: [''],

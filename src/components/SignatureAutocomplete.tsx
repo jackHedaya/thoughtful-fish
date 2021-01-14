@@ -35,6 +35,7 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
           }`}
           label={props.title}
           variant="outlined"
+          style={{ width: '100%' }}
           {...props.TextFieldProps}
         />
       </div>
@@ -51,7 +52,7 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
                       <div
                         {...getOptionProps({ option, index })}
                         key={`${option.group}/${option.value}`}
-                        className={s.watchlistName}
+                        className={s.itemName}
                       >
                         {option.value}
                       </div>

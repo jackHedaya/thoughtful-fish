@@ -1,17 +1,20 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
+import { useRouter } from 'next/router'
 import { IconButton, IconButtonProps, Slide } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
 
-import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
 import SignatureRadio from '../../components/SignatureRadio'
+import InstructionPanel from '../../components/InstructionPanel'
+import { PresetState } from '../../state/presetBase'
+
+import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
+import TargetPricePreset from '../../components/HackerPresets/TargetPricePreset'
 
 import s from '../../styles/pages/option-hacker.module.scss'
-import { useRouter } from 'next/router'
-import { PresetState } from '../../state/presetBase'
-import InstructionPanel from '../../components/InstructionPanel'
 
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
   Expression: ExpressionPreset,
+  'Target Price': TargetPricePreset,
 }
 
 export type PresetProps = {
