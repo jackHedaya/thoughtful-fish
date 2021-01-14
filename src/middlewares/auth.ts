@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { MIDDLEWARE_ERROR } from '.'
 
 import ameritrade from '../lib/ameritrade'
 import {
@@ -19,14 +20,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   let accessToken = getAccessToken(req)
 
   if (refreshToken && !accessToken) {
-    const {
-      accessToken: newAccessToken,
-      expiresIn,
-    } = await ameritrade.auth.requestAccessToken({ refreshToken })
+    try {
+      const {
+        accessToken: newAccessToken,
+        expiresIn,
+      } = await ameritrade.auth.requestAccessToken({ refreshToken })
 
-    accessToken = newAccessToken
+      accessToken = newAccessToken
 
-    writeAccessToken({ res, accessToken, expiresIn })
+      writeAccessToken({ res, accessToken, expiresIn })
+    } catch (_) {
+      throw MIDDLEWARE_ERROR.UNAUTHORIZED
+    }
   }
 
   req.session = { refreshToken, accessToken }
