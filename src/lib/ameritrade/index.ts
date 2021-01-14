@@ -10,6 +10,53 @@ const axios = a.create({
 })
 
 /*
+ *  Functions for Authentication
+ */
+const TOKEN_ENDPOINT = 'https://api.tdameritrade.com/v1/oauth2/token'
+
+function tokenRequest(body: { [key: string]: string }) {
+  return axios(TOKEN_ENDPOINT, {
+    method: 'POST',
+    data: q.stringify({ client_id: process.env.CONSUMER_KEY, ...body }),
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  }).then((res) => {
+    if (res.data.error) throw res.data.error
+    return res.data
+  })
+}
+
+function generateLoginLink() {
+  return `https://auth.tdameritrade.com/auth?response_type=code&redirect_uri=${q.escape(
+    process.env.REDIRECT_URI
+  )}&client_id=${q.escape(process.env.CONSUMER_KEY)}`
+}
+
+function requestAccessToken({ refreshToken }: { refreshToken: string }) {
+  return tokenRequest({
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  }).then((data) => {
+    const { access_token, expires_in } = data
+
+    return { accessToken: access_token, expiresIn: expires_in }
+  })
+}
+
+function authenticateViaCode({ code }: { code: string }) {
+  return tokenRequest({
+    code: code,
+    grant_type: 'authorization_code',
+    access_type: 'offline',
+    redirect_uri: process.env.REDIRECT_URI,
+  }).then((data) => ({
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresIn: data.expires_in,
+    refreshTokenExpiresIn: data.refresh_token_expires_in,
+  }))
+}
+
+/*
  *  Functions to quotes options and stocks
  */
 
@@ -132,7 +179,7 @@ function updateWatchlist(params: UpdateWatchlistParams) {
   })
 }
 
-export default {
+const ameritrade = {
   symbol: { quote, getOptionChain },
   watchlist: {
     getAll: getAccountWatchlists,
@@ -140,4 +187,11 @@ export default {
     create: createWatchlist,
     update: updateWatchlist,
   },
+  auth: {
+    authenticateViaCode,
+    requestAccessToken,
+    generateLoginLink,
+  },
 }
+
+export default ameritrade
