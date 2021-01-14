@@ -1,11 +1,18 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core'
-import { Provider } from 'next-auth/client'
 import type { AppProps } from 'next/app'
-import { useRouter } from 'next/router'
-
+import Router, { useRouter } from 'next/router'
+import { Provider } from 'next-auth/client'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core'
+import NProgress from 'nprogress'
+        
 import Navbar from '../components/Navbar'
 
 import '../styles/globals.scss'
+import 'nprogress/nprogress.css'
+
+//Binding events.
+Router.events.on('routeChangeStart', () => NProgress.start())
+Router.events.on('routeChangeComplete', () => NProgress.done())
+Router.events.on('routeChangeError', () => NProgress.done())
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()

@@ -1,0 +1,140 @@
+@import '../colors.scss';
+
+.watchlistSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 75px;
+
+  .watchlistOrList {
+    margin-right: 10px;
+    min-width: 110px;
+    max-width: 150px;
+    flex: 0 0 33.333%;
+  }
+
+  .selectWatchlist {
+    flex: 1 0 auto;
+  }
+}
+
+.expression {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .textfield {
+    width: 100%;
+    margin-right: 5px;
+  }
+
+  margin-bottom: 15px;
+
+  &:last-of-type {
+    margin-bottom: 20px;
+  }
+}
+
+// Override Material UI requires !important
+.addExpressionButton {
+  display: block;
+  font-weight: bold !important;
+  border: 1px solid lightgray !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  margin: 0 auto !important;
+  margin-bottom: 50px !important;
+}
+
+.closeIcon {
+  transition: color 1s linear;
+
+  &:hover {
+    cursor: pointer;
+    color: $signature-red;
+  }
+}
+
+.nextButton {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+}
+
+.instructions {
+  flex: 0.5;
+  border: 2px dashed $soft-black;
+  background-color: $soft-dark-gray;
+  padding: 15px;
+  min-height: 50vh;
+  max-height: 80vh;
+  overflow-y: scroll;
+
+  .how {
+    margin-top: 20px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  i {
+    display: block;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    font-size: 0.7em;
+  }
+
+  div {
+    margin-bottom: 20px;
+  }
+
+  .example {
+    .textfield {
+      display: flex;
+      justify-content: left;
+      align-items: center;
+
+      border: 2px solid $soft-black;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-align: left;
+      max-width: 350px;
+      opacity: 0.5;
+    }
+  }
+
+  .vars {
+    margin-top: 20px;
+
+    h3 {
+      display: block;
+      clear: both;
+      margin-top: 10px;
+    }
+
+    .list {
+      margin-top: 10px;
+      clear: both;
+      overflow: auto;
+
+      code {
+        font-size: 0.9em;
+        margin: 0.5em;
+        color: $signature-red;
+        border-radius: 5px;
+        border: 1px solid $signature-red;
+        padding: 3px 5px;
+        background-color: rgba($signature-red, 0.01);
+
+        float: left;
+
+        &::first-line {
+          padding-left: 100px;
+        }
+        // clear: left;
+      }
+    }
+  }
+}

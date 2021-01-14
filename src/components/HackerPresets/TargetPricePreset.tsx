@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { Button, TextField, Tooltip } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
+import { TextField } from '@material-ui/core'
 
 import SignatureAccordion from '../SignatureAccordion'
 import SignatureAutocomplete from '../SignatureAutocomplete'
 import SignatureButton from '../SignatureButton'
+import DollarTextField from '../DollarTextField'
 import SignatureSelect from '../SignatureSelect'
 import { PresetProps } from '../../pages/option-hacker'
 
-import useExpressionPresetState from '../../state/useExpressionPresetState'
+import useTargetPricePreset from '../../state/useTargetPricePreset'
 
 import s from '../../styles/components/option-preset.module.scss'
 
@@ -17,12 +17,13 @@ export default function ExpressionPreset(props: PresetProps) {
     'Watchlist'
   )
 
-  const [state, dispatch] = useExpressionPresetState()
+  const [state, dispatch] = useTargetPricePreset()
 
   function onNext() {
     dispatch({ type: 'prepare_for_send' })
 
-    if (state.tickers.length > 0) props.onComplete(state)
+    if (state.tickers.length > 0 && state.targetPrice !== undefined)
+      props.onComplete(state)
   }
 
   return (
@@ -57,6 +58,7 @@ export default function ExpressionPreset(props: PresetProps) {
           ) : (
             <TextField
               className={s.selectWatchlist}
+              required
               value={state.tickers.join(',')}
               onChange={(e) =>
                 dispatch({
@@ -75,7 +77,6 @@ export default function ExpressionPreset(props: PresetProps) {
                   autoComplete: 'off',
                 },
               }}
-              required
             />
           )}
         </div>
@@ -89,7 +90,7 @@ export default function ExpressionPreset(props: PresetProps) {
             })
             dispatch({
               type: 'set_accordion_open',
-              accordion: 'expressions',
+              accordion: 'targetPrice',
               open: true,
             })
           }}
@@ -98,54 +99,60 @@ export default function ExpressionPreset(props: PresetProps) {
         </SignatureButton>
       </SignatureAccordion>
       <SignatureAccordion
-        title="Expressions"
-        style={{ position: 'relative', display: 'block' }}
-        expanded={state._accordionsOpen.expressions}
+        title="Target Price"
+        style={{ position: 'relative' }}
+        expanded={state._accordionsOpen.targetPrice}
         onChange={(_, b) =>
           dispatch({
             type: 'set_accordion_open',
-            accordion: 'expressions',
+            accordion: 'targetPrice',
             open: b,
           })
         }
       >
-        {state.expressions.map((value, i) => (
-          <div className={s.expression} key={`Expression/${i}`}>
-            <TextField
-              className={s.textfield}
-              value={value}
-              onChange={(e) =>
+        <div className={s.watchlistSection}>
+          <DollarTextField
+            value={state.targetPrice}
+            onChange={(e) => {
+              dispatch({
+                type: 'set_target_price',
+                targetPrice: parseFloat(e.target.value),
+              })
+            }}
+            variant="outlined"
+            label="Target Price"
+            placeholder="Target Price"
+            required
+          />
+          <TextField
+            // Likely due to the field being empty
+            value={isNaN(state.daysLeft) ? '' : state.daysLeft}
+            onChange={(e) => {
+              const v = e.currentTarget.value.trim()
+
+              if (/^[0-9]*$/g.test(v)) {
                 dispatch({
-                  type: 'set_expression_at_index',
-                  index: i,
-                  value: e.currentTarget.value,
+                  type: 'set_days_left',
+                  daysLeft: parseFloat(v),
                 })
               }
-              variant="outlined"
-              label={`Expression ${i + 1}`}
-              size="small"
-            />
-            <CloseIcon
-              className={s.closeIcon}
-              onClick={() =>
-                dispatch({ type: 'remove_expression_at_index', index: i })
-              }
-            />
-          </div>
-        ))}
-        <Button
-          className={s.addExpressionButton}
-          size="small"
-          onClick={() => dispatch({ type: 'add_expression', expression: '' })}
-        >
-          Add Expression
-        </Button>
+            }}
+            label="Days Left"
+            placeholder="Days Left"
+            style={{ width: '200px' }}
+            variant="outlined"
+            inputProps={{
+              inputMode: 'numeric',
+              pattern: '[0-9]*',
+            }}
+          />
+        </div>
         <SignatureButton
           className={s.nextButton}
           onClick={() => {
             dispatch({
               type: 'set_accordion_open',
-              accordion: 'expressions',
+              accordion: 'targetPrice',
               open: false,
             })
           }}
@@ -157,67 +164,6 @@ export default function ExpressionPreset(props: PresetProps) {
         BackButtonProps={{ disabled: true }}
         onNext={onNext}
       />
-    </div>
-  )
-}
-
-export function InstructionPanel() {
-  return (
-    <div className={s.instructions}>
-      <h2>How to use</h2>
-      <div className={s.how}>
-        The Option Hacker will screen all the options given that satisfy one or
-        multiple expressions.{' '}
-      </div>
-      <h2>Example</h2>
-      <div className={s.example}>
-        <Tooltip
-          title={`This will find all options in the given list whose price is less
-        than 25% of underlying price`}
-        >
-          <div className={s.textfield}>
-            <span>{'option.mark / underlying.mark < 0.25'}</span>
-          </div>
-        </Tooltip>
-        <Tooltip
-          title={`This will find all options in the given list who have more than 120 days until expiration`}
-        >
-          <div className={s.textfield}>
-            <span>{'option.daysToExpiration > 120'}</span>
-          </div>
-        </Tooltip>
-      </div>
-      <i>Hover over example to see explanation</i>
-      <h2>Variables</h2>
-      <div className={s.vars}>
-        <h3>Option</h3>
-        <div className={s.list}>
-          <code>mark</code>
-          <code>last</code>
-          <code>daysToExpiration</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>daysToExpiration</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>daysToExpiration</code>
-        </div>
-        <h3>Underlying</h3>
-        <div className={s.list}>
-          <code>mark</code>
-          <code>last</code>
-          <code>close</code>
-          <code>open</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>close</code>
-          <code>open</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>close</code>
-          <code>open</code>
-        </div>
-      </div>
     </div>
   )
 }
