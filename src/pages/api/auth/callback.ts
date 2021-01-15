@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import jwt from 'jsonwebtoken'
-import { setCookie } from 'nookies'
 
 import ameritrade from '../../../lib/ameritrade'
-import { writeAccessToken, writeRefreshToken } from '../../../lib/thoughtful-fish/auth'
+import {
+  writeAccessToken,
+  writeProfile,
+  writeRefreshToken,
+} from '../../../lib/thoughtful-fish/session'
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -23,8 +25,11 @@ export default async function callback(req: NextApiRequest, res: NextApiResponse
       refreshTokenExpiresIn,
     } = await ameritrade.auth.authenticateViaCode({ code })
 
+    const profile = await ameritrade.account.getProfile({ accessToken })
+
     writeAccessToken({ res, accessToken, expiresIn })
     writeRefreshToken({ res, refreshToken, expiresIn: refreshTokenExpiresIn })
+    writeProfile({ res, profile, expiresIn })
 
     if (typeof req.query.route === 'string') res.redirect(req.query.route)
 
