@@ -9,13 +9,15 @@ const axios = a.create({
   responseType: 'json',
 })
 
+const bearerHeader = (token: string) => ({ Authorization: `Bearer ${token}` })
+
 /*
  *  Functions for Authentication
  */
-const TOKEN_ENDPOINT = 'https://api.tdameritrade.com/v1/oauth2/token'
 
 function tokenRequest(body: { [key: string]: string }) {
-  return axios(TOKEN_ENDPOINT, {
+  return axios({
+    url: '/oauth2/token',
     method: 'POST',
     data: q.stringify({ client_id: process.env.CONSUMER_KEY, ...body }),
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -57,6 +59,28 @@ function authenticateViaCode({ code }: { code: string }) {
 }
 
 /*
+ *  Function to access profile
+ */
+
+function getProfile({ accessToken }: { accessToken: string }): Promise<Profile> {
+  return axios({
+    url: '/userprincipals',
+    headers: bearerHeader(accessToken),
+  }).then((res) => {
+    if (res.data.error) throw res.data.error
+
+    const { userId, primaryAccountId, accounts: fullAccounts } = res.data as UserPrincipal
+
+    const accounts = fullAccounts.map(({ accountId, displayName }) => ({
+      accountId,
+      displayName,
+    }))
+
+    return { userId, primaryAccountId, accounts }
+  })
+}
+
+/*
  *  Functions to quotes options and stocks
  */
 
@@ -70,7 +94,7 @@ function quote(params: QuoteParams): Promise<Quote> {
   return axios({
     method: 'GET',
     url: `/marketdata/${symbol}/quotes`,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: bearerHeader(accessToken),
   }).then((res) => res.data[symbol])
 }
 
@@ -90,7 +114,7 @@ function getOptionChain(params: GetOptionChainParams) {
       type,
       includeQuotes: 'TRUE',
     })}`,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: bearerHeader(accessToken),
   })
 }
 
@@ -105,7 +129,7 @@ function getAccountWatchlists(params: GetAccountWatchlistsParams) {
 
   return axios({
     url: `/accounts/${accountNumber}/watchlists`,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: bearerHeader(accessToken),
   }).then((res) => res.data as Watchlist[])
 }
 
@@ -120,10 +144,7 @@ async function getWatchlistByName(params: GetWatchlistByNameParams) {
 
   const watchlists = await getAccountWatchlists({ accountNumber, accessToken })
 
-  return watchlists.find(
-    (_watchlist) =>
-      _watchlist.name.trim().toLowerCase() === name.trim().toLowerCase()
-  )
+  return watchlists.find((_watchlist) => _watchlist.name.trim().toLowerCase() === name.trim().toLowerCase())
 }
 
 type CreateWatchlistParams = {
@@ -140,7 +161,7 @@ function createWatchlist(params: CreateWatchlistParams) {
     method: 'POST',
     url: `/accounts/${accountNumber}/watchlists`,
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      ...bearerHeader(accessToken),
       'Content-Type': 'application/json',
     },
     data: {
@@ -159,18 +180,12 @@ type UpdateWatchlistParams = {
 }
 
 function updateWatchlist(params: UpdateWatchlistParams) {
-  const {
-    watchlistId,
-    watchlistName,
-    accessToken,
-    accountNumber,
-    symbols,
-  } = params
+  const { watchlistId, watchlistName, accessToken, accountNumber, symbols } = params
 
   return axios({
     method: 'PATCH',
     url: `/accounts/${accountNumber}/watchlists/${watchlistId}`,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: bearerHeader(accessToken),
     data: {
       name: watchlistName,
       watchlistId,
@@ -191,6 +206,9 @@ const ameritrade = {
     authenticateViaCode,
     requestAccessToken,
     generateLoginLink,
+  },
+  account: {
+    getProfile,
   },
 }
 
