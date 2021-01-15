@@ -1,19 +1,25 @@
-import Router  from 'next/router'
+import { createContext } from 'react'
 import type { AppProps } from 'next/app'
+import Router, { useRouter } from 'next/router'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core'
-import NProgress from 'nprogress' //nprogress module
+import NProgress from 'nprogress'
 
 import Navbar from '../components/Navbar'
 
 import '../styles/globals.scss'
 import 'nprogress/nprogress.css'
 
-//Binding events.
 Router.events.on('routeChangeStart', () => NProgress.start())
 Router.events.on('routeChangeComplete', () => NProgress.done())
 Router.events.on('routeChangeError', () => NProgress.done())
 
+const SessionContext = createContext<Session>(null)
+
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter()
+
+  const isLoginPage = router.asPath.startsWith('/login')
+
   const theme = createMuiTheme({
     palette: {
       primary: { main: '#ff6767' },
@@ -32,10 +38,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <div className="app">
-      <Navbar />
-      <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <SessionContext.Provider value={pageProps.session}>
+        {!isLoginPage && <Navbar />}
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </SessionContext.Provider>
     </div>
   )
 }

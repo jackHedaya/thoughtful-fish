@@ -1,5 +1,7 @@
+import { NextPageContext } from 'next'
 import Head from 'next/head'
 import styles from '../styles/pages/home.module.scss'
+import getSession from '../services/getSession'
 
 export default function Home() {
   return (
@@ -62,4 +64,18 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export async function getServerSideProps(ctx: NextPageContext) {
+  const session = getSession(ctx)
+
+  if (session === null)
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/login',
+      },
+    }
+
+  return { props: { session } }
 }

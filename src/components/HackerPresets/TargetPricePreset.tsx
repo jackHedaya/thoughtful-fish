@@ -12,7 +12,7 @@ import useTargetPricePreset from '../../state/useTargetPricePreset'
 
 import s from '../../styles/components/option-preset.module.scss'
 
-export default function ExpressionPreset(props: PresetProps) {
+export default function TargetPricePreset(props: PresetProps) {
   const [watchlistOrList, setWatchlistOrList] = useState<'Watchlist' | 'List'>(
     'Watchlist'
   )
