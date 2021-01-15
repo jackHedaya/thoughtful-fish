@@ -1,6 +1,7 @@
-import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
+import { NextApiResponse } from 'next'
 import { parseCookies, setCookie } from 'nookies'
 import jwt from 'jsonwebtoken'
+import { isNextPageContext } from '../../types/assertions'
 
 declare module 'http' {
   interface IncomingMessage {
@@ -62,8 +63,6 @@ function writeToken(params: WriteTokenParams) {
   })
 }
 
-type ContextOrRequest = NextPageContext | NextApiRequest
-
 export function getRefreshToken(ctxOrReq: ContextOrRequest) {
   return getToken({ ctxOrReq, key: 'refreshToken' })
 }
@@ -79,7 +78,7 @@ type GetTokenParams = {
 
 function getToken({ ctxOrReq, key }: GetTokenParams) {
   try {
-    const req = !isCtx(ctxOrReq) ? ctxOrReq : ctxOrReq.req
+    const req = !isNextPageContext(ctxOrReq) ? ctxOrReq : ctxOrReq.req
 
     if (!req._cookies) req._cookies = parseCookies({ req })
 
@@ -91,9 +90,4 @@ function getToken({ ctxOrReq, key }: GetTokenParams) {
   } catch (e) {
     return null
   }
-}
-
-function isCtx(x: any): x is NextPageContext {
-  if (!!x.req) return true
-  return false
 }
