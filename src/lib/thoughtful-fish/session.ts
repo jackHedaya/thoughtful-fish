@@ -1,6 +1,7 @@
 import { NextApiResponse } from 'next'
 import { parseCookies, setCookie } from 'nookies'
 import jwt from 'jsonwebtoken'
+
 import { isNextPageContext } from '../../types/assertions'
 
 declare module 'http' {
@@ -9,15 +10,11 @@ declare module 'http' {
   }
 }
 
-type DecodedCookie = { [key: string]: string }
+type DecodedCookie = { [key: string]: any }
 
 const JWT_SECRET = process.env.JWT_SECRET
 
-type WriteAccessParams = {
-  res: NextApiResponse
-  accessToken: string
-  expiresIn: number
-}
+type WriteAccessParams = { res: NextApiResponse; accessToken: string; expiresIn: number }
 
 export function writeAccessToken(params: WriteAccessParams) {
   const { res, accessToken, expiresIn } = params
@@ -25,11 +22,7 @@ export function writeAccessToken(params: WriteAccessParams) {
   return writeToken({ res, key: 'accessToken', token: accessToken, expiresIn })
 }
 
-type WriteRefreshParams = {
-  res: NextApiResponse
-  refreshToken: string
-  expiresIn: number
-}
+type WriteRefreshParams = { res: NextApiResponse; refreshToken: string; expiresIn: number }
 
 export function writeRefreshToken(params: WriteRefreshParams) {
   const { res, refreshToken, expiresIn } = params
@@ -42,17 +35,33 @@ export function writeRefreshToken(params: WriteRefreshParams) {
   })
 }
 
-type WriteTokenParams = {
-  res: NextApiResponse
-  key: string
-  token: string
-  expiresIn: number
+type WriteProfileParams = { res: NextApiResponse; profile: Profile; expiresIn: number }
+
+export function writeProfile(params: WriteProfileParams) {
+  const { res, profile, expiresIn } = params
+
+  return writeCookie({ res, key: 'profile', payload: profile, expiresIn })
 }
+
+type WriteTokenParams = { res: NextApiResponse; key: string; token: string; expiresIn: number }
 
 function writeToken(params: WriteTokenParams) {
   const { res, key, token, expiresIn } = params
 
-  const tokenJwt = jwt.sign({ token }, JWT_SECRET, {
+  return writeCookie({ res, key, payload: { token }, expiresIn })
+}
+
+type WriteCookieParams = {
+  res: NextApiResponse
+  key: string
+  payload: DecodedCookie
+  expiresIn: number
+}
+
+function writeCookie(params: WriteCookieParams) {
+  const { res, key, payload, expiresIn } = params
+
+  const tokenJwt = jwt.sign(payload, JWT_SECRET, {
     expiresIn: expiresIn,
   })
 
@@ -71,13 +80,17 @@ export function getAccessToken(ctxOrReq: ContextOrRequest) {
   return getToken({ ctxOrReq, key: 'accessToken' })
 }
 
+export function getProfile(ctxOrReq: ContextOrRequest) {
+  return (getDecodedCookie({ ctxOrReq, key: 'profile' }) as Profile) || null
+}
+
 type GetTokenParams = {
   ctxOrReq: ContextOrRequest
   key: string
 }
 
 function getToken({ ctxOrReq, key }: GetTokenParams) {
-  const { token } = getDecodedCookie({ ctxOrReq, key })
+  const token = getDecodedCookie({ ctxOrReq, key })?.token
 
   return token || null
 }
@@ -86,6 +99,7 @@ function getDecodedCookie({ ctxOrReq, key }: GetTokenParams) {
   try {
     const req = !isNextPageContext(ctxOrReq) ? ctxOrReq : ctxOrReq.req
 
+    // Prevent cookie from being parsed over and over again
     if (!req._cookies) req._cookies = parseCookies({ req })
 
     let cookieJwt = req._cookies[key]
