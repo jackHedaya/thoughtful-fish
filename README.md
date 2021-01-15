@@ -24,7 +24,7 @@ These steps are needed to configure SSL on localhost
 ### Configure `.env.local`
 
 - `$ touch .env.local`
-- Populate `.env.local` with `CONSUMER_KEY`, `JWT_SIGNING_PRIVATE_KEY`, `NEXTAUTH_URL="https://localhost:3000/"` and `NODE_TLS_REJECT_UNAUTHORIZED=0`
+- Populate `.env.local` with `CONSUMER_KEY`, `JWT_SECRET`, and `NODE_TLS_REJECT_UNAUTHORIZED=0`
 
 ### Running
 
