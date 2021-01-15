@@ -4,7 +4,7 @@ import q from 'querystring'
 import formatSymbols from './formatSymbols'
 
 const axios = a.create({
-  baseURL: 'https://api.ameritrade.com/v1',
+  baseURL: 'https://api.tdameritrade.com/v1',
   headers: { 'Content-Type': 'application/json' },
   responseType: 'json',
 })
