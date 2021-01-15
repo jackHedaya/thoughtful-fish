@@ -1,4 +1,4 @@
-import { NextPageContext } from 'next'
+import { NextApiResponse, NextPageContext } from 'next'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { Paper } from '@material-ui/core'
@@ -7,8 +7,11 @@ const Bubbles = dynamic(() => import('../components/BubbleBackground'), {
   ssr: false,
 })
 
-import s from '../styles/pages/login.module.scss'
+import ameritrade from '../lib/ameritrade'
 import getSession from '../services/getSession'
+import { getRefreshToken, writeAccessToken } from '../lib/thoughtful-fish/auth'
+
+import s from '../styles/pages/login.module.scss'
 
 export default function Login() {
   const Router = useRouter()
@@ -34,14 +37,30 @@ export default function Login() {
 
 export async function getServerSideProps(ctx: NextPageContext) {
   const session = getSession(ctx)
+  const route = ctx.query.route || '/home'
 
-  if (session)
-    return {
-      redirect: {
-        destination: ctx.query.route || '/home',
-        permanent: false,
-      },
-    }
+  if (session) return { redirect: { destination: route, permanent: false } }
+
+  const refreshToken = getRefreshToken(ctx)
+
+  try {
+    const {
+      accessToken,
+      expiresIn,
+    } = await ameritrade.auth.requestAccessToken({ refreshToken })
+
+    writeAccessToken({
+      res: ctx.res as NextApiResponse,
+      accessToken,
+      expiresIn,
+    })
+
+
+    console.log('hey')
+    return { redirect: { destination: route, permanent: false } }
+  } catch (e) {
+    // Don't do anything because the refresh token is invalid and will direct to /login
+  }
 
   return { props: {} }
 }
