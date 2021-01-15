@@ -6,13 +6,7 @@ type Keys =
   | { key: string; type: TypeofValue }[]
   | { key: string; validator: (value: unknown) => boolean }[]
 
-type TypeofValue =
-  | 'object'
-  | 'boolean'
-  | 'function'
-  | 'number'
-  | 'string'
-  | 'undefined'
+type TypeofValue = 'object' | 'boolean' | 'function' | 'number' | 'string' | 'undefined'
 
 export default async (req: NextApiRequest, keys: Keys) => {
   // Normalizes key into { key, validator } list
@@ -33,5 +27,4 @@ export default async (req: NextApiRequest, keys: Keys) => {
 }
 
 const isStringArray = (x: any): x is string[] => typeof x[0] === 'string'
-const isKeyTypeArray = (x: any): x is { key: string; type: TypeofValue }[] =>
-  !!x?.type
+const isKeyTypeArray = (x: any): x is { key: string; type: TypeofValue }[] => !!x?.type

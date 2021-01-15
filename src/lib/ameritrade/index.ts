@@ -144,7 +144,9 @@ async function getWatchlistByName(params: GetWatchlistByNameParams) {
 
   const watchlists = await getAccountWatchlists({ accountNumber, accessToken })
 
-  return watchlists.find((_watchlist) => _watchlist.name.trim().toLowerCase() === name.trim().toLowerCase())
+  return watchlists.find(
+    (_watchlist) => _watchlist.name.trim().toLowerCase() === name.trim().toLowerCase()
+  )
 }
 
 type CreateWatchlistParams = {

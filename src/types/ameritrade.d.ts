@@ -54,12 +54,7 @@ type FullLinkedAccount = {
     expressTrading: boolean
     directOptionsRouting: boolean
     directEquityRouting: boolean
-    defaultEquityOrderLegInstruction:
-      | 'BUY'
-      | 'SELL'
-      | 'BUY_TO_COVER'
-      | 'SELL_SHORT'
-      | 'NONE'
+    defaultEquityOrderLegInstruction: 'BUY' | 'SELL' | 'BUY_TO_COVER' | 'SELL_SHORT' | 'NONE'
     defaultEquityOrderType:
       | 'MARKET'
       | 'LIMIT'
@@ -70,12 +65,7 @@ type FullLinkedAccount = {
       | 'NONE'
     defaultEquityOrderPriceLinkType: 'VALUE' | 'PERCENT' | 'NONE'
     defaultEquityOrderDuration: 'DAY' | 'GOOD_TILL_CANCEL' | 'NONE'
-    defaultEquityOrderMarketSession:
-      | 'AM'
-      | 'PM'
-      | 'NORMAL'
-      | 'SEAMLESS'
-      | 'NONE'
+    defaultEquityOrderMarketSession: 'AM' | 'PM' | 'NORMAL' | 'SEAMLESS' | 'NONE'
     defaultEquityQuantity: number
     mutualFundTaxLotMethod:
       | 'FIFO'
@@ -102,11 +92,7 @@ type FullLinkedAccount = {
       | 'AVERAGE_COST'
       | 'NONE'
     defaultAdvancedToolLaunch: 'TA' | 'N' | 'Y' | 'TOS' | 'NONE' | 'CC2'
-    authTokenTimeout:
-      | 'FIFTY_FIVE_MINUTES'
-      | 'TWO_HOURS'
-      | 'FOUR_HOURS'
-      | 'EIGHT_HOURS'
+    authTokenTimeout: 'FIFTY_FIVE_MINUTES' | 'TWO_HOURS' | 'FOUR_HOURS' | 'EIGHT_HOURS'
   }
   acl: string
   authorizations: {

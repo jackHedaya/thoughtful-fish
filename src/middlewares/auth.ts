@@ -1,11 +1,7 @@
 import { MIDDLEWARE_ERROR } from '.'
 import { isNextPageContext } from '../types/assertions'
 
-import {
-  getAccessToken,
-  getRefreshToken,
-  writeAccessToken,
-} from '../lib/thoughtful-fish/auth'
+import { getAccessToken, getRefreshToken, writeAccessToken } from '../lib/thoughtful-fish/auth'
 
 import ameritrade from '../lib/ameritrade'
 
@@ -24,10 +20,9 @@ export default async (ctxOrReq: ContextOrRequest, res: NextApiResponse) => {
 
   if (refreshToken && !accessToken) {
     try {
-      const {
-        accessToken: newAccessToken,
-        expiresIn,
-      } = await ameritrade.auth.requestAccessToken({ refreshToken })
+      const { accessToken: newAccessToken, expiresIn } = await ameritrade.auth.requestAccessToken({
+        refreshToken,
+      })
 
       accessToken = newAccessToken
 

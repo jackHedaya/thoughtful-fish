@@ -1,9 +1,5 @@
 import { useReducer } from 'react'
-import {
-  PresetActionBase,
-  presetReducerBase,
-  PresetStateBase,
-} from './presetBase'
+import { PresetActionBase, presetReducerBase, PresetStateBase } from './presetBase'
 
 export type TargetPricePresetState = PresetStateBase & {
   targetPrice: number
@@ -17,19 +13,14 @@ export type TargetPricePresetState = PresetStateBase & {
 type Action =
   | PresetActionBase<TargetPricePresetState>
   | { type: 'set_target_price'; targetPrice: number }
-  | { type: 'set_days_left'; daysLeft: number  }
+  | { type: 'set_days_left'; daysLeft: number }
 
-function reducer(
-  state: TargetPricePresetState,
-  action: Action
-): TargetPricePresetState {
+function reducer(state: TargetPricePresetState, action: Action): TargetPricePresetState {
   const defaultReducerState = presetReducerBase(action, state)
 
-  if (defaultReducerState && action.type === 'prepare_for_send')
-    state = defaultReducerState
+  if (defaultReducerState && action.type === 'prepare_for_send') state = defaultReducerState
 
-  if (defaultReducerState && action.type !== 'prepare_for_send')
-    return defaultReducerState
+  if (defaultReducerState && action.type !== 'prepare_for_send') return defaultReducerState
 
   switch (action.type) {
     case 'set_target_price':

@@ -23,10 +23,7 @@ type Action =
   | { type: 'remove_expression_at_index'; index: number }
   | { type: 'set_expression_at_index'; index: number; value: string }
 
-function reducer(
-  state: ExpressionPresetState,
-  action: Action
-): ExpressionPresetState {
+function reducer(state: ExpressionPresetState, action: Action): ExpressionPresetState {
   const defaultReducer = presetReducerBase(action, state)
 
   if (defaultReducer) return defaultReducer

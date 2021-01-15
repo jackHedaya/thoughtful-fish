@@ -3,17 +3,11 @@ import jwt from 'jsonwebtoken'
 import { setCookie } from 'nookies'
 
 import ameritrade from '../../../lib/ameritrade'
-import {
-  writeAccessToken,
-  writeRefreshToken,
-} from '../../../lib/thoughtful-fish/auth'
+import { writeAccessToken, writeRefreshToken } from '../../../lib/thoughtful-fish/auth'
 
 const JWT_SECRET = process.env.JWT_SECRET
 
-export default async function callback(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function callback(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code
 
   if (typeof code !== 'string') {

@@ -13,10 +13,7 @@ interface Return<Data, Error>
 }
 
 export interface Config<Data = unknown, Error = unknown>
-  extends Omit<
-    ConfigInterface<AxiosResponse<Data>, AxiosError<Error>>,
-    'initialData'
-  > {
+  extends Omit<ConfigInterface<AxiosResponse<Data>, AxiosError<Error>>, 'initialData'> {
   initialData?: Data
 }
 

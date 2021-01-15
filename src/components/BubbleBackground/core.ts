@@ -70,8 +70,7 @@ export default class Background {
   constructor(id: string, color: string) {
     this.canvas = document.getElementById(id) as HTMLCanvasElement
 
-    if (this.canvas === null)
-      throw `Unable to find canvas with id ${id}`
+    if (this.canvas === null) throw `Unable to find canvas with id ${id}`
 
     this.ctx = this.canvas.getContext('2d')
     this.canvas.height = window.innerHeight
@@ -109,9 +108,7 @@ export default class Background {
   generateBubbles() {
     let self = this
     for (let i = 0; i < self.bubbleDensity(); i++) {
-      self.addBubble(
-        new Bubble(self.canvas.width, self.canvas.height, self.color)
-      )
+      self.addBubble(new Bubble(self.canvas.width, self.canvas.height, self.color))
     }
   }
 
