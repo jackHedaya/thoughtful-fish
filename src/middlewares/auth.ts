@@ -1,12 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import { MIDDLEWARE_ERROR } from '.'
+import { isNextPageContext } from '../types/assertions'
 
-import ameritrade from '../lib/ameritrade'
 import {
   getAccessToken,
   getRefreshToken,
   writeAccessToken,
 } from '../lib/thoughtful-fish/auth'
+
+import ameritrade from '../lib/ameritrade'
 
 declare module 'http' {
   interface IncomingMessage {
@@ -14,10 +15,12 @@ declare module 'http' {
   }
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const refreshToken = getRefreshToken(req)
+export default async (ctxOrReq: ContextOrRequest, res: NextApiResponse) => {
+  const req = isNextPageContext(ctxOrReq) ? ctxOrReq.req : ctxOrReq
 
-  let accessToken = getAccessToken(req)
+  const refreshToken = getRefreshToken(ctxOrReq)
+
+  let accessToken = getAccessToken(ctxOrReq)
 
   if (refreshToken && !accessToken) {
     try {
@@ -32,6 +35,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     } catch (_) {
       throw MIDDLEWARE_ERROR.UNAUTHORIZED
     }
+  } else if (!refreshToken) {
+    throw MIDDLEWARE_ERROR.UNAUTHORIZED
   }
 
   req.session = { refreshToken, accessToken }
