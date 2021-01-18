@@ -13,7 +13,7 @@ Router.events.on('routeChangeStart', () => NProgress.start())
 Router.events.on('routeChangeComplete', () => NProgress.done())
 Router.events.on('routeChangeError', () => NProgress.done())
 
-const SessionContext = createContext<Session>(null)
+export const SessionContext = createContext<Session>(null)
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
