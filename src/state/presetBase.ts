@@ -1,5 +1,5 @@
 import { ExpressionPresetState } from './useExpressionPresetState'
-import { TargetPricePresetState } from './useTargetPricePreset'
+import { TargetPricePresetState } from './useTargetPricePresetState'
 
 export type PresetStateBase = {
   tickers: string[]
