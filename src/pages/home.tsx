@@ -66,7 +66,7 @@ export async function getServerSideProps(ctx: NextPageContext) {
     return {
       redirect: {
         permanent: false,
-        destination: '/login?route=/home',
+        destination: `/login?route=/${ctx.req.url}`,
       },
     }
 
