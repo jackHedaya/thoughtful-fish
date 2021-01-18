@@ -82,9 +82,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     <div className="content">
       <div className="page-title">Option Hacker</div>
       {loadingDone && !res.error && (
-        <h2 className={s.resultsTitle}>
-          Results for {props.tickers.join(', ')}
-        </h2>
+        <h2 className={s.resultsTitle}>Results for {props.tickers.join(', ')}</h2>
       )}
       <div className={s.results}>
         {res.error && loaderTimeoutDone ? (
@@ -149,7 +147,11 @@ export function getServerSideProps(context: NextPageContext) {
   // Query will come in encoded JSON form... It will be parsed to this form
   // '{"tickers":["NCLH"],"expressions":[""]': ''
   // This will get the key and decode it to JSON
-  const props = JSON.parse(Object.keys(context.query)[0])
+  let props = {}
+
+  try {
+    props = JSON.parse(Object.keys(context.query)[0])
+  } catch (e) {}
 
   return { props }
 }
