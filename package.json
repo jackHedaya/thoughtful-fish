@@ -19,6 +19,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-number-format": "^4.4.4",
+    "safe-eval": "^0.4.1",
     "sass": "^1.32.0",
     "swr": "^0.3.11"
   },
