@@ -67,7 +67,6 @@ export default function OptionHacker() {
                 onComplete={(d: PresetState) => {
                   setSendData(cleanState({ preset, ...d }))
                   setWillTransition(true)
-                  getResults()
                 }}
               />
             </div>
