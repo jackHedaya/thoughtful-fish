@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { TextField } from '@material-ui/core'
 
 import SignatureAccordion from '../SignatureAccordion'
-import SignatureAutocomplete from '../SignatureAutocomplete'
+import SetupAccordion from './SetupAccordion'
 import SignatureButton from '../SignatureButton'
 import DollarTextField from '../DollarTextField'
-import SignatureSelect from '../SignatureSelect'
+
 import { PresetProps } from '../../pages/option-hacker'
 
 import useTargetPricePreset from '../../state/useTargetPricePreset'
@@ -13,91 +13,36 @@ import useTargetPricePreset from '../../state/useTargetPricePreset'
 import s from '../../styles/components/option-preset.module.scss'
 
 export default function TargetPricePreset(props: PresetProps) {
-  const [watchlistOrList, setWatchlistOrList] = useState<'Watchlist' | 'List'>(
-    'Watchlist'
-  )
-
   const [state, dispatch] = useTargetPricePreset()
 
   function onNext() {
     dispatch({ type: 'prepare_for_send' })
 
-    if (state.tickers.length > 0 && state.targetPrice !== undefined)
-      props.onComplete(state)
+    if (state.tickers.length > 0 && state.targetPrice !== undefined) props.onComplete(state)
   }
 
   return (
     <div>
-      <SignatureAccordion
-        title="Setup"
-        style={{ position: 'relative' }}
+      <SetupAccordion
         expanded={state._accordionsOpen.setup}
-        onChange={(_, b) =>
+        onExpandedChange={(b) =>
           dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })
         }
-      >
-        <div className={s.watchlistSection}>
-          <SignatureSelect
-            label="Watchlist / List"
-            className={s.watchlistOrList}
-            items={['Watchlist', 'List']}
-            onChange={(e) => setWatchlistOrList(e)}
-            value={watchlistOrList}
-          />
-          {watchlistOrList === 'Watchlist' ? (
-            <SignatureAutocomplete
-              className={s.selectWatchlist}
-              title="Select Watchlist"
-              options={[
-                { group: "jackehedaya's Watchlists", value: 'Hello' },
-                { group: "jackehedaya's Watchlists", value: 'World' },
-                { group: "john's Watchlists", value: 'World' },
-              ]}
-              TextFieldProps={{ required: true }}
-            />
-          ) : (
-            <TextField
-              className={s.selectWatchlist}
-              required
-              value={state.tickers.join(',')}
-              onChange={(e) =>
-                dispatch({
-                  type: 'set_tickers',
-                  tickers: e.currentTarget.value
-                    .split(',')
-                    .map((x) => x.trim().toUpperCase()),
-                })
-              }
-              label="Ticker List"
-              placeholder="Comma seperated list"
-              variant="outlined"
-              inputProps={{
-                autoComplete: 'new-password',
-                form: {
-                  autoComplete: 'off',
-                },
-              }}
-            />
-          )}
-        </div>
-        <SignatureButton
-          className={s.nextButton}
-          onClick={() => {
-            dispatch({
-              type: 'set_accordion_open',
-              accordion: 'setup',
-              open: false,
-            })
-            dispatch({
-              type: 'set_accordion_open',
-              accordion: 'targetPrice',
-              open: true,
-            })
-          }}
-        >
-          Next
-        </SignatureButton>
-      </SignatureAccordion>
+        tickers={state.tickers}
+        setTickers={(tickers: string[]) => dispatch({ type: 'set_tickers', tickers })}
+        onNext={() => {
+          dispatch({
+            type: 'set_accordion_open',
+            accordion: 'setup',
+            open: false,
+          })
+          dispatch({
+            type: 'set_accordion_open',
+            accordion: 'expressions',
+            open: true,
+          })
+        }}
+      />
       <SignatureAccordion
         title="Target Price"
         style={{ position: 'relative' }}
@@ -160,10 +105,7 @@ export default function TargetPricePreset(props: PresetProps) {
           Finish
         </SignatureButton>
       </SignatureAccordion>
-      <props.navigationButtons
-        BackButtonProps={{ disabled: true }}
-        onNext={onNext}
-      />
+      <props.navigationButtons BackButtonProps={{ disabled: true }} onNext={onNext} />
     </div>
   )
 }
