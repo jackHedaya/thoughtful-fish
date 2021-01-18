@@ -10,6 +10,8 @@ import { PresetState } from '../../state/presetBase'
 import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
 import TargetPricePreset from '../../components/HackerPresets/TargetPricePreset'
 
+import getSession from '../../services/getSession'
+
 import s from '../../styles/pages/option-hacker.module.scss'
 
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
@@ -30,7 +32,7 @@ export default function OptionHacker() {
   const [preset, setPreset] = useState('Expression')
   const [sendData, setSendData] = useState<{ [key: string]: any }>()
 
-  const _PresetComponent = PRESET_TO_COMPONENT[preset]
+  const PresetComponent = PRESET_TO_COMPONENT[preset]
 
   const [willTransition, setWillTransition] = useState(false)
 
@@ -60,11 +62,12 @@ export default function OptionHacker() {
           <div className={s.controls}>
             <PresetSetup preset={preset} setPreset={setPreset} />
             <div>
-              <_PresetComponent
+              <PresetComponent
                 navigationButtons={NavigationButtons}
                 onComplete={(d: PresetState) => {
                   setSendData(cleanState({ preset, ...d }))
                   setWillTransition(true)
+                  getResults()
                 }}
               />
             </div>
@@ -76,10 +79,7 @@ export default function OptionHacker() {
   )
 }
 
-function PresetSetup(props: {
-  preset: string
-  setPreset: Dispatch<SetStateAction<string>>
-}) {
+function PresetSetup(props: { preset: string; setPreset: Dispatch<SetStateAction<string>> }) {
   const { preset, setPreset } = props
 
   return (
@@ -97,10 +97,7 @@ function PresetSetup(props: {
 type NavigationButtonProps = {
   onNext?: () => void
   onBack?: () => void
-  WrapperProps?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
+  WrapperProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
   NextButtonProps?: IconButtonProps
   BackButtonProps?: IconButtonProps
 }
@@ -111,9 +108,7 @@ export function NavigationButtons(props: NavigationButtonProps) {
       <IconButton
         {...props.BackButtonProps}
         onClick={props.onBack}
-        className={`${s.navButton} ${s.back} ${
-          props.BackButtonProps?.className || ''
-        }`}
+        className={`${s.navButton} ${s.back} ${props.BackButtonProps?.className || ''}`}
       >
         <ArrowBack />
       </IconButton>
@@ -126,4 +121,18 @@ export function NavigationButtons(props: NavigationButtonProps) {
       </IconButton>
     </div>
   )
+}
+
+export async function getServerSideProps(ctx: NextPageContext) {
+  const session = getSession(ctx)
+
+  if (session === null)
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/login?route=/${ctx.req.url}`,
+      },
+    }
+
+  return { props: { session } }
 }
