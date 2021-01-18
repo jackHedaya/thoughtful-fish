@@ -1,19 +1,17 @@
-import { useState } from 'react'
 import { TextField } from '@material-ui/core'
 
 import SignatureAccordion from '../SignatureAccordion'
-import SetupAccordion from './SetupAccordion'
 import SignatureButton from '../SignatureButton'
 import DollarTextField from '../DollarTextField'
 
 import { PresetProps } from '../../pages/option-hacker'
 
-import useTargetPricePreset from '../../state/useTargetPricePreset'
+import useTargetPricePresetState from '../../state/useTargetPricePresetState'
 
 import s from '../../styles/components/option-preset.module.scss'
 
 export default function TargetPricePreset(props: PresetProps) {
-  const [state, dispatch] = useTargetPricePreset()
+  const [state, dispatch] = useTargetPricePresetState()
 
   function onNext() {
     dispatch({ type: 'prepare_for_send' })
@@ -23,39 +21,22 @@ export default function TargetPricePreset(props: PresetProps) {
 
   return (
     <div>
-      <SetupAccordion
-        expanded={state._accordionsOpen.setup}
-        onExpandedChange={(b) =>
-          dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })
-        }
-        tickers={state.tickers}
-        setTickers={(tickers: string[]) => dispatch({ type: 'set_tickers', tickers })}
-        onNext={() => {
-          dispatch({
-            type: 'set_accordion_open',
-            accordion: 'setup',
-            open: false,
-          })
-          dispatch({
-            type: 'set_accordion_open',
-            accordion: 'expressions',
-            open: true,
-          })
-        }}
-      />
       <SignatureAccordion
-        title="Target Price"
-        style={{ position: 'relative' }}
-        expanded={state._accordionsOpen.targetPrice}
-        onChange={(_, b) =>
-          dispatch({
-            type: 'set_accordion_open',
-            accordion: 'targetPrice',
-            open: b,
-          })
-        }
+        title="Setup"
+        expanded={state._accordionsOpen.setup}
+        onChange={(_, b) => dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })}
       >
         <div className={s.watchlistSection}>
+          <TextField
+            value={state.tickers[0]}
+            onChange={(e) =>
+              dispatch({ type: 'set_tickers', tickers: [e.currentTarget.value.toUpperCase()] })
+            }
+            label="Ticker / Symbol"
+            placeholder="AAPL"
+            variant="outlined"
+            required
+          />
           <DollarTextField
             value={state.targetPrice}
             onChange={(e) => {
@@ -84,26 +65,26 @@ export default function TargetPricePreset(props: PresetProps) {
             }}
             label="Days Left"
             placeholder="Days Left"
-            style={{ width: '200px' }}
+            style={{ width: '200px', marginTop: '15px' }}
             variant="outlined"
             inputProps={{
               inputMode: 'numeric',
               pattern: '[0-9]*',
             }}
           />
+          <SignatureButton
+            className={s.nextButton}
+            onClick={() => {
+              dispatch({
+                type: 'set_accordion_open',
+                accordion: 'setup',
+                open: false,
+              })
+            }}
+          >
+            Finish
+          </SignatureButton>
         </div>
-        <SignatureButton
-          className={s.nextButton}
-          onClick={() => {
-            dispatch({
-              type: 'set_accordion_open',
-              accordion: 'targetPrice',
-              open: false,
-            })
-          }}
-        >
-          Finish
-        </SignatureButton>
       </SignatureAccordion>
       <props.navigationButtons BackButtonProps={{ disabled: true }} onNext={onNext} />
     </div>
