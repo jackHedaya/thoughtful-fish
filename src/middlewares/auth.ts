@@ -32,7 +32,7 @@ export default async (ctxOrReq: ContextOrRequest, res: NextApiResponse) => {
         refreshToken,
       })
 
-      const newProfile = await ameritrade.account.getProfile({ accessToken })
+      const newProfile = await ameritrade.account.getProfile({ accessToken: newAccessToken })
 
       accessToken = newAccessToken
       profile = newProfile
