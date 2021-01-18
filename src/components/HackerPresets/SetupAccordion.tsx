@@ -5,6 +5,9 @@ import SignatureSelect from '../SignatureSelect'
 import SignatureAutocomplete from '../SignatureAutocomplete'
 import SignatureButton from '../SignatureButton'
 
+import useRequest from '../../hooks/useRequest'
+import useSession from '../../hooks/useSession'
+
 import s from '../../styles/components/option-preset.module.scss'
 
 type SetupAccordionProps = {
@@ -17,6 +20,37 @@ type SetupAccordionProps = {
 
 export default function SetupAccordion(props: SetupAccordionProps) {
   const [watchlistOrList, setWatchlistOrList] = useState<'Watchlist' | 'List'>('Watchlist')
+  const [watchlistField, setWatchlistField] = useState('')
+  const session = useSession()
+
+  const { data = {}, response, error } = useRequest<{
+    [accountId: string]: Watchlist[]
+  }>({
+    url: '/api/watchlists',
+  })
+
+  const watchlists = Object.entries(data).flatMap(([accountNumber, watchlists]) =>
+    watchlists.map((watchlist) => ({
+      label: watchlist.name,
+      group: getAccountNameByNumber(accountNumber),
+      value: watchlist,
+    }))
+  )
+
+  function getAccountNameByNumber(accountNumber: string) {
+    const profile = session.profile
+    const accountNumbersToName = { [profile.primaryAccountId]: profile.userId }
+
+    profile.accounts.forEach(
+      (account) => (accountNumbersToName[account.accountId] = account.displayName)
+    )
+
+    return accountNumbersToName[accountNumber]
+  }
+
+  function getTickersFromWatchlist(watchlist: Watchlist): string[] {
+    return watchlist.watchlistItems.reduce((acc, item) => [...acc, item.instrument.symbol], [])
+  }
 
   return (
     <SignatureAccordion
@@ -37,12 +71,14 @@ export default function SetupAccordion(props: SetupAccordionProps) {
           <SignatureAutocomplete
             className={s.selectWatchlist}
             title="Select Watchlist"
-            options={[
-              { group: "jackehedaya's Watchlists", value: 'Hello' },
-              { group: "jackehedaya's Watchlists", value: 'World' },
-              { group: "john's Watchlists", value: 'World' },
-            ]}
-            TextFieldProps={{ required: true }}
+            options={watchlists}
+            TextFieldProps={{
+              required: true,
+              value: watchlistField,
+              onChange: (e) => setWatchlistField(e.currentTarget.value),
+            }}
+            onChange={(option) => props.setTickers(getTickersFromWatchlist(option.value))}
+            loading={!error && !response}
           />
         ) : (
           <TextField
