@@ -6,7 +6,6 @@ export type TargetPricePresetState = PresetStateBase & {
   daysLeft: number
   _accordionsOpen: {
     setup: boolean
-    targetPrice: boolean
   }
 }
 
@@ -46,6 +45,6 @@ export default function presetReducer() {
     tickers: [],
     targetPrice: undefined,
     daysLeft: undefined,
-    _accordionsOpen: { setup: true, targetPrice: false },
+    _accordionsOpen: { setup: true },
   })
 }
