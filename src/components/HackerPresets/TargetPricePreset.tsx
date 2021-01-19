@@ -28,7 +28,7 @@ export default function TargetPricePreset(props: PresetProps) {
       >
         <div className={s.watchlistSection}>
           <TextField
-            value={state.tickers[0]}
+            value={state.tickers[0] || ''}
             onChange={(e) =>
               dispatch({ type: 'set_tickers', tickers: [e.currentTarget.value.toUpperCase()] })
             }
