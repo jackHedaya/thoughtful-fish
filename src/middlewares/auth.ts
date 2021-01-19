@@ -40,10 +40,10 @@ export default async (ctxOrReq: ContextOrRequest, res: NextApiResponse) => {
       writeAccessToken({ res, accessToken, expiresIn })
       writeProfile({ res, profile, expiresIn })
     } catch (e) {
-      throw MIDDLEWARE_ERROR.UNAUTHORIZED
+      throw MIDDLEWARE_ERROR.UNAUTHORIZED()
     }
   } else if (!refreshToken) {
-    throw MIDDLEWARE_ERROR.UNAUTHORIZED
+    throw MIDDLEWARE_ERROR.UNAUTHORIZED()
   }
 
   req.session = { refreshToken, accessToken, profile }
