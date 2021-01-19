@@ -1,30 +1,33 @@
 import { NextApiRequest } from 'next'
 import { MIDDLEWARE_ERROR } from '.'
 
-type Keys =
-  | string[]
-  | { key: string; type: TypeofValue }[]
-  | { key: string; validator: (value: unknown) => boolean }[]
+type Key =
+  | string
+  | { key: string; type: TypeofValue }
+  | { key: string; validator: (value: unknown) => boolean }
 
 type TypeofValue = 'object' | 'boolean' | 'function' | 'number' | 'string' | 'undefined'
 
-export default async (req: NextApiRequest, keys: Keys) => {
-  // Normalizes key into { key, validator } list
-  const normalKeys = isStringArray(keys)
-    ? keys.map((key) => ({ key, validator: (x: unknown) => !!x }))
-    : isKeyTypeArray(keys)
-    ? keys.map(({ key, type }) => ({
-        key,
-        validator: (x: unknown) => typeof x === type,
-      }))
-    : keys
-
+export default async (req: NextApiRequest, keys: Key[]) => {
   let data = req.method === 'GET' ? req.query : req.body
 
-  normalKeys.forEach(({ key, validator }) => {
-    if (!validator(data[key])) throw MIDDLEWARE_ERROR.MISSING_PARAMETER
+  keys.forEach((k) => {
+    const validator =
+      typeof k === 'string'
+        ? (x: unknown) => !!x
+        : isKeyType(k)
+        ? (x: unknown) =>
+            typeof x === k.type || (k.type === 'number' && !isNaN(parseFloat(x as string)))
+        : k.validator
+
+    const key = typeof k === 'string' ? k : k.key
+
+    if (!validator(data[key])) {
+      if (!!data[key]) throw MIDDLEWARE_ERROR.INVALID_PARAMETER(key)
+
+      throw MIDDLEWARE_ERROR.MISSING_PARAMETER(key)
+    }
   })
 }
 
-const isStringArray = (x: any): x is string[] => typeof x[0] === 'string'
-const isKeyTypeArray = (x: any): x is { key: string; type: TypeofValue }[] => !!x?.type
+const isKeyType = (x: any): x is { key: string; type: TypeofValue } => !!x?.type
