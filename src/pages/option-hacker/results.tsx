@@ -1,11 +1,14 @@
+import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import useRequest from '../../hooks/useRequest'
+import q from 'querystring'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 
-import s from '../../styles/pages/results.module.scss'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import useRequest from '../../hooks/useRequest'
+import { auth } from '../../middlewares'
+
+import s from '../../styles/pages/results.module.scss'
 
 type OptionHackerResultsProps = {
   tickers: string[]
@@ -14,8 +17,10 @@ type OptionHackerResultsProps = {
 }
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
-  const res = useRequest<{ options: Partial<OptionExtension>[] }, {}>({
-    url: '/hey',
+  const { data: options, error } = useRequest<Partial<OptionExtension[]>, {}>({
+    url: '/api/find_options?' + q.stringify(props),
+    method: 'GET',
+    data: JSON.stringify(props),
   })
 
   // Used to prevent a loading flash
@@ -26,57 +31,16 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     return () => clearTimeout(x)
   })
 
-  const SAMPLE_OPTIONS = [
-    {
-      mark: 2.42,
-      impliedVolatility: 0.45,
-      symbol: 'AYX_24572C23',
-      type: 'CALL',
-      daysToExpiration: 24,
-      strike: 120,
-    },
-    {
-      mark: 2.42,
-      impliedVolatility: 0.45,
-      symbol: 'AYX_24572C23',
-      type: 'CALL',
-      daysToExpiration: 24,
-      strike: 120,
-    },
-    {
-      mark: 2.42,
-      impliedVolatility: 0.45,
-      symbol: 'AYX_24572C23',
-      type: 'CALL',
-      daysToExpiration: 24,
-      strike: 120,
-    },
-    {
-      mark: 2.42,
-      impliedVolatility: 0.45,
-      symbol: 'AYX_24572C23',
-      type: 'CALL',
-      daysToExpiration: 24,
-      strike: 120,
-    },
-    {
-      mark: 2.42,
-      impliedVolatility: 0.45,
-      symbol: 'AYX_24572C23',
-      type: 'CALL',
-      daysToExpiration: 24,
-      strike: 120,
-    },
-  ]
-
   const SAMPLE_HEADERS = [
     { label: 'Symbol', key: 'symbol' },
-    { label: 'Type', key: 'type' },
-    { label: 'Strike', key: 'strike' },
+    { label: 'Type', key: 'putCall' },
+    { label: 'Strike', key: 'strikePrice' },
     { label: 'Mark', key: 'mark' },
   ]
 
-  const loadingDone = !res.data && loaderTimeoutDone
+  const loadingDone = options && loaderTimeoutDone
+
+  const tickers = props.tickers.join(', ')
 
   return (
     <div className="content">
@@ -84,18 +48,16 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
         <title>Thoughtful Fish | {tickers} Results</title>
       </Head>
       <div className="page-title">Option Hacker</div>
-      {loadingDone && !res.error && (
-        <h2 className={s.resultsTitle}>Results for {props.tickers.join(', ')}</h2>
-      )}
+      {loadingDone && !error && <h2 className={s.resultsTitle}>Results for {tickers}</h2>}
       <div className={s.results}>
-        {res.error && loaderTimeoutDone ? (
-          <div className={s.errorMessage}>{res.error.message}</div>
+        {error && loaderTimeoutDone ? (
+          <div className={s.errorMessage}>{error.message}</div>
         ) : !loadingDone ? (
           <div className={s.loader}>
             <LoadingAnimation />
           </div>
         ) : (
-          <OptionTable headers={SAMPLE_HEADERS} options={res.data.options} />
+          <OptionTable headers={SAMPLE_HEADERS} options={options} />
         )}
         {/* <OptionTable headers={SAMPLE_HEADERS} options={SAMPLE_OPTIONS} /> */}
       </div>
@@ -118,42 +80,52 @@ function OptionTable(props: OptionTableProps) {
     router.push(`/chart/${symbol}`)
   }
 
+  console.log(options)
+
   return (
     <table>
-      {headers.map(({ label }) => (
-        <th key={`Header/${label}`}>{label}</th>
-      ))}
-      {
-        /* Header logic: Loop over every option and generate a row.
-         * Inside each row, generate table data by taking each given header key and
-         * accessing the option value for that key
-         */
-        options.map((option, i) => (
-          <tr key={`Row/${i}`}>
-            {headers.map(({ key }) => (
-              <td
-                onClick={() => key === 'symbol' && chartOption(option.symbol)}
-                className={key === 'symbol' && s.symbol}
-                key={`RowData/${i}/${key}`}
-              >
-                {option[key]}
-              </td>
-            ))}
-          </tr>
-        ))
-      }
+      <thead>
+        <tr>
+          {headers.map(({ label }) => (
+            <th key={`Header/${label}`}>{label}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          /* Header logic: Loop over every option and generate a row.
+           * Inside each row, generate table data by taking each given header key and
+           * accessing the option value for that key
+           */
+          options.map((option, i) => (
+            <tr key={`Row/${i}`}>
+              {headers.map(({ key }) => (
+                <td
+                  onClick={() => key === 'symbol' && chartOption(option.symbol)}
+                  className={key === 'symbol' ? s.symbol : undefined}
+                  key={`RowData/${i}/${key}`}
+                >
+                  {option[key]}
+                </td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
     </table>
   )
 }
 
-export function getServerSideProps(context: NextPageContext) {
+export async function getServerSideProps(ctx: NextPageContext) {
+  await auth(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
+
   // Query will come in encoded JSON form... It will be parsed to this form
   // '{"tickers":["NCLH"],"expressions":[""]': ''
   // This will get the key and decode it to JSON
   let props = {}
 
   try {
-    props = JSON.parse(Object.keys(context.query)[0])
+    props = JSON.parse(Object.keys(ctx.query)[0])
   } catch (e) {}
 
   return { props }
