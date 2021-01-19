@@ -1,4 +1,4 @@
-import { NextPageContext } from 'next'
+import Head from 'next/head'
 import useRequest from '../../hooks/useRequest'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
@@ -80,6 +80,9 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   return (
     <div className="content">
+      <Head>
+        <title>Thoughtful Fish | {tickers} Results</title>
+      </Head>
       <div className="page-title">Option Hacker</div>
       {loadingDone && !res.error && (
         <h2 className={s.resultsTitle}>Results for {props.tickers.join(', ')}</h2>

@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { IconButton, IconButtonProps, Slide } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
@@ -56,6 +57,9 @@ export default function OptionHacker() {
 
   return (
     <div className="content">
+      <Head>
+        <title>Thoughtful Fish | Option Hacker</title>
+      </Head>
       <div className="page-title">Option Hacker</div>
       <Slide direction="right" in={!willTransition} onExit={getResults}>
         <div className={s.hacker}>
