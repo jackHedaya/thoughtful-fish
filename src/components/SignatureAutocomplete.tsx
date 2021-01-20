@@ -31,6 +31,8 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
     getOptionSelected: (option, value) =>
       option.group === value.group && option.label === option.label,
     onChange: (_, option: DropdownOption) => {
+      if (option.value === '') return
+
       props.onChange?.(option)
 
       // Create fake event that contains option label
