@@ -37,8 +37,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
 
     res.json(options)
   } catch (e) {
-    console.log(e)
-    const { status = 500, error = 'Something went wrong' } = e
-    res.status(status).end(error)
+    const { status = e?.response?.status, error = e?.response?.statusText } = e
+
+    res.status(status || 500).end(error || 'Something went wrong')
   }
 }
