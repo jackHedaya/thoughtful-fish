@@ -139,7 +139,7 @@ export function InstructionPanel() {
             <h3>{capitalize(category)}</h3>
             <div className={s.list}>
               {Object.entries(keywords).map(([key, type]) => (
-                <Tooltip title={type} key={`Key/${key}`}>
+                <Tooltip title={<span>{type}</span>} key={`Key/${key}`}>
                   <code>{key}</code>
                 </Tooltip>
               ))}
