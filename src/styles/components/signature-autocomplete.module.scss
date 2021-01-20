@@ -3,7 +3,9 @@
 .listbox {
   position: absolute;
   display: inline-block;
+  
   width: 40%;
+  max-height: 200px;
   min-width: auto;
   background-color: white;
   transform: translate(0, -2px);
@@ -15,6 +17,7 @@
   padding: 10px;
 
   z-index: 10;
+  overflow: scroll;
 
   .groupTitle {
     font-family: Sitara;
