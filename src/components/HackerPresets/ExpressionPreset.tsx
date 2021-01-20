@@ -1,10 +1,13 @@
-import { Button, TextField, Tooltip } from '@material-ui/core'
+import React from 'react'
+import { Button, capitalize, TextField, Tooltip } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 
 import SetupAccordion from './SetupAccordion'
 import SignatureAccordion from '../SignatureAccordion'
 import SignatureButton from '../SignatureButton'
 import { PresetProps } from '../../pages/option-hacker'
+
+import expressionKeywords from '../../lib/thoughtful-fish/expressionKeywords'
 
 import useExpressionPresetState from '../../state/useExpressionPresetState'
 
@@ -101,6 +104,8 @@ export default function ExpressionPreset(props: PresetProps) {
 }
 
 export function InstructionPanel() {
+  const allKeywords = expressionKeywords()
+
   return (
     <div className={s.instructions}>
       <h2>How to use</h2>
@@ -129,33 +134,18 @@ export function InstructionPanel() {
       <i>Hover over example to see explanation</i>
       <h2>Variables</h2>
       <div className={s.vars}>
-        <h3>Option</h3>
-        <div className={s.list}>
-          <code>mark</code>
-          <code>last</code>
-          <code>daysToExpiration</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>daysToExpiration</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>daysToExpiration</code>
-        </div>
-        <h3>Underlying</h3>
-        <div className={s.list}>
-          <code>mark</code>
-          <code>last</code>
-          <code>close</code>
-          <code>open</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>close</code>
-          <code>open</code>
-          <code>mark</code>
-          <code>last</code>
-          <code>close</code>
-          <code>open</code>
-        </div>
+        {Object.entries(allKeywords).map(([category, keywords]) => (
+          <React.Fragment key={`Category/${category}`}>
+            <h3>{capitalize(category)}</h3>
+            <div className={s.list}>
+              {Object.entries(keywords).map(([key, type]) => (
+                <Tooltip title={type} key={`Key/${key}`}>
+                  <code>{key}</code>
+                </Tooltip>
+              ))}
+            </div>
+          </React.Fragment>
+        ))}
       </div>
     </div>
   )
