@@ -1,8 +1,4 @@
-import {
-  expressionPreset,
-  PresetParams,
-  targetPricePreset,
-} from '../../lib/thoughtful-fish/find_options'
+import { expressionPreset, targetPricePreset } from '../../lib/thoughtful-fish/findOptions'
 import { auth, requiredData } from '../../middlewares'
 import getSession from '../../services/getSession'
 
