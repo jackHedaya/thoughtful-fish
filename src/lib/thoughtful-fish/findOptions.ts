@@ -109,13 +109,13 @@ export function expressionPreset(tickers: string[], options: ExpressionPresetOpt
 }
 
 type TargetPricePresetOptions = PresetParams & {
-  days: number
+  daysLeft: number
   targetPrice: number
   includeUnprofitable: boolean
 }
 
 export function targetPricePreset(ticker: string | [string], options: TargetPricePresetOptions) {
-  const { days = 0, includeUnprofitable = false, targetPrice } = options
+  const { daysLeft = 0, includeUnprofitable = false, targetPrice } = options
 
   const tickerStr = typeof ticker === 'string' ? ticker : ticker[0]
 
@@ -132,7 +132,7 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
 
   return findOptions([tickerStr], {
     ...options,
-    expressions: `option.daysToExpiration >= ${days}`,
+    expressions: `option.daysToExpiration >= ${daysLeft}`,
     onQueryComplete: (ops) =>
       ops
         .map((x) => ({
