@@ -148,8 +148,9 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
           returnOnTarget: calcReturnOnTarget(x, targetPrice).toFixed(2) + '%',
         }))
         .sort((a, b) => b.rot - a.rot)
-        .filter((val) => includeUnprofitable || val.rot > 0),
+        .filter((val) => includeUnprofitable || val.rot > 0)
 
-    // Removes rot key from output as it is only used internally for sorting and filtering
-  }).then((options) => options.map(({ rot, ...option }) => option))
+        // Removes rot key from output as it is only used internally for sorting and filtering
+        .map(({ rot, ...o }) => (o as unknown) as OptionExtension),
+  })
 }
