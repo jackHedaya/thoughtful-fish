@@ -28,6 +28,8 @@ async function findOptions(
   if (tickers.length < 1) throw 'No tickers given'
 
   const pagedTickers = tickers.slice(100 * (page - 1), 100 * page)
+
+  // Combines expressions if given as array
   const expression = typeof exp === 'string' ? exp : exp.join(' && ')
 
   const foundOptions: Option[] = []
@@ -91,7 +93,7 @@ function queryDateMap(query: QueryParams): OptionExtension[] {
   Object.entries(query.expDateMap).forEach(([, strikes]) => {
     Object.entries(strikes).forEach(([, [option]]) => {
       try {
-        if (safeEval(expression, { underlying, option })) out.push(option)
+        if (safeEval(expression, { underlying, option, Math })) out.push(option)
       } catch (e) {
         throw `Error in given expression: ${e.message}`
       }

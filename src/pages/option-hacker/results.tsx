@@ -136,7 +136,6 @@ function OptionTable(props: OptionTableProps) {
                   className={key === 'symbol' ? s.symbol : undefined}
                   key={`RowData/${i}/${key}`}
                 >
-                  {console.log(option.isInTheMoney)}
                   {key === 'symbol' && option.inTheMoney ? <div className={s.itm}>ITM</div> : null}
 
                   {option[key]?.toString()}

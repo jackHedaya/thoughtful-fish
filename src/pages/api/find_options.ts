@@ -16,8 +16,7 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
       { key: 'preset', type: 'string' },
       {
         key: 'tickers',
-        validator: (tickers) =>
-          (Array.isArray(tickers) && tickers.length > 0) || typeof tickers === 'string',
+        validator: stringOrStringArray,
       },
     ])
 
@@ -29,7 +28,7 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
 
     if (preset === 'Target Price') await requiredData(req, [{ key: 'targetPrice', type: 'number' }])
     else if (preset === 'Expression')
-      await requiredData(req, [{ key: 'expressions', validator: (x) => Array.isArray(x) }])
+      await requiredData(req, [{ key: 'expressions', validator: stringOrStringArray }])
 
     const accessToken = getSession(req).accessToken
 
@@ -42,3 +41,6 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
     res.status(status || 500).end(error || 'Something went wrong')
   }
 }
+
+const stringOrStringArray = (str: any) =>
+  (Array.isArray(str) && str.length > 0) || typeof str === 'string'
