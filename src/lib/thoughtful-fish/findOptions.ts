@@ -13,7 +13,10 @@ type FindCommandOptions = PresetParams & {
   expressions: string | string[]
 }
 
-async function findOptions(tickers: string[], options: FindCommandOptions) {
+async function findOptions(
+  tickers: string[],
+  options: FindCommandOptions
+): Promise<OptionExtension[]> {
   const {
     type: queryOptionType = 'ALL',
     page = 1,
@@ -137,10 +140,16 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
       ops
         .map((x) => ({
           ...x,
-          returnOnTarget: calcReturnOnTarget(x, targetPrice),
-          returnOnTargetFormatted: calcReturnOnTarget(x, targetPrice).toFixed(2) + '%',
+
+          // Numerical return on target for internal use
+          rot: calcReturnOnTarget(x, targetPrice),
+
+          // Formatted return on target
+          returnOnTarget: calcReturnOnTarget(x, targetPrice).toFixed(2) + '%',
         }))
-        .sort((a, b) => b.returnOnTarget - a.returnOnTarget)
-        .filter((val) => includeUnprofitable || val.returnOnTarget > 0),
-  })
+        .sort((a, b) => b.rot - a.rot)
+        .filter((val) => includeUnprofitable || val.rot > 0),
+
+    // Removes rot key from output as it is only used internally for sorting and filtering
+  }).then((options) => options.map(({ rot, ...option }) => option))
 }
