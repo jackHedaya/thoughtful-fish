@@ -137,7 +137,7 @@ function OptionTable(props: OptionTableProps) {
                   className={key === 'symbol' ? s.symbol : undefined}
                   key={`RowData/${i}/${key}`}
                 >
-                  {option[key]}
+                  {option[key]?.toString()}
                 </td>
               ))}
             </tr>
