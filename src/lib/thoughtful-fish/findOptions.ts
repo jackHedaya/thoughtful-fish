@@ -144,10 +144,3 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
         .filter((val) => includeUnprofitable || val.returnOnTarget > 0),
   })
 }
-
-const camelCaseToTitle = (str: string) => {
-  const result = str.replace(/([A-Z])/g, ' $1')
-  const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
-
-  return finalResult
-}

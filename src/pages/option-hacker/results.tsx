@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
-import Head from 'next/head'
 import q from 'querystring'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { TextField } from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 
-import { useRouter } from 'next/router'
-import useRequest from '../../hooks/useRequest'
 import { auth } from '../../middlewares'
+import setQuerystring from '../../utils/setQuerystring'
+import useRequest from '../../hooks/useRequest'
 
 import s from '../../styles/pages/results.module.scss'
 
@@ -14,7 +17,17 @@ type OptionHackerResultsProps = {
   tickers: string[]
   expressions?: string[]
   preset: string
+  headers?: string[]
 }
+
+type HeaderOption = { key: string; label: string }
+
+const DEFAULT_HEADERS = [
+  { label: 'Symbol', key: 'symbol' },
+  { label: 'Type', key: 'putCall' },
+  { label: 'Strike', key: 'strikePrice' },
+  { label: 'Mark', key: 'mark' },
+]
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const { data: options, error } = useRequest<Partial<OptionExtension[]>, {}>({
@@ -26,17 +39,13 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   // Used to prevent a loading flash
   const [loaderTimeoutDone, setLoaderTimeoutDone] = useState(false)
 
+  const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
+  const [displayHeaders, setDisplayHeaders] = useState(passedHeaders || DEFAULT_HEADERS)
+
   useEffect(() => {
     let x = setTimeout(() => setLoaderTimeoutDone(true), 2000)
     return () => clearTimeout(x)
   })
-
-  const SAMPLE_HEADERS = [
-    { label: 'Symbol', key: 'symbol' },
-    { label: 'Type', key: 'putCall' },
-    { label: 'Strike', key: 'strikePrice' },
-    { label: 'Mark', key: 'mark' },
-  ]
 
   const loadingDone = options && loaderTimeoutDone
 
@@ -57,9 +66,32 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
             <LoadingAnimation />
           </div>
         ) : (
-          <OptionTable headers={SAMPLE_HEADERS} options={options} />
+          <>
+            <Autocomplete
+              className={s.tableHeaderSelection}
+              options={Object.keys(options[0]).map((key) => ({
+                key,
+                label: camelCaseToTitle(key),
+              }))}
+              getOptionLabel={(option) => option.label}
+              value={displayHeaders}
+              onChange={(_, headers) => {
+                setDisplayHeaders(headers as HeaderOption[])
+                setQuerystring('headers', (headers as HeaderOption[]).map((h) => h.key).join(','))
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Table Headers"
+                  placeholder="Option Properties"
+                />
+              )}
+              multiple
+            />
+            <OptionTable headers={displayHeaders} options={options} />
+          </>
         )}
-        {/* <OptionTable headers={SAMPLE_HEADERS} options={SAMPLE_OPTIONS} /> */}
       </div>
     </div>
   )
@@ -116,18 +148,27 @@ function OptionTable(props: OptionTableProps) {
   )
 }
 
+const camelCaseToTitle = (str: string) => {
+  const result = str.replace(/([A-Z])/g, ' $1')
+  const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
+
+  return finalResult
+}
+
 export async function getServerSideProps(ctx: NextPageContext) {
   await auth(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
 
-  // Query will come in encoded JSON form... It will be parsed to this form
+  // Hacker query will come in encoded JSON form... It will be parsed to this form
   // '{"tickers":["NCLH"],"expressions":[""]': ''
   // This will get the key and decode it to JSON
   let props = {}
 
+  // Table headers are passed in comma separated into query string
+  const headers = (ctx.query.headers as string).split(',')
+
   try {
-    props = JSON.parse(Object.keys(ctx.query)[0])
+    props = { ...JSON.parse(Object.keys(ctx.query)[0]), headers }
   } catch (e) {}
 
   return { props }
 }
-// }
