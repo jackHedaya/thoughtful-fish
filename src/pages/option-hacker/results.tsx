@@ -84,7 +84,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
                   {...params}
                   variant="outlined"
                   label="Table Headers"
-                  placeholder="Option Properties"
+                  placeholder="Header"
                 />
               )}
               multiple
@@ -164,10 +164,11 @@ export async function getServerSideProps(ctx: NextPageContext) {
   let props = {}
 
   // Table headers are passed in comma separated into query string
-  const headers = (ctx.query.headers as string).split(',')
+  const headers = (ctx.query.headers as string)?.split(',')
 
   try {
-    props = { ...JSON.parse(Object.keys(ctx.query)[0]), headers }
+    // Header spread needs to be done because getServerSideProps throws if a property is undefined
+    props = { ...JSON.parse(Object.keys(ctx.query)[0]), ...(headers ? { headers } : {}) }
   } catch (e) {}
 
   return { props }
