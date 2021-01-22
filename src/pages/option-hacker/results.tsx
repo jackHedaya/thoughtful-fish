@@ -74,6 +74,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
                 label: camelCaseToTitle(key),
               }))}
               getOptionLabel={(option) => option.label}
+              getOptionSelected={(o, n) => o.key === n.key}
               value={displayHeaders}
               onChange={(_, headers) => {
                 setDisplayHeaders(headers as HeaderOption[])
@@ -112,8 +113,6 @@ function OptionTable(props: OptionTableProps) {
     router.push(`/chart/${symbol}`)
   }
 
-  console.log(options)
-
   return (
     <table>
       <thead>
@@ -137,6 +136,9 @@ function OptionTable(props: OptionTableProps) {
                   className={key === 'symbol' ? s.symbol : undefined}
                   key={`RowData/${i}/${key}`}
                 >
+                  {console.log(option.isInTheMoney)}
+                  {key === 'symbol' && option.inTheMoney ? <div className={s.itm}>ITM</div> : null}
+
                   {option[key]?.toString()}
                 </td>
               ))}
