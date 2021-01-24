@@ -1,5 +1,6 @@
 import a from 'axios'
 import q from 'querystring'
+import c from '../thoughtful-fish/cache'
 
 import formatSymbols from './formatSymbols'
 
@@ -8,6 +9,8 @@ const axios = a.create({
   headers: { 'Content-Type': 'application/json' },
   responseType: 'json',
 })
+
+const cache = c()
 
 const bearerHeader = (token: string) => ({ Authorization: `Bearer ${token}` })
 
@@ -104,7 +107,24 @@ type GetOptionChainParams = {
   type: 'CALL' | 'PUT' | 'ALL'
 }
 
-function getOptionChain(params: GetOptionChainParams) {
+async function getOptionChain(params: GetOptionChainParams) {
+  const { symbol, accessToken } = params
+
+  const cachedChain: OptionChain = cache.get(symbol)
+
+  if (cachedChain) return { ...cachedChain, _cached: true }
+
+  const newChain = await requestOptionChain(params)
+
+  const marketHours = await getMarketHours({ accessToken })
+
+  if (!marketHours.isOpen) cache.set(symbol, newChain, cache.tomorrowAtNine())
+  else cache.set(symbol, newChain, cache.nextMinute())
+
+  return { ...newChain, _cached: false }
+}
+
+function requestOptionChain(params: GetOptionChainParams): Promise<OptionChain> {
   const { symbol, accessToken, type } = params
 
   return axios({
@@ -115,7 +135,7 @@ function getOptionChain(params: GetOptionChainParams) {
       includeQuotes: 'TRUE',
     })}`,
     headers: bearerHeader(accessToken),
-  })
+  }).then((x) => x.data)
 }
 
 /*
@@ -194,6 +214,39 @@ function updateWatchlist(params: UpdateWatchlistParams) {
       watchlistItems: formatSymbols(symbols),
     },
   })
+}
+
+/*
+ * Functions to get market hours
+ */
+
+type GetMarketHoursParams = { accessToken: string; markets?: MarketType | MarketType[] }
+
+async function getMarketHours(params: GetMarketHoursParams) {
+  const { accessToken, markets = 'OPTION' } = params
+
+  const cachedHours: MarketHours = cache.get('marketHours')
+
+  if (cachedHours) return { ...cachedHours, _cached: true }
+
+  const newHours = await requestMarketHours({ accessToken, markets })
+  console.log(cache)
+  cache.set('marketHours', newHours, cache.tomorrow())
+
+  return { ...newHours, _cached: true }
+}
+
+function requestMarketHours(params: GetMarketHoursParams): Promise<MarketHours> {
+  const { accessToken, markets: m = 'OPTION' } = params
+
+  const markets = typeof m === 'string' ? m : m.join(',')
+
+  return axios({
+    method: 'GET',
+    url: '/marketdata/hours',
+    headers: bearerHeader(accessToken),
+    params: { markets, date: new Date().toISOString() },
+  }).then((x) => x.data)
 }
 
 const ameritrade = {
