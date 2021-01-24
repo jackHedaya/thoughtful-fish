@@ -55,7 +55,6 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   })
 
   const options = useMemo(() => {
-    console.log(data?.options[0])
     let sorted = sorter(data?.options, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
