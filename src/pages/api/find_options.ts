@@ -3,7 +3,7 @@ import { auth, requiredData } from '../../middlewares'
 import getSession from '../../services/getSession'
 
 const PRESET_TO_FUNCTION: {
-  [preset: string]: (tickers: string[] | string, ...params: any) => Promise<Option[]>
+  [preset: string]: (tickers: string[] | string, ...params: any) => Promise<HackerResult>
 } = {
   'Target Price': targetPricePreset,
   Expression: expressionPreset,

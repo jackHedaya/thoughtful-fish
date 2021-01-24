@@ -30,11 +30,13 @@ const DEFAULT_HEADERS = [
 ]
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
-  const { data: options, error } = useRequest<Partial<OptionExtension[]>, {}>({
+  const { data, error } = useRequest<HackerResult, {}>({
     url: '/api/find_options?' + q.stringify(props),
     method: 'GET',
     data: JSON.stringify(props),
   })
+
+  const options = data?.options
 
   // Used to prevent a loading flash
   const [loaderTimeoutDone, setLoaderTimeoutDone] = useState(false)
