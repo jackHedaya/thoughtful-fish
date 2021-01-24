@@ -110,8 +110,7 @@ export function InstructionPanel() {
     <div className={s.instructions}>
       <h2>How to use</h2>
       <div className={s.how}>
-        The Option Hacker will screen all the options given that satisfy one or multiple
-        expressions.{' '}
+        This hacker preset will screen all the options given that satisfy one or more expressions
       </div>
       <h2>Example</h2>
       <div className={s.example}>

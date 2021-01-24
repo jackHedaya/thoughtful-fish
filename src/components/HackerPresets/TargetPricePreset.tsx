@@ -90,3 +90,15 @@ export default function TargetPricePreset(props: PresetProps) {
     </div>
   )
 }
+
+export function InstructionPanel() {
+  return (
+    <div className={s.instructions}>
+      <h2>How to use</h2>
+      <div className={s.how}>
+        This hacker preset will show you the highest return options for a given stock, target price,
+        and (optional) amount of days left
+      </div>
+    </div>
+  )
+}
