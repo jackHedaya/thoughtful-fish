@@ -1,5 +1,6 @@
 export { default as auth } from './auth'
 export { default as requiredData } from './requiredData'
+export { default as transformData } from './transformData'
 
 export const MIDDLEWARE_ERROR = {
   MISSING_PARAMETER: (p: string) => ({ status: 400, error: `Missing parameter '${p}'` }),
