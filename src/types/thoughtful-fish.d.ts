@@ -1,6 +1,9 @@
 type OptionListManipulator = (options: Option[]) => OptionExtension[]
 type OptionExtension = { [key: string]: unknown } & Option
 
+type HackerResult = { options: OptionExtension[]; meta: HackerMeta }
+type HackerMeta = { cached: boolean }
+
 type Session = {
   accessToken: string
   refreshToken: string
