@@ -6,6 +6,7 @@ export type PresetParams = {
   page: number
   type: 'CALL' | 'PUT' | 'ALL'
   accessToken: string
+  noCache?: boolean
 }
 
 type FindCommandOptions = PresetParams & {
@@ -13,13 +14,11 @@ type FindCommandOptions = PresetParams & {
   expressions: string | string[]
 }
 
-async function findOptions(
-  tickers: string[],
-  options: FindCommandOptions
-): Promise<OptionExtension[]> {
+async function findOptions(tickers: string[], options: FindCommandOptions) {
   const {
     type: queryOptionType = 'ALL',
     page = 1,
+    noCache,
     onQueryComplete = (e) => e,
     accessToken,
     expressions: exp,
@@ -36,14 +35,16 @@ async function findOptions(
 
   const promises = []
 
+  let isFromCache = false
+
   for (const ticker of pagedTickers) {
     const p = ameritrade.symbol
-      .getOptionChain({ symbol: ticker, type: options.type, accessToken })
-      .then((res) => {
-        const data: OptionChain = res.data
-
+      .getOptionChain({ symbol: ticker, type: options.type, accessToken, noCache })
+      .then((data) => {
         // This symbol does not have options available
         if (data.status === 'FAILED') return
+
+        if (data._cached) isFromCache = true
 
         const underlying = data.underlying
 
@@ -75,7 +76,7 @@ async function findOptions(
 
   await Promise.all(promises)
 
-  if (foundOptions.length > 0) return foundOptions
+  if (foundOptions.length > 0) return { options: foundOptions, meta: { cached: isFromCache } }
   else throw 'No options found'
 }
 

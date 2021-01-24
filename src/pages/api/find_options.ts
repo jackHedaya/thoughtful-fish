@@ -1,9 +1,9 @@
 import { expressionPreset, targetPricePreset } from '../../lib/thoughtful-fish/findOptions'
-import { auth, requiredData } from '../../middlewares'
+import { auth, requiredData, transformData } from '../../middlewares'
 import getSession from '../../services/getSession'
 
 const PRESET_TO_FUNCTION: {
-  [preset: string]: (tickers: string[] | string, ...params: any) => Promise<Option[]>
+  [preset: string]: (tickers: string[] | string, ...params: any) => Promise<HackerResult>
 } = {
   'Target Price': targetPricePreset,
   Expression: expressionPreset,
@@ -19,6 +19,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
         validator: stringOrStringArray,
       },
     ])
+
+    await transformData(req, [{ key: 'noCache', type: 'boolean' }])
 
     const { preset, tickers, ...otherData } = req.query
 
@@ -37,6 +39,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
     res.json(options)
   } catch (e) {
     const { status = e?.response?.status, error = e?.response?.statusText } = e
+
+    if (process.env.NODE_ENV === 'development') console.log(e)
 
     res.status(status || 500).end(error || 'Something went wrong')
   }
