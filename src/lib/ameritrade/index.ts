@@ -105,20 +105,23 @@ type GetOptionChainParams = {
   symbol: string
   accessToken: string
   type: 'CALL' | 'PUT' | 'ALL'
+  noCache?: boolean
 }
 
 async function getOptionChain(params: GetOptionChainParams) {
-  const { symbol, accessToken } = params
+  const { symbol, accessToken, noCache } = params
 
-  const cachedChain: OptionChain = cache.get(symbol)
+  const cacheKey = `optionChain.${symbol}`
 
-  if (cachedChain) return { ...cachedChain, _cached: true }
+  const cachedChain: OptionChain = cache.get(cacheKey)
+  console.log(cachedChain)
+  if (cachedChain && !noCache) return { ...cachedChain, _cached: true }
 
   const newChain = await requestOptionChain(params)
 
-  const marketHours = await getMarketHours({ accessToken })
+  const marketHours = await getMarketHours({ accessToken, noCache })
 
-  if (!marketHours.isOpen) cache.set(symbol, newChain, cache.tomorrowAtNine())
+  if (!marketHours.isOpen) cache.set(cacheKey, newChain, cache.tomorrowAtNine())
   else cache.set(symbol, newChain, cache.nextMinute())
 
   return { ...newChain, _cached: false }
@@ -220,17 +223,21 @@ function updateWatchlist(params: UpdateWatchlistParams) {
  * Functions to get market hours
  */
 
-type GetMarketHoursParams = { accessToken: string; markets?: MarketType | MarketType[] }
+type GetMarketHoursParams = {
+  accessToken: string
+  markets?: MarketType | MarketType[]
+  noCache?: boolean
+}
 
 async function getMarketHours(params: GetMarketHoursParams) {
-  const { accessToken, markets = 'OPTION' } = params
+  const { accessToken, markets = 'OPTION', noCache } = params
 
   const cachedHours: MarketHours = cache.get('marketHours')
 
-  if (cachedHours) return { ...cachedHours, _cached: true }
+  if (cachedHours && !noCache) return { ...cachedHours, _cached: true }
 
   const newHours = await requestMarketHours({ accessToken, markets })
-  console.log(cache)
+
   cache.set('marketHours', newHours, cache.tomorrow())
 
   return { ...newHours, _cached: true }

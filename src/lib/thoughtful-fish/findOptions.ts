@@ -6,6 +6,7 @@ export type PresetParams = {
   page: number
   type: 'CALL' | 'PUT' | 'ALL'
   accessToken: string
+  noCache?: boolean
 }
 
 type FindCommandOptions = PresetParams & {
@@ -17,6 +18,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
   const {
     type: queryOptionType = 'ALL',
     page = 1,
+    noCache,
     onQueryComplete = (e) => e,
     accessToken,
     expressions: exp,
@@ -37,7 +39,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
 
   for (const ticker of pagedTickers) {
     const p = ameritrade.symbol
-      .getOptionChain({ symbol: ticker, type: options.type, accessToken })
+      .getOptionChain({ symbol: ticker, type: options.type, accessToken, noCache })
       .then((data) => {
         // This symbol does not have options available
         if (data.status === 'FAILED') return

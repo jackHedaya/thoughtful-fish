@@ -1,5 +1,5 @@
 import { expressionPreset, targetPricePreset } from '../../lib/thoughtful-fish/findOptions'
-import { auth, requiredData } from '../../middlewares'
+import { auth, requiredData, transformData } from '../../middlewares'
 import getSession from '../../services/getSession'
 
 const PRESET_TO_FUNCTION: {
@@ -20,6 +20,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
       },
     ])
 
+    await transformData(req, [{ key: 'noCache', type: 'boolean' }])
+
     const { preset, tickers, ...otherData } = req.query
 
     const presetFn = PRESET_TO_FUNCTION[preset as string]
@@ -37,6 +39,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
     res.json(options)
   } catch (e) {
     const { status = e?.response?.status, error = e?.response?.statusText } = e
+
+    if (process.env.NODE_ENV === 'development') console.log(e)
 
     res.status(status || 500).end(error || 'Something went wrong')
   }
