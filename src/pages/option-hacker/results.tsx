@@ -119,7 +119,9 @@ function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<
       interactive
       leaveDelay={300}
     >
-      <InfoOutlined className={s.cached} />
+      <span className={`${s.cached} icon`}>
+        <InfoOutlined />
+      </span>
     </Tooltip>
   )
 }
