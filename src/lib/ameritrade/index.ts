@@ -114,7 +114,7 @@ async function getOptionChain(params: GetOptionChainParams) {
   const cacheKey = `optionChain.${symbol}`
 
   const cachedChain: OptionChain = cache.get(cacheKey)
-  console.log(cachedChain)
+
   if (cachedChain && !noCache) return { ...cachedChain, _cached: true }
 
   const newChain = await requestOptionChain(params)
