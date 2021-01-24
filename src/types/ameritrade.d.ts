@@ -365,3 +365,27 @@ type IndexQuote = {
   '52WkLow': number
   securityStatus: string
 }
+
+/*
+ *  Market Hour types
+ */
+
+type Timestamp = string
+type MarketType = 'EQUITY' | 'OPTION' | 'FUTURE' | 'BOND' | 'FOREX'
+
+type MultipleMarketHours = { [key: MarketType]: { [marketName: string]: MarketHours } }
+
+type MarketHours = {
+  category: string
+  date: string
+  exchange: string
+  isOpen: false
+  marketType: MarketType
+  product: string
+  productName: string
+  sessionHours: {
+    preMarket?: [{ start: Timestamp; end: Timestamp }]
+    regularMarket?: [{ start: Timestamp; end: Timestamp }]
+    postMarket?: [{ start: Timestamp; end: Timestamp }]
+  }
+}
