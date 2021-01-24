@@ -6,6 +6,27 @@ $content-indent: 20px;
   margin-top: 10px;
   margin-bottom: 20px;
   margin-left: $content-indent;
+
+  .cached {
+    height: 18px;
+    float: right;
+
+    &:hover {
+      color: $signature-red;
+      cursor: pointer;
+    }
+  }
+}
+
+.cachedTooltip {
+  span {
+    color: rgb(230, 239, 255);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .results {

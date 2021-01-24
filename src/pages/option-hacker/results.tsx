@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import q from 'querystring'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { TextField } from '@material-ui/core'
+import { TextField, Tooltip } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
@@ -12,6 +12,7 @@ import setQuerystring from '../../utils/setQuerystring'
 import useRequest from '../../hooks/useRequest'
 
 import s from '../../styles/pages/results.module.scss'
+import { InfoOutlined } from '@material-ui/icons'
 
 type OptionHackerResultsProps = {
   tickers: string[]
@@ -30,10 +31,13 @@ const DEFAULT_HEADERS = [
 ]
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
+  const [noCache, setNoCache] = useState(false)
+
   const { data, error } = useRequest<HackerResult, {}>({
-    url: '/api/find_options?' + q.stringify(props),
+    url: '/api/find_options',
     method: 'GET',
-    data: JSON.stringify(props),
+    params: { ...props, noCache },
+    paramsSerializer: (d) => q.stringify(d),
   })
 
   const options = data?.options
@@ -59,7 +63,11 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
         <title>Thoughtful Fish | {tickers} Results</title>
       </Head>
       <div className="page-title">Option Hacker</div>
-      {loadingDone && !error && <h2 className={s.resultsTitle}>Results for {tickers}</h2>}
+      {loadingDone && !error && (
+        <h2 className={s.resultsTitle}>
+          Results for {tickers} {data.meta.cached && <CachedTooltip setNoCache={setNoCache} />}
+        </h2>
+      )}
       <div className={s.results}>
         {error && loaderTimeoutDone ? (
           <div className={s.errorMessage}>{error.message}</div>
@@ -97,6 +105,25 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
         )}
       </div>
     </div>
+  )
+}
+
+function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<boolean>> }) {
+  return (
+    <Tooltip
+      title={
+        <span className={s.cachedTooltip}>
+          These results come from cached prices. To reload press{' '}
+          <span onClick={() => props.setNoCache(true)}>here</span>
+        </span>
+      }
+      placement="left-end"
+      arrow
+      interactive
+      leaveDelay={300}
+    >
+      <InfoOutlined className={s.cached} />
+    </Tooltip>
   )
 }
 
