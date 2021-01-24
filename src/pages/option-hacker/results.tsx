@@ -4,15 +4,17 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { TextField, Tooltip } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
+import { InfoOutlined } from '@material-ui/icons'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 
 import { auth } from '../../middlewares'
+
+import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import setQuerystring from '../../utils/setQuerystring'
 import useRequest from '../../hooks/useRequest'
 
 import s from '../../styles/pages/results.module.scss'
-import { InfoOutlined } from '@material-ui/icons'
 
 type OptionHackerResultsProps = {
   tickers: string[]
@@ -22,13 +24,6 @@ type OptionHackerResultsProps = {
 }
 
 type HeaderOption = { key: string; label: string }
-
-const DEFAULT_HEADERS = [
-  { label: 'Symbol', key: 'symbol' },
-  { label: 'Type', key: 'putCall' },
-  { label: 'Strike', key: 'strikePrice' },
-  { label: 'Mark', key: 'mark' },
-]
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const [noCache, setNoCache] = useState(false)
@@ -46,7 +41,9 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const [loaderTimeoutDone, setLoaderTimeoutDone] = useState(false)
 
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
-  const [displayHeaders, setDisplayHeaders] = useState(passedHeaders || DEFAULT_HEADERS)
+  const [displayHeaders, setDisplayHeaders] = useState(
+    passedHeaders || defaultPresetHeaders[props.preset]
+  )
 
   useEffect(() => {
     let x = setTimeout(() => setLoaderTimeoutDone(true), 2000)
