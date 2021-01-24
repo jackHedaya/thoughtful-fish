@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import q from 'querystring'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { TextField, Tooltip } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
-import { InfoOutlined } from '@material-ui/icons'
+import { ArrowDropDownSharp, ArrowDropUpSharp, InfoOutlined } from '@material-ui/icons'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 
@@ -12,6 +12,7 @@ import { auth } from '../../middlewares'
 
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import setQuerystring from '../../utils/setQuerystring'
+import sorter from '../../utils/sorter'
 import useRequest from '../../hooks/useRequest'
 
 import s from '../../styles/pages/results.module.scss'
@@ -27,6 +28,24 @@ type HeaderOption = { key: string; label: string }
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const [noCache, setNoCache] = useState(false)
+  const [sortByKey, setSortByKey] = useState(null)
+  const [sortDirection, setSortDirection] = useState<'DESC' | 'ASC' | null>('DESC')
+
+  const handleSort = (key: string) => {
+    if (sortByKey === key) {
+      if (sortDirection === 'DESC') setSortDirection('ASC')
+
+      if (sortDirection === 'ASC') {
+        setSortDirection(null)
+        setSortByKey(null)
+      }
+
+      return
+    }
+
+    setSortDirection('DESC')
+    setSortByKey(key)
+  }
 
   const { data, error } = useRequest<HackerResult, {}>({
     url: '/api/find_options',
@@ -35,7 +54,12 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     paramsSerializer: (d) => q.stringify(d),
   })
 
-  const options = data?.options
+  const options = useMemo(() => {
+    console.log(data?.options[0])
+    let sorted = sorter(data?.options, sortByKey)
+
+    return sortDirection === 'ASC' ? sorted.reverse() : sorted
+  }, [data?.options, sortByKey, sortDirection])
 
   // Used to prevent a loading flash
   const [loaderTimeoutDone, setLoaderTimeoutDone] = useState(false)
@@ -97,7 +121,13 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
               )}
               multiple
             />
-            <OptionTable headers={displayHeaders} options={options} />
+            <OptionTable
+              headers={displayHeaders}
+              options={options}
+              sortByKey={sortByKey}
+              onSort={handleSort}
+              sortDirection={sortDirection}
+            />
           </>
         )}
       </div>
@@ -129,11 +159,14 @@ function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<
 type OptionTableProps = {
   headers: TableHeader[]
   options: Partial<OptionExtension>[]
+  sortByKey: string
+  sortDirection: 'ASC' | 'DESC' | null
+  onSort: (key: string) => void
 }
 type TableHeader = { label: string; key: string }
 
 function OptionTable(props: OptionTableProps) {
-  const { headers, options } = props
+  const { headers, options, sortByKey, onSort, sortDirection } = props
 
   const router = useRouter()
 
@@ -144,9 +177,16 @@ function OptionTable(props: OptionTableProps) {
   return (
     <table>
       <thead>
-        <tr>
-          {headers.map(({ label }) => (
-            <th key={`Header/${label}`}>{label}</th>
+        <tr style={{ minWidth: '49px' }}>
+          {headers.map(({ label, key }) => (
+            <th
+              className={key !== sortByKey ? s.noSort : undefined}
+              key={`Header/${label}`}
+              onClick={() => onSort(key)}
+            >
+              {label}
+              <SortIcon isActive={key === sortByKey} direction={sortDirection} />
+            </th>
           ))}
         </tr>
       </thead>
@@ -174,6 +214,24 @@ function OptionTable(props: OptionTableProps) {
         }
       </tbody>
     </table>
+  )
+}
+
+function SortIcon(props: { isActive: boolean; direction: string }) {
+  const { isActive, direction } = props
+
+  return (
+    <span className="icon">
+      {isActive ? (
+        direction === 'DESC' ? (
+          <ArrowDropDownSharp />
+        ) : (
+          <ArrowDropUpSharp />
+        )
+      ) : (
+        <div style={{ height: '24px', display: 'inline-block' }}></div>
+      )}
+    </span>
   )
 }
 

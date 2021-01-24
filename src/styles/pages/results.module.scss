@@ -52,6 +52,13 @@ $content-indent: 20px;
     margin: 20px 0;
   }
 
+  thead {
+    .noSort {
+      padding-left: 27px;
+      padding-right: 27px;
+    }
+  }
+
   table {
     width: 100%;
     border-collapse: separate;
