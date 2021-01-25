@@ -75,17 +75,17 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const loadingDone = options && loaderTimeoutDone
 
-  const tickers = props.tickers.join(', ')
+  const tickersTitle = generateTickersTitle(props.tickers)
 
   return (
     <div className="content">
       <Head>
-        <title>Thoughtful Fish | {tickers} Results</title>
+        <title>Thoughtful Fish | {tickersTitle} Results</title>
       </Head>
       <div className="page-title">Option Hacker</div>
       {loadingDone && !error && (
         <h2 className={s.resultsTitle}>
-          Results for {tickers} {data.meta.cached && <CachedTooltip setNoCache={setNoCache} />}
+          Results for {tickersTitle} {data.meta.cached && <CachedTooltip setNoCache={setNoCache} />}
         </h2>
       )}
       <div className={s.results}>
@@ -239,6 +239,19 @@ const camelCaseToTitle = (str: string) => {
   const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
 
   return finalResult
+}
+
+const generateTickersTitle = (tickers: string[]) => {
+  const MAX_SHOWN = 6
+
+  if (tickers.length < 2) return tickers[0]
+
+  const lastElement = tickers[tickers.length - 1]
+  const excludingLast = tickers.slice(0, tickers.length - 1).join(', ')
+
+  if (tickers.length < MAX_SHOWN) return `${excludingLast} and ${lastElement}`
+
+  return `${tickers.slice(0, MAX_SHOWN).join(', ')} and ${tickers.length - MAX_SHOWN} more`
 }
 
 export async function getServerSideProps(ctx: NextPageContext) {
