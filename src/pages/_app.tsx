@@ -6,8 +6,8 @@ import NProgress from 'nprogress'
 
 import Navbar from '../components/Navbar'
 
-import '../styles/globals.scss'
 import 'nprogress/nprogress.css'
+import '../styles/globals.scss'
 
 Router.events.on('routeChangeStart', () => NProgress.start())
 Router.events.on('routeChangeComplete', () => NProgress.done())
