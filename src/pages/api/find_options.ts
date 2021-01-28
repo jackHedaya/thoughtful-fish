@@ -32,13 +32,16 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
     else if (preset === 'Expression')
       await requiredData(req, [{ key: 'expressions', validator: stringOrStringArray }])
 
-    const accessToken = getSession(req).accessToken
+    const accessToken = getSession(req)?.accessToken
 
     const options = await presetFn(tickers as string[], { ...otherData, accessToken })
 
     res.json(options)
   } catch (e) {
-    const { status = e?.response?.status, error = e?.response?.statusText } = e
+    const {
+      status = e?.response?.status || e.status,
+      error = e?.response?.statusText || e.error,
+    } = e
 
     if (process.env.NODE_ENV === 'development') console.log(e)
 

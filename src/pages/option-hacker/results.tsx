@@ -47,7 +47,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     setSortByKey(key)
   }
 
-  const { data, error } = useRequest<HackerResult, {}>({
+  const { data, error, response } = useRequest<HackerResult, string>({
     url: '/api/find_options',
     method: 'GET',
     params: { ...props, noCache },
@@ -90,7 +90,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       )}
       <div className={s.results}>
         {error && loaderTimeoutDone ? (
-          <div className={s.errorMessage}>{error.message}</div>
+          <div className={s.errorMessage}>{error.response.data || error.message}</div>
         ) : !loadingDone ? (
           <div className={s.loader}>
             <LoadingAnimation />

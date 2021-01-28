@@ -77,7 +77,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
   await Promise.all(promises)
 
   if (foundOptions.length > 0) return { options: foundOptions, meta: { cached: isFromCache } }
-  else throw 'No options found'
+  else throw { error: 'No options found', status: 404 }
 }
 
 type QueryParams = {
