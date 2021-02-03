@@ -23,7 +23,7 @@ export default function ExpressionPreset(props: PresetProps) {
   }
 
   return (
-    <div>
+    <div onKeyPress={(e) => (e.key === 'Enter' ? onNext() : false)}>
       <SetupAccordion
         expanded={state._accordionsOpen.setup}
         onExpandedChange={(b) =>

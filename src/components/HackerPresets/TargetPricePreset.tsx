@@ -20,7 +20,7 @@ export default function TargetPricePreset(props: PresetProps) {
   }
 
   return (
-    <div>
+    <div onKeyPress={(e) => (e.key === 'Enter' ? onNext() : false)}>
       <SignatureAccordion
         title="Setup"
         style={{ position: 'relative' }}
