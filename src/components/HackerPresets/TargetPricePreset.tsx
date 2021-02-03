@@ -23,6 +23,7 @@ export default function TargetPricePreset(props: PresetProps) {
     <div>
       <SignatureAccordion
         title="Setup"
+        style={{ position: 'relative' }}
         expanded={state._accordionsOpen.setup}
         onChange={(_, b) => dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })}
       >
