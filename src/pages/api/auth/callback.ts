@@ -7,7 +7,6 @@ import {
   writeRefreshToken,
 } from '../../../lib/thoughtful-fish/session'
 
-const JWT_SECRET = process.env.JWT_SECRET
 
 export default async function callback(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code
