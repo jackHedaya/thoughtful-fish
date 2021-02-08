@@ -4,6 +4,9 @@
   background-color: $signature-red;
   box-shadow: 6px 0px 6px #dadada;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  grid-area: nav;
 
   .item {
     width: 60px;
@@ -22,5 +25,14 @@
       height: 100%;
       color: white;
     }
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .nav {
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    position: sticky;
   }
 }

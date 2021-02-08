@@ -22,6 +22,14 @@
   }
 }
 
+@media only screen and (max-width: 400px) {
+  .hacker {
+    flex-direction: column-reverse;
+  }
+
+  // Instruction media queries are in ./option-preset.module.scss
+}
+
 @mixin disabled {
   border: 2px solid rgba(0, 0, 0, 0.26) !important;
 

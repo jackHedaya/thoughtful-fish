@@ -27,8 +27,9 @@ export default function TargetPricePreset(props: PresetProps) {
         expanded={state._accordionsOpen.setup}
         onChange={(_, b) => dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })}
       >
-        <div className={s.watchlistSection}>
+        <div className={s.setupSection}>
           <TextField
+            className={s.setupField}
             value={state.tickers[0] || ''}
             onChange={(e) =>
               dispatch({ type: 'set_tickers', tickers: [e.currentTarget.value.toUpperCase()] })
@@ -40,6 +41,7 @@ export default function TargetPricePreset(props: PresetProps) {
           />
           <DollarTextField
             value={state.targetPrice}
+            className={s.setupField}
             onChange={(e) => {
               dispatch({
                 type: 'set_target_price',
@@ -66,7 +68,7 @@ export default function TargetPricePreset(props: PresetProps) {
             }}
             label="Days Left"
             placeholder="Days Left"
-            style={{ width: '200px', marginTop: '15px' }}
+            className={s.setupField}
             variant="outlined"
             inputProps={{
               inputMode: 'numeric',
