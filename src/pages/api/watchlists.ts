@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next'
 import { auth } from '../../middlewares'
+import { getSession } from '../../middlewares/auth'
 import ameritrade from '../../lib/ameritrade'
-import getSession from '../../services/getSession'
 
 export default async function watchlists(req: NextApiRequest, res: NextApiResponse) {
   try {

@@ -11,7 +11,7 @@ import { PresetState } from '../../state/presetBase'
 import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
 import TargetPricePreset from '../../components/HackerPresets/TargetPricePreset'
 
-import getSession from '../../services/getSession'
+import { authOrPassSession } from '../../middlewares/auth'
 
 import s from '../../styles/pages/option-hacker.module.scss'
 
@@ -127,15 +127,5 @@ export function NavigationButtons(props: NavigationButtonProps) {
 }
 
 export async function getServerSideProps(ctx: NextPageContext) {
-  const session = getSession(ctx)
-
-  if (session === null)
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/login?route=${ctx.req.url}`,
-      },
-    }
-
-  return { props: { session } }
+  return authOrPassSession(ctx)
 }

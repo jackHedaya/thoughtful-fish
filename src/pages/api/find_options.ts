@@ -1,6 +1,6 @@
 import { expressionPreset, targetPricePreset } from '../../lib/thoughtful-fish/findOptions'
 import { auth, requiredData, transformData } from '../../middlewares'
-import getSession from '../../services/getSession'
+import { getSession } from '../../middlewares/auth'
 
 const PRESET_TO_FUNCTION: {
   [preset: string]: (tickers: string[] | string, ...params: any) => Promise<HackerResult>

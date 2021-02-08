@@ -8,7 +8,7 @@ import { ArrowDropDownSharp, ArrowDropUpSharp, InfoOutlined } from '@material-ui
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 
-import { auth } from '../../middlewares'
+import { returnRedirect, getSession } from '../../middlewares/auth'
 
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import setQuerystring from '../../utils/setQuerystring'
@@ -255,7 +255,9 @@ const generateTickersTitle = (tickers: string[]) => {
 }
 
 export async function getServerSideProps(ctx: NextPageContext) {
-  await auth(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
+  const session = getSession(ctx)
+
+  if (!session) return returnRedirect(ctx)
 
   // Hacker query will come in encoded JSON form... It will be parsed to this form
   // '{"tickers":["NCLH"],"expressions":[""]': ''
