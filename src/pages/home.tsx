@@ -5,7 +5,7 @@ import styles from '../styles/pages/home.module.scss'
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <div className="content">
       <Head>
         <title>Thoughtful Fish</title>
         <link rel="icon" href="/favicon.ico" />
