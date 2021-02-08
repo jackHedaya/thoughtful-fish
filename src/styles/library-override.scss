@@ -1,0 +1,18 @@
+/** Next Progress Bar */
+
+#nprogress {
+  .bar {
+    background: $signature-red !important;
+  }
+
+  .spinner-icon {
+    border-top-color: $signature-red !important;
+    border-left-color: $signature-red !important;
+  }
+}
+
+/** React Virtualized Table */
+
+.ReactVirtualized__Grid:focus {
+  outline: none !important;
+}
