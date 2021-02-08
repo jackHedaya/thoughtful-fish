@@ -59,7 +59,7 @@ export default function SetupAccordion(props: SetupAccordionProps) {
       expanded={props.expanded}
       onChange={(_, b) => props.onExpandedChange(b)}
     >
-      <div className={s.watchlistSection}>
+      <div className={s.setupSection}>
         <SignatureSelect
           label="Watchlist / List"
           className={s.watchlistOrList}
