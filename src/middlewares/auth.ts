@@ -1,5 +1,4 @@
 import { MIDDLEWARE_ERROR } from '.'
-import { isNextPageContext } from '../types/assertions'
 
 import {
   getAccessToken,
