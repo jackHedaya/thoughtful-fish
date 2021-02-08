@@ -144,3 +144,11 @@ $flex-margin: 6px;
     }
   }
 }
+
+@media only screen and (max-width: 400px) {
+  .instructions {
+    margin: 20px 0;
+    min-height: unset;
+    max-height: 40vh;
+  }
+}

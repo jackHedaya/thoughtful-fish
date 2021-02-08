@@ -1,5 +1,5 @@
 .container {
-  min-height: 100vh;
+  height: 100%;
   padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
@@ -79,9 +79,12 @@
   height: 1em;
 }
 
-@media (max-width: 600px) {
+@media only screen and (max-width: 400px) {
   .grid {
-    width: 100%;
     flex-direction: column;
+  }
+
+  .title {
+    width: 100vw;
   }
 }

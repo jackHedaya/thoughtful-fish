@@ -49,16 +49,6 @@ h5 {
   grid-template-areas: 'nav content';
 }
 
-@media only screen and (max-width: 400px) {
-  .app {
-    grid-template-areas:
-      'content'
-      'nav';
-    grid-template-columns: unset;
-    grid-template-rows: 1fr auto;
-  }
-}
-
 .content {
   padding: 20px 40px;
   grid-area: content;
@@ -74,4 +64,19 @@ h5 {
 .icon {
   vertical-align: middle;
   display: inline-block;
+}
+
+@media only screen and (max-width: 400px) {
+  .app {
+    grid-template-areas:
+      'content'
+      'nav';
+    grid-template-columns: unset;
+    grid-template-rows: 1fr auto;
+  }
+
+  .content {
+    padding: 10px 20px;
+    overflow: scroll;
+  }
 }
