@@ -56,6 +56,13 @@ export function authOrPassSession(ctx: NextPageContext) {
 }
 
 export function getSession(ctx: ContextOrRequest): Session {
+  if (process.env.SKIP_AUTH)
+    return {
+      accessToken: '',
+      refreshToken: '',
+      profile: { userId: '', primaryAccountId: '', accounts: [] },
+    }
+
   const accessToken = getAccessToken(ctx)
   const refreshToken = getRefreshToken(ctx)
   const profile = getProfile(ctx)

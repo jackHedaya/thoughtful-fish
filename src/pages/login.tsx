@@ -32,7 +32,7 @@ export default function Login() {
 
 export async function getServerSideProps(ctx: NextPageContext) {
   try {
-    await auth(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
+    if (!process.env.SKIP_AUTH) await auth(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
 
     return {
       redirect: {
