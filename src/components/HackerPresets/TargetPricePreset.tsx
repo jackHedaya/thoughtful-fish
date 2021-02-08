@@ -73,16 +73,7 @@ export default function TargetPricePreset(props: PresetProps) {
               pattern: '[0-9]*',
             }}
           />
-          <SignatureButton
-            className={s.nextButton}
-            onClick={() => {
-              dispatch({
-                type: 'set_accordion_open',
-                accordion: 'setup',
-                open: false,
-              })
-            }}
-          >
+          <SignatureButton className={s.nextButton} onClick={() => onNext()}>
             Finish
           </SignatureButton>
         </div>

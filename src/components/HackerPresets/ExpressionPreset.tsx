@@ -85,16 +85,7 @@ export default function ExpressionPreset(props: PresetProps) {
         >
           Add Expression
         </Button>
-        <SignatureButton
-          className={s.nextButton}
-          onClick={() => {
-            dispatch({
-              type: 'set_accordion_open',
-              accordion: 'expressions',
-              open: false,
-            })
-          }}
-        >
+        <SignatureButton className={s.nextButton} onClick={() => onNext()}>
           Finish
         </SignatureButton>
       </SignatureAccordion>
