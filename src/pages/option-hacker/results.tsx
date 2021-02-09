@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import q from 'querystring'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -10,10 +10,12 @@ import LoadingAnimation from '../../components/LoadingAnimation'
 
 import { returnRedirect, getSession } from '../../middlewares/auth'
 
+import useRequest from '../../hooks/useRequest'
+import usePrettyLoading from '../../hooks/usePrettyLoading'
+
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
-import useRequest from '../../hooks/useRequest'
 
 import s from '../../styles/pages/results.module.scss'
 
@@ -54,26 +56,20 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     paramsSerializer: (d) => q.stringify(d),
   })
 
+  const isPrettyLoading = usePrettyLoading(2000)
+
   const options = useMemo(() => {
     let sorted = sorter(data?.options, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
   }, [data?.options, sortByKey, sortDirection])
 
-  // Used to prevent a loading flash
-  const [loaderTimeoutDone, setLoaderTimeoutDone] = useState(false)
-
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, setDisplayHeaders] = useState(
     passedHeaders || defaultPresetHeaders[props.preset]
   )
 
-  useEffect(() => {
-    let x = setTimeout(() => setLoaderTimeoutDone(true), 2000)
-    return () => clearTimeout(x)
-  })
-
-  const loadingDone = options && loaderTimeoutDone
+  const loadingDone = options && !isPrettyLoading
 
   const tickersTitle = generateTickersTitle(props.tickers)
 
@@ -89,7 +85,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
         </h2>
       )}
       <div className={s.results}>
-        {error && loaderTimeoutDone ? (
+        {error && !isPrettyLoading ? (
           <div className={s.errorMessage}>{error.response.data || error.message}</div>
         ) : !loadingDone ? (
           <div className={s.loader}>
