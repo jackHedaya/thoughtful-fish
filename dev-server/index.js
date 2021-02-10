@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 var https = require('https')
 var fs = require('fs')
 
