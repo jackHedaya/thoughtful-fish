@@ -21,9 +21,13 @@ export default function Login() {
   const { error, response } = useRequest({ url: '/api/auth/validate' })
   const isPrettyLoading = usePrettyLoading(1000)
 
-  const loading = (!error && !response) || isPrettyLoading
+  let loading = (!error && !response) || isPrettyLoading
 
-  if (!loading && response?.status === 201) Router.push(redirectRoute)
+  if (!loading && response?.status === 201) {
+    loading = true
+
+    Router.push(redirectRoute)
+  }
 
   return (
     <div className={s.login}>
