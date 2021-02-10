@@ -31,7 +31,7 @@ export default function OptionHacker() {
   const router = useRouter()
 
   const [preset, setPreset] = useState('Expression')
-  const [sendData, setSendData] = useState<{ [key: string]: any }>()
+  const [sendData, setSendData] = useState<{ [key: string]: unknown }>()
 
   const PresetComponent = PRESET_TO_COMPONENT[preset]
 

@@ -113,7 +113,7 @@ async function getOptionChain(params: GetOptionChainParams) {
 
   const cacheKey = `optionChain.${symbol}`
 
-  const cachedChain: OptionChain = cache.get(cacheKey)
+  const cachedChain: OptionChain = cache.get(cacheKey) as OptionChain
 
   if (cachedChain && !noCache) return { ...cachedChain, _cached: true }
 
@@ -232,7 +232,7 @@ type GetMarketHoursParams = {
 async function getMarketHours(params: GetMarketHoursParams) {
   const { accessToken, markets = 'OPTION', noCache } = params
 
-  const cachedHours: MarketHours = cache.get('marketHours')
+  const cachedHours: MarketHours = cache.get('marketHours') as MarketHours
 
   if (cachedHours && !noCache) return { ...cachedHours, _cached: true }
 

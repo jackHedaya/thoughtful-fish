@@ -10,7 +10,7 @@ declare module 'http' {
   }
 }
 
-type DecodedCookie = { [key: string]: any }
+type DecodedCookie = { [key: string]: unknown }
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -90,7 +90,7 @@ type GetTokenParams = {
 }
 
 function getToken({ ctxOrReq, key }: GetTokenParams) {
-  const token = getDecodedCookie({ ctxOrReq, key })?.token
+  const token = getDecodedCookie({ ctxOrReq, key })?.token as string
 
   return token || null
 }
@@ -102,7 +102,7 @@ function getDecodedCookie({ ctxOrReq, key }: GetTokenParams) {
     // Prevent cookie from being parsed over and over again
     if (!req._cookies) req._cookies = parseCookies({ req })
 
-    let cookieJwt = req._cookies[key]
+    const cookieJwt = req._cookies[key]
 
     return jwt.verify(cookieJwt, JWT_SECRET) as DecodedCookie
   } catch (e) {

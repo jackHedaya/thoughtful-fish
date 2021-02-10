@@ -77,7 +77,9 @@ export default function SetupAccordion(props: SetupAccordionProps) {
               value: watchlistField,
               onChange: (e) => setWatchlistField(e.currentTarget.value),
             }}
-            onChange={(option) => props.setTickers(getTickersFromWatchlist(option.value))}
+            onChange={(option) =>
+              props.setTickers(getTickersFromWatchlist(option.value as Watchlist))
+            }
             loading={!error && !response}
           />
         ) : (

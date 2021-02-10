@@ -8,17 +8,17 @@ export default function flexCanvas(canvas: HTMLCanvasElement) {
   // let onScreenCVS: HTMLCanvasElement = document.getElementById(
   //   "onScreen"
   // ) as HTMLCanvasElement;
-  let onScreenCTX = canvas.getContext('2d')
+  const onScreenCTX = canvas.getContext('2d')
 
   //Set initial size of canvas. If using a non-square, make sure to set the ratio the same as the offscreen canvas by multiplying either the height or width by the correct ratio.
-  let rect = (canvas.parentNode as Element).getBoundingClientRect()
-  let baseDimension = setSize(rect)
+  const rect = (canvas.parentNode as Element).getBoundingClientRect()
+  const baseDimension = setSize(rect)
 
   canvas.width = baseDimension
   canvas.height = baseDimension
 
-  let img = new Image()
-  let source = canvas.toDataURL()
+  const img = new Image()
+  const source = canvas.toDataURL()
 
   //Once the image is loaded, draw the image onto the onscreen canvas.
   function renderImage(img: HTMLImageElement) {

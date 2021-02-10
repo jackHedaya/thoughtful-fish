@@ -11,7 +11,7 @@ export default async function watchlists(req: NextApiRequest, res: NextApiRespon
 
     const accountNumbers = [profile.primaryAccountId, ...profile.accounts.map((x) => x.accountId)]
 
-    let accountToWatchlist: { [num: string]: Watchlist[] } = {}
+    const accountToWatchlist: { [num: string]: Watchlist[] } = {}
 
     const promises = accountNumbers.map((accountNumber) =>
       ameritrade.watchlist

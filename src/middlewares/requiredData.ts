@@ -9,7 +9,7 @@ type Key =
 type TypeofValue = 'object' | 'boolean' | 'function' | 'number' | 'string' | 'undefined'
 
 export default async (req: NextApiRequest, keys: Key[]) => {
-  let data = req.method === 'GET' ? req.query : req.body
+  const data = req.method === 'GET' ? req.query : req.body
 
   keys.forEach((k) => {
     const validator =
@@ -30,4 +30,4 @@ export default async (req: NextApiRequest, keys: Key[]) => {
   })
 }
 
-const isKeyType = (x: any): x is { key: string; type: TypeofValue } => !!x?.type
+const isKeyType = (x: Record<string, unknown>): x is { key: string; type: TypeofValue } => !!x?.type

@@ -17,7 +17,7 @@ export default function Navbar() {
 }
 
 function NavItem(props: {
-  Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
+  Icon: OverridableComponent<SvgIconTypeMap<unknown, 'svg'>>
   to: string
 }) {
   const { Icon, to } = props
@@ -27,10 +27,7 @@ function NavItem(props: {
   const isSelected = router.asPath === to
 
   return (
-    <div
-      className={`item ${isSelected ? 'selected' : ''}`}
-      onClick={() => Router.push(to)}
-    >
+    <div className={`item ${isSelected ? 'selected' : ''}`} onClick={() => Router.push(to)}>
       <Icon className="icon" />
     </div>
   )

@@ -7,7 +7,6 @@ import {
   writeRefreshToken,
 } from '../../../lib/thoughtful-fish/session'
 
-
 export default async function callback(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code
 

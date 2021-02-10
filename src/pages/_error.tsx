@@ -1,7 +1,8 @@
 import React from 'react'
 import Error, { ErrorProps } from 'next/error'
 
-function CustomError({ statusCode }) {
+type CustomErrorProps = { statusCode: number }
+function CustomError({ statusCode }: CustomErrorProps) {
   return (
     <div className="content">
       <E statusCode={statusCode} />

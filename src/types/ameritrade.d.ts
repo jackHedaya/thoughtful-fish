@@ -49,7 +49,7 @@ type FullLinkedAccount = {
   accountCdDomainId: string
   company: string
   segment: string
-  surrogateIds: object
+  surrogateIds: Record<string, unknown>
   preferences: {
     expressTrading: boolean
     directOptionsRouting: boolean

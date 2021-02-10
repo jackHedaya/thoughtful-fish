@@ -49,7 +49,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     setSortByKey(key)
   }
 
-  const { data, error, response } = useRequest<HackerResult, string>({
+  const { data, error } = useRequest<HackerResult, string>({
     url: '/api/find_options',
     method: 'GET',
     params: { ...props, noCache },
@@ -59,7 +59,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const isPrettyLoading = usePrettyLoading(2000)
 
   const options = useMemo(() => {
-    let sorted = sorter(data?.options, sortByKey)
+    const sorted = sorter(data?.options, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
   }, [data?.options, sortByKey, sortDirection])
