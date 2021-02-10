@@ -1,5 +1,5 @@
-import NumberFormat, { NumberFormatProps } from 'react-number-format'
 import { TextField, TextFieldProps } from '@material-ui/core'
+import NumberFormat, { NumberFormatProps } from 'react-number-format'
 
 function NumberFormatCustom(props: NumberFormatProps) {
   const { inputRef, onChange, ...other } = props

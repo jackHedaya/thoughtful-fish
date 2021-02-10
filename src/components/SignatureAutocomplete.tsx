@@ -1,6 +1,6 @@
-import React, { CSSProperties } from 'react'
-import useAutocomplete from '@material-ui/lab/useAutocomplete'
 import { CircularProgress, TextField, TextFieldProps } from '@material-ui/core'
+import useAutocomplete from '@material-ui/lab/useAutocomplete'
+import React, { CSSProperties } from 'react'
 
 import s from '../styles/components/signature-autocomplete.module.scss'
 

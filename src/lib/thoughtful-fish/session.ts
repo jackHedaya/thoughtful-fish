@@ -1,6 +1,6 @@
+import jwt from 'jsonwebtoken'
 import { NextApiResponse } from 'next'
 import { parseCookies, setCookie } from 'nookies'
-import jwt from 'jsonwebtoken'
 
 import { isNextPageContext } from '../../types/assertions'
 

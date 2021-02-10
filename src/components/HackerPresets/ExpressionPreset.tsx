@@ -1,17 +1,15 @@
-import React from 'react'
 import { Button, capitalize, TextField, Tooltip } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
-
-import SetupAccordion from './SetupAccordion'
-import SignatureAccordion from '../SignatureAccordion'
-import SignatureButton from '../SignatureButton'
-import { PresetProps } from '../../pages/option-hacker'
+import React from 'react'
 
 import expressionKeywords from '../../lib/thoughtful-fish/expressionKeywords'
-
+import { PresetProps } from '../../pages/option-hacker'
 import useExpressionPresetState from '../../state/useExpressionPresetState'
-
 import s from '../../styles/components/option-preset.module.scss'
+import SignatureAccordion from '../SignatureAccordion'
+import SignatureButton from '../SignatureButton'
+
+import SetupAccordion from './SetupAccordion'
 
 export default function ExpressionPreset(props: PresetProps) {
   const [state, dispatch] = useExpressionPresetState()

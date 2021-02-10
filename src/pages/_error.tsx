@@ -1,5 +1,5 @@
-import React from 'react'
 import Error, { ErrorProps } from 'next/error'
+import React from 'react'
 
 type CustomErrorProps = { statusCode: number }
 function CustomError({ statusCode }: CustomErrorProps) {

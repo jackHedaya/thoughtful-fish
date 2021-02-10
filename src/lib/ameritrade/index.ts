@@ -1,5 +1,7 @@
-import a from 'axios'
 import q from 'querystring'
+
+import a from 'axios'
+
 import c from '../thoughtful-fish/cache'
 
 import formatSymbols from './formatSymbols'

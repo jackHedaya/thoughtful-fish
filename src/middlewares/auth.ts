@@ -1,5 +1,4 @@
-import { MIDDLEWARE_ERROR } from '.'
-
+import ameritrade from '../lib/ameritrade'
 import {
   getAccessToken,
   getProfile,
@@ -8,7 +7,7 @@ import {
   writeProfile,
 } from '../lib/thoughtful-fish/session'
 
-import ameritrade from '../lib/ameritrade'
+import { MIDDLEWARE_ERROR } from '.'
 
 declare module 'http' {
   interface IncomingMessage {

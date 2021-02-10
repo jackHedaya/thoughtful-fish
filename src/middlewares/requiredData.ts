@@ -1,4 +1,5 @@
 import { NextApiRequest } from 'next'
+
 import { MIDDLEWARE_ERROR } from '.'
 
 type Key =

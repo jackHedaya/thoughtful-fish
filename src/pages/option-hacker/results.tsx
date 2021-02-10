@@ -1,23 +1,20 @@
-import { useMemo, useState } from 'react'
 import q from 'querystring'
+
+import { TextField, Tooltip } from '@material-ui/core'
+import { ArrowDropDownSharp, ArrowDropUpSharp, InfoOutlined } from '@material-ui/icons'
+import { Autocomplete } from '@material-ui/lab'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { TextField, Tooltip } from '@material-ui/core'
-import { Autocomplete } from '@material-ui/lab'
-import { ArrowDropDownSharp, ArrowDropUpSharp, InfoOutlined } from '@material-ui/icons'
+import { useMemo, useState } from 'react'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
-
-import { returnRedirect, getSession } from '../../middlewares/auth'
-
-import useRequest from '../../hooks/useRequest'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
-
+import useRequest from '../../hooks/useRequest'
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
+import { getSession, returnRedirect } from '../../middlewares/auth'
+import s from '../../styles/pages/results.module.scss'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
-
-import s from '../../styles/pages/results.module.scss'
 
 type OptionHackerResultsProps = {
   tickers: string[]

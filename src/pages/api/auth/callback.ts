@@ -1,5 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-
 import ameritrade from '../../../lib/ameritrade'
 import {
   writeAccessToken,

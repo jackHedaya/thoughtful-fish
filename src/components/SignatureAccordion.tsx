@@ -1,7 +1,6 @@
-import { CSSProperties } from 'react'
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary } from '@material-ui/core'
-
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import { CSSProperties } from 'react'
 
 import s from '../styles/components/signature-accordion.module.scss'
 

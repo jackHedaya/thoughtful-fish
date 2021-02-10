@@ -1,5 +1,5 @@
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { CSSProperties } from 'react'
-import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
 
 type SignatureSelectProps = (ItemObjectProps | StringObjectProps) & {
   label?: string

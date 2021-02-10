@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react'
+
 import s from '../styles/components/signature-button.module.scss'
 
 type SignatureButtonProps = {

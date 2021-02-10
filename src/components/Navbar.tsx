@@ -1,10 +1,9 @@
-import Router, { useRouter } from 'next/router'
-
-import { OverridableComponent } from '@material-ui/core/OverridableComponent'
 import { SvgIconTypeMap } from '@material-ui/core'
+import { OverridableComponent } from '@material-ui/core/OverridableComponent'
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined'
-import ShowChartOutlinedIcon from '@material-ui/icons/ShowChartOutlined'
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined'
+import ShowChartOutlinedIcon from '@material-ui/icons/ShowChartOutlined'
+import Router, { useRouter } from 'next/router'
 
 export default function Navbar() {
   return (

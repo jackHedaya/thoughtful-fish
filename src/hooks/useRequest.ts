@@ -1,5 +1,5 @@
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import useSWR, { ConfigInterface, responseInterface } from 'swr'
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 
 export type GetRequest = AxiosRequestConfig | null
 
