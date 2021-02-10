@@ -10,7 +10,12 @@ The beautiful portal to help you invest
 
 ### Setup repository
 
+For cloning `stable`: 
+- `$ git clone --branch master https://github.com/jackHedaya/thoughtful-fish`
+
+For cloning `develop`:
 - `$ git clone https://github.com/jackHedaya/thoughtful-fish`
+
 - `$ cd thoughtful-fish && yarn`
 
 ### Setup development server
