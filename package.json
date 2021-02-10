@@ -6,7 +6,7 @@
     "dev": "node dev-server/index.js",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint '*/**/*.{js,ts,tsx}'  --fix"
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --fix"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.2",
