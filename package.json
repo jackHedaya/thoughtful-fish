@@ -6,7 +6,7 @@
     "dev": "node dev-server/index.js",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    "lint": "eslint '*/**/*.{js,ts,tsx}'  --fix"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.2",
@@ -34,6 +34,7 @@
     "@typescript-eslint/parser": "^4.15.0",
     "eslint": "^7.19.0",
     "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "husky": "^5.0.9",
