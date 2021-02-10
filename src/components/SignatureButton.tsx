@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react'
+
 import s from '../styles/components/signature-button.module.scss'
 
 type SignatureButtonProps = {
@@ -13,10 +14,7 @@ type SignatureButtonProps = {
 export default function SignatureButton(props: SignatureButtonProps) {
   return (
     <div style={props.style} className={props.className || ''}>
-      <div
-        className={`${s.button} ${s[props.type || 'outlined'] || ''}`}
-        onClick={props.onClick}
-      >
+      <div className={`${s.button} ${s[props.type || 'outlined'] || ''}`} onClick={props.onClick}>
         {props.children}
       </div>
     </div>

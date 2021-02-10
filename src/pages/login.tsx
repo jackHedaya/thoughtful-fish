@@ -1,16 +1,15 @@
-import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
 import { Paper } from '@material-ui/core'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 
 const Bubbles = dynamic(() => import('../components/BubbleBackground'), {
   ssr: false,
 })
 
-import useRequest from '../hooks/useRequest'
-
-import s from '../styles/pages/login.module.scss'
 import Loading from '../components/LoadingAnimation'
 import usePrettyLoading from '../hooks/usePrettyLoading'
+import useRequest from '../hooks/useRequest'
+import s from '../styles/pages/login.module.scss'
 
 export default function Login() {
   const Router = useRouter()

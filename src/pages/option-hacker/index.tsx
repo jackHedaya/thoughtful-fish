@@ -1,18 +1,15 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { IconButton, IconButtonProps, Slide } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
-
-import SignatureRadio from '../../components/SignatureRadio'
-import InstructionPanel from '../../components/InstructionPanel'
-import { PresetState } from '../../state/presetBase'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 
 import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
 import TargetPricePreset from '../../components/HackerPresets/TargetPricePreset'
-
+import InstructionPanel from '../../components/InstructionPanel'
+import SignatureRadio from '../../components/SignatureRadio'
 import { authOrPassSession } from '../../middlewares/auth'
-
+import { PresetState } from '../../state/presetBase'
 import s from '../../styles/pages/option-hacker.module.scss'
 
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
@@ -31,7 +28,7 @@ export default function OptionHacker() {
   const router = useRouter()
 
   const [preset, setPreset] = useState('Expression')
-  const [sendData, setSendData] = useState<{ [key: string]: any }>()
+  const [sendData, setSendData] = useState<{ [key: string]: unknown }>()
 
   const PresetComponent = PRESET_TO_COMPONENT[preset]
 

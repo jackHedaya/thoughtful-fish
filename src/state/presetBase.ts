@@ -15,14 +15,17 @@ export type PresetActionBase<State extends PresetStateBase> =
   | { type: 'set_tickers'; tickers: string[] }
   | { type: 'prepare_for_send' }
 
-export function presetReducerBase<Q extends PresetStateBase>(action: any, state: Q): Q | false {
+export function presetReducerBase<Q extends PresetStateBase>(
+  action: Record<string, unknown>,
+  state: Q
+): Q | false {
   switch (action.type) {
     case 'set_accordion_open':
       return {
         ...state,
         _accordionsOpen: {
           ...state._accordionsOpen,
-          [action.accordion]: action.open,
+          [action.accordion as string]: action.open,
         },
       }
     case 'set_tickers':

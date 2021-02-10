@@ -1,14 +1,11 @@
 import { TextField } from '@material-ui/core'
 
+import { PresetProps } from '../../pages/option-hacker'
+import useTargetPricePresetState from '../../state/useTargetPricePresetState'
+import s from '../../styles/components/option-preset.module.scss'
+import DollarTextField from '../DollarTextField'
 import SignatureAccordion from '../SignatureAccordion'
 import SignatureButton from '../SignatureButton'
-import DollarTextField from '../DollarTextField'
-
-import { PresetProps } from '../../pages/option-hacker'
-
-import useTargetPricePresetState from '../../state/useTargetPricePresetState'
-
-import s from '../../styles/components/option-preset.module.scss'
 
 export default function TargetPricePreset(props: PresetProps) {
   const [state, dispatch] = useTargetPricePresetState()

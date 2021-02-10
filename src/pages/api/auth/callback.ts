@@ -1,12 +1,9 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-
 import ameritrade from '../../../lib/ameritrade'
 import {
   writeAccessToken,
   writeProfile,
   writeRefreshToken,
 } from '../../../lib/thoughtful-fish/session'
-
 
 export default async function callback(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code

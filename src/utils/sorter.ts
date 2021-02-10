@@ -1,4 +1,4 @@
-export default function sorter<T extends { [key: string]: any }>(array: T[], key: string) {
+export default function sorter<T extends Record<string, unknown>>(array: T[], key: string) {
   if (array === undefined) return undefined
   if (key === null) return array
 

@@ -1,8 +1,8 @@
-import { createContext } from 'react'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import type { AppProps } from 'next/app'
 import Router, { useRouter } from 'next/router'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core'
 import NProgress from 'nprogress'
+import { createContext } from 'react'
 
 import Navbar from '../components/Navbar'
 

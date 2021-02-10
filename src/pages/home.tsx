@@ -1,5 +1,6 @@
 import { NextPageContext } from 'next'
 import Head from 'next/head'
+
 import { authOrPassSession } from '../middlewares/auth'
 import styles from '../styles/pages/home.module.scss'
 

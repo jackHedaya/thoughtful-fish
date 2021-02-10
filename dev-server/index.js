@@ -1,5 +1,7 @@
-var https = require('https')
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 var fs = require('fs')
+var https = require('https')
 
 const next = require('next')
 const port = process.env.PORT || 3000
