@@ -12,6 +12,9 @@ module.exports = {
       version: 'detect', // Tells eslint-plugin-react to automatically detect the version of React to use
     },
   },
+  globals: {
+    React: 'writeable',
+  },
   extends: [
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
@@ -21,5 +24,8 @@ module.exports = {
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
+    'react/react-in-jsx-scope': 'off',
+    'react/no-unescaped-entities': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
   },
 }
