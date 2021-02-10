@@ -75,7 +75,11 @@ export function returnRedirect(ctx: NextPageContext) {
   return {
     redirect: {
       permanent: false,
-      destination: `/login?route=${ctx.req.url}`,
+      destination: redirectUrl(ctx.req.url),
     },
   }
+}
+
+export function redirectUrl(route: string) {
+  return `/login?route=${route}`
 }
