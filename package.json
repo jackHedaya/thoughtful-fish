@@ -19,6 +19,7 @@
     "nprogress": "^0.2.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-draggable": "^4.4.3",
     "react-number-format": "^4.4.4",
     "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.4",
