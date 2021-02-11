@@ -1,4 +1,8 @@
-import { expressionPreset, targetPricePreset } from '../../lib/thoughtful-fish/findOptions'
+import {
+  expressionPreset,
+  targetPricePreset,
+  volatilityPreset,
+} from '../../lib/thoughtful-fish/findOptions'
 import { auth, requiredData, transformData } from '../../middlewares'
 import { getSession } from '../../middlewares/auth'
 
@@ -10,6 +14,7 @@ const PRESET_TO_FUNCTION: {
 } = {
   'Target Price': targetPricePreset,
   Expression: expressionPreset,
+  Volatility: volatilityPreset,
 }
 
 export default async function findOptions(req: NextApiRequest, res: NextApiResponse) {
@@ -34,6 +39,7 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
     if (preset === 'Target Price') await requiredData(req, [{ key: 'targetPrice', type: 'number' }])
     else if (preset === 'Expression')
       await requiredData(req, [{ key: 'expressions', validator: stringOrStringArray }])
+    // Other preset required data goes here
 
     const accessToken = getSession(req)?.accessToken
 

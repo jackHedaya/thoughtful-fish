@@ -14,4 +14,10 @@ export default {
     { label: 'Return On Target', key: 'returnOnTarget' },
     { label: 'Days to Expiration', key: 'daysToExpiration' },
   ],
+  Volatility: [
+    { label: 'Underlying Symbol', key: 'underlyingSymbol' },
+    { label: 'Symbol', key: 'symbol' },
+    { label: 'Volatility', key: 'volatility' },
+    { label: 'Expiration Date', key: 'formattedExpirationDate' },
+  ],
 }

@@ -1,3 +1,4 @@
+import moment from 'moment'
 import safeEval from 'safe-eval'
 
 import ameritrade from '../ameritrade'
@@ -30,7 +31,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
 
   // Combines expressions if given as array
   const expression = typeof exp === 'string' ? exp : exp.join(' && ')
-
+  console.log(expression)
   const foundOptions: Option[] = []
 
   const promises = []
@@ -41,6 +42,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
     const p = ameritrade.symbol
       .getOptionChain({ symbol: ticker, type: options.type, accessToken, noCache })
       .then((data) => {
+        console.log('Recieved chain')
         // This symbol does not have options available
         if (data.status === 'FAILED') return
 
@@ -157,5 +159,27 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
         // Disable eslint for this line because defining variable for exclusion
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(({ rot, ...o }) => (o as unknown) as OptionExtension),
+  })
+}
+
+export function volatilityPreset(tickers: string[], options: PresetParams) {
+  return findOptions(tickers, {
+    ...options,
+    expressions: [
+      // Gets only the options within 10% of the underlying price
+      `option.strikePrice / underlying.mark < 1.1`,
+      `option.strikePrice / underlying.mark > 0.9`,
+    ],
+    onQueryComplete: (ops) => {
+      // Bit of magic to get unique items from property value
+      // Gets one option per expirationDate because as a representation of volatility
+      return ops
+        .filter((e, i) => ops.findIndex((a) => a.expirationDate === e.expirationDate) === i)
+        .map((x) => ({
+          ...x,
+          underlyingSymbol: x.symbol.match(/([A-Z]*)_/)?.[1],
+          formattedExpirationDate: moment(x.expirationDate).toLocaleString(),
+        }))
+    },
   })
 }
