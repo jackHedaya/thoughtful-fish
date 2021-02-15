@@ -2,6 +2,32 @@
 
 $content-indent: 20px;
 
+// Cell style variables
+
+$cell-padding-width: 15px;
+$cell-padding-height: 10px;
+$cell-margin-height: 3px;
+$cell-border-thickness: 1px;
+$cell-font-size: 15px;
+
+// Header style variables
+
+$header-padding-width: 15px;
+$header-padding-height: 10px;
+$header-border-thickness: 1px;
+$header-font-size: 17px;
+
+// Calculated variables for use in virtualized table
+
+$header-height: ($header-padding-height * 2) + ($header-border-thickness * 2) + $header-font-size;
+$row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-font-size +
+  ($cell-margin-height * 2) + 2;
+
+:export {
+  headerHeight: $header-height;
+  rowHeight: $row-height;
+}
+
 .resultsTitle {
   margin-top: 10px;
   margin-bottom: 20px;
@@ -31,7 +57,6 @@ $content-indent: 20px;
 }
 
 .results {
-  // position: relative;
   padding-left: $content-indent;
 
   width: 100%;
@@ -52,22 +77,43 @@ $content-indent: 20px;
     margin: 20px 0;
   }
 
-  thead {
-    .noSort {
-      padding-left: 27px;
-      padding-right: 27px;
-    }
-  }
-
-  table {
+  .table {
     width: 100%;
-    border-collapse: separate;
+    height: 100%;
 
-    th,
-    td {
+    .tableGrid,
+    &:focus {
+      outline: none !important;
+    }
+
+    .header {
+      padding: $header-padding-height $header-padding-width;
+
+      color: $signature-red;
+      height: $header-height;
+      border: $header-border-thickness solid $soft-black;
+      text-align: center;
+
+      flex-grow: 1;
+
+      min-width: 110px;
+      overflow: hidden;
+
+      align-items: center;
+    }
+
+    .cell {
       position: relative;
-      border: 1px solid $soft-black;
-      padding: 10px 15px;
+      align-items: stretch;
+      border: $cell-border-thickness solid $soft-black;
+
+      padding: $header-padding-height $header-padding-width;
+      padding-right: 0;
+
+      flex-grow: 1;
+
+      min-width: 110px;
+      overflow: hidden;
 
       .itm {
         position: absolute;
@@ -83,16 +129,37 @@ $content-indent: 20px;
         font-weight: bold;
       }
     }
-
-    th {
-      color: $signature-red;
-    }
-
-    td {
-      &.symbol:hover {
-        cursor: pointer;
-        color: $signature-red;
-      }
-    }
   }
+}
+
+$drag-handle-size: 30px;
+
+.dragHandle {
+  flex: 0 0 $drag-handle-size;
+  z-index: 2;
+  cursor: col-resize;
+  color: #0085ff;
+  transform: translate(15px, 1.5px);
+
+  &:hover {
+    color: $signature-red;
+  }
+}
+
+.dragHandleActive,
+.dragHandleActive:hover {
+  color: $signature-red;
+  z-index: 3;
+}
+
+.dragHandleIcon {
+  flex: 0 0 $drag-handle-size;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.headerTruncated {
+  flex: auto;
 }

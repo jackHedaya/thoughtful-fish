@@ -1,10 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import q from 'querystring'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { Table, Column, CellMeasurer, CellMeasurerCache } from 'react-virtualized'
+import AutoSizer from 'react-virtualized-auto-sizer'
+import Draggable from 'react-draggable'
 import { TextField, Tooltip } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
-import { ArrowDropDownSharp, ArrowDropUpSharp, InfoOutlined } from '@material-ui/icons'
+import {
+  ArrowDropDownSharp,
+  ArrowDropUpSharp,
+  DragIndicator,
+  InfoOutlined,
+} from '@material-ui/icons'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 
@@ -15,6 +23,7 @@ import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
 import useRequest from '../../hooks/useRequest'
 
+import 'react-virtualized/styles.css'
 import s from '../../styles/pages/results.module.scss'
 
 type OptionHackerResultsProps = {
@@ -47,7 +56,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     setSortByKey(key)
   }
 
-  const { data, error, response } = useRequest<HackerResult, string>({
+  const { data, error } = useRequest<HackerResult, string>({
     url: '/api/find_options',
     method: 'GET',
     params: { ...props, noCache },
@@ -169,68 +178,98 @@ function OptionTable(props: OptionTableProps) {
 
   const router = useRouter()
 
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
+    headers.reduce((p, a) => ({ ...p, [a.key]: 1 / headers.length }), {})
+  )
+
   function chartOption(symbol: string) {
     router.push(`/chart/${symbol}`)
   }
 
+  type HeaderRendererProps = {
+    dataKey: string
+    label: string
+    columnData: { totalWidth: number; index: number }
+  }
+
+  function HeaderRenderer(props: HeaderRendererProps) {
+    const { dataKey, label, columnData } = props
+
+    const resizeRow = ({ dataKey, deltaX }) => {
+      const percentDelta = deltaX / columnData.totalWidth
+
+      const nextDataKey = headers[columnData.index + 1].key
+
+      setColumnWidths({
+        ...columnWidths,
+        [dataKey]: columnWidths[dataKey] + percentDelta,
+        [nextDataKey]: columnWidths[nextDataKey] - percentDelta,
+      })
+    }
+
+    return (
+      <Fragment key={dataKey}>
+        <div className={s.headerTruncated}>{label}</div>
+        {columnData.index !== headers.length - 1 && (
+          <Draggable
+            axis="x"
+            defaultClassName={s.dragHandle}
+            defaultClassNameDragging={s.dragHandleActive}
+            onDrag={(event, { deltaX }) =>
+              resizeRow({
+                dataKey,
+                deltaX,
+              })
+            }
+            position={{ x: 0, y: 0 }}
+          >
+            <DragIndicator className={s.dragHandleIcon} />
+          </Draggable>
+        )}
+      </Fragment>
+    )
+  }
+
   return (
-    <table>
-      <thead>
-        <tr style={{ minWidth: '49px' }}>
-          {headers.map(({ label, key }) => (
-            <th
-              className={key !== sortByKey ? s.noSort : undefined}
-              key={`Header/${label}`}
-              onClick={() => onSort(key)}
+    <div className={s.table}>
+      <AutoSizer>
+        {({ width, height }) => {
+          return (
+            <Table
+              width={width}
+              height={height}
+              headerHeight={parseInt(s.headerHeight)}
+              rowCount={options.length}
+              rowHeight={getPixelNumber(s.rowHeight)}
+              rowGetter={({ index }) => options[index]}
+              className={s.tableGrid}
+              headerClassName={s.header}
             >
-              {label}
-              <SortIcon isActive={key === sortByKey} direction={sortDirection} />
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {
-          /* Header logic: Loop over every option and generate a row.
-           * Inside each row, generate table data by taking each given header key and
-           * accessing the option value for that key
-           */
-          options.map((option, i) => (
-            <tr key={`Row/${i}`}>
-              {headers.map(({ key }) => (
-                <td
-                  onClick={() => key === 'symbol' && chartOption(option.symbol)}
-                  className={key === 'symbol' ? s.symbol : undefined}
-                  key={`RowData/${i}/${key}`}
-                >
-                  {key === 'symbol' && option.inTheMoney ? <div className={s.itm}>ITM</div> : null}
+              {headers.map(({ key, label }, index) => (
+                <Column
+                  className={s.cell}
+                  label={label}
+                  width={columnWidths[key] * width}
+                  dataKey={key}
+                  columnData={{ totalWidth: width, index }}
+                  headerRenderer={HeaderRenderer}
+                  cellRenderer={({ rowData: option }) => (
+                    <span className={key === 'symbol' ? s.symbol : undefined}>
+                      {key === 'symbol' && option.inTheMoney ? (
+                        <div className={s.itm}>ITM</div>
+                      ) : null}
 
-                  {option[key]?.toString()}
-                </td>
+                      {option[key]}
+                    </span>
+                  )}
+                  key={`Column/${key}`}
+                />
               ))}
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  )
-}
-
-function SortIcon(props: { isActive: boolean; direction: string }) {
-  const { isActive, direction } = props
-
-  return (
-    <span className="icon">
-      {isActive ? (
-        direction === 'DESC' ? (
-          <ArrowDropDownSharp />
-        ) : (
-          <ArrowDropUpSharp />
-        )
-      ) : (
-        <div style={{ height: '24px', display: 'inline-block' }}></div>
-      )}
-    </span>
+            </Table>
+          )
+        }}
+      </AutoSizer>
+    </div>
   )
 }
 
@@ -253,6 +292,8 @@ const generateTickersTitle = (tickers: string[]) => {
 
   return `${tickers.slice(0, MAX_SHOWN).join(', ')} and ${tickers.length - MAX_SHOWN} more`
 }
+
+const getPixelNumber = (px: string) => parseFloat(px.match(/(\d*)px/)?.[1]) || null
 
 export async function getServerSideProps(ctx: NextPageContext) {
   await auth(ctx.req as NextApiRequest, ctx.res as NextApiResponse)
