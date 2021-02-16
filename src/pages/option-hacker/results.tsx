@@ -1,18 +1,12 @@
 import q from 'querystring'
 
 import { TextField, Tooltip } from '@material-ui/core'
-import {
-  ArrowDropDownSharp,
-  ArrowDropUpSharp,
-  DragIndicator,
-  InfoOutlined,
-} from '@material-ui/icons'
+import { InfoOutlined } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import Draggable from 'react-draggable'
-import { Column, SortDirection, SortDirectionType, Table } from 'react-virtualized'
-import AutoSizer from 'react-virtualized-auto-sizer'
+import { useMemo, useState } from 'react'
+import { SortDirection, SortDirectionType } from 'react-virtualized'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
@@ -22,7 +16,8 @@ import { getSession, returnRedirect } from '../../middlewares/auth'
 import s from '../../styles/pages/results.module.scss'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
-import 'react-virtualized/styles.css'
+
+const OptionTable = dynamic(() => import('../../components/OptionTable'))
 
 type OptionHackerResultsProps = {
   tickers: string[]
@@ -158,146 +153,6 @@ function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<
   )
 }
 
-type OptionTableProps = {
-  headers: TableHeader[]
-  options: Partial<OptionExtension>[]
-  sortBy: string
-  sortDirection: 'ASC' | 'DESC' | null
-  onSort: (sortBy: string) => void
-}
-type TableHeader = { label: string; key: string }
-
-function OptionTable(props: OptionTableProps) {
-  const { headers, options, sortBy, onSort, sortDirection } = props
-
-  const cellMinWidth = headers.length * getPixelNumber(s.cellMinWidth)
-  const wrapperRef = useRef(null)
-
-  // Needed to prevent a bug where overflow changing hides columns
-  useEffect(() => {
-    wrapperRef.current?.scrollTo(0, 0)
-  }, [wrapperRef.current?.isScrollable])
-
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({})
-
-  /** Resets column widths on header added */
-  useEffect(() => {
-    setColumnWidths(
-      headers.reduce(
-        (p, a) => ({
-          ...p,
-          [a.key]: 1 / headers.length,
-        }),
-        {}
-      )
-    )
-  }, [headers.length])
-
-  type HeaderRendererProps = {
-    dataKey: string
-    label: string
-    columnData: { totalWidth: number; index: number }
-  }
-
-  function HeaderRenderer(props: HeaderRendererProps) {
-    const { dataKey, label, columnData } = props
-
-    const resizeRow = ({ dataKey, deltaX }) => {
-      const percentDelta = deltaX / columnData.totalWidth
-
-      const nextDataKey = headers[columnData.index + 1].key
-
-      setColumnWidths({
-        ...columnWidths,
-        [dataKey]: columnWidths[dataKey] + percentDelta,
-        [nextDataKey]: columnWidths[nextDataKey] - percentDelta,
-      })
-    }
-
-    return (
-      <Fragment key={dataKey}>
-        <div className={s.headerTruncated}>{label}</div>
-        {sortBy === dataKey ? (
-          sortDirection === SortDirection.ASC ? (
-            <ArrowDropUpSharp />
-          ) : (
-            <ArrowDropDownSharp />
-          )
-        ) : null}
-
-        {columnData.index !== headers.length - 1 && (
-          <Draggable
-            axis="x"
-            defaultClassName={s.dragHandle}
-            defaultClassNameDragging={s.dragHandleActive}
-            onDrag={(event, { deltaX }) =>
-              resizeRow({
-                dataKey,
-                deltaX,
-              })
-            }
-            position={{ x: 0, y: 0 }}
-          >
-            <DragIndicator className={s.dragHandleIcon} />
-          </Draggable>
-        )}
-      </Fragment>
-    )
-  }
-
-  return (
-    <div className={s.table} ref={wrapperRef}>
-      <AutoSizer>
-        {({ width, height }) => {
-          // This is needed to prevent a bug where overflow is changed and the scrollbar is stuck
-          if (width < cellMinWidth) wrapperRef.current.isScrollable = true
-          else wrapperRef.current.isScrollable = false
-
-          return (
-            <Table
-              // Subtract of 5 to account for border thickness causing unnecessary scroll
-              width={width < cellMinWidth ? cellMinWidth : width - 5}
-              height={height}
-              headerHeight={parseInt(s.headerHeight)}
-              onHeaderClick={(h) => h.dataKey}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              sort={({ sortBy }) => onSort(sortBy)}
-              rowCount={options.length}
-              rowHeight={getPixelNumber(s.rowHeight)}
-              rowGetter={({ index }) => options[index]}
-              className={s.tableGrid}
-              headerClassName={s.header}
-            >
-              {headers.map(({ key, label }, index) => (
-                <Column
-                  className={`${s.cell} ${sortBy === key ? s.sortingBy : undefined}`}
-                  label={label}
-                  width={columnWidths[key] * width}
-                  dataKey={key}
-                  columnData={{ totalWidth: width, index }}
-                  headerRenderer={HeaderRenderer}
-                  headerClassName={sortBy === key ? s.sortingBy : undefined}
-                  cellRenderer={({ rowData: option }) => (
-                    <span className={key === 'symbol' ? s.symbol : undefined}>
-                      {key === 'symbol' && option.inTheMoney ? (
-                        <div className={s.itm}>ITM</div>
-                      ) : null}
-
-                      {option[key]}
-                    </span>
-                  )}
-                  key={`Column/${key}`}
-                />
-              ))}
-            </Table>
-          )
-        }}
-      </AutoSizer>
-    </div>
-  )
-}
-
 const camelCaseToTitle = (str: string) => {
   const result = str.replace(/([A-Z])/g, ' $1')
   const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
@@ -317,8 +172,6 @@ const generateTickersTitle = (tickers: string[]) => {
 
   return `${tickers.slice(0, MAX_SHOWN).join(', ')} and ${tickers.length - MAX_SHOWN} more`
 }
-
-const getPixelNumber = (px: string) => parseFloat(px.match(/(\d*)px/)?.[1]) || null
 
 export async function getServerSideProps(ctx: NextPageContext) {
   const session = getSession(ctx)
