@@ -1,11 +1,18 @@
 import q from 'querystring'
 
 import { TextField, Tooltip } from '@material-ui/core'
-import { ArrowDropDownSharp, ArrowDropUpSharp, InfoOutlined } from '@material-ui/icons'
+import {
+  ArrowDropDownSharp,
+  ArrowDropUpSharp,
+  DragIndicator,
+  InfoOutlined,
+} from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import Draggable from 'react-draggable'
+import { Column, SortDirection, SortDirectionType, Table } from 'react-virtualized'
+import AutoSizer from 'react-virtualized-auto-sizer'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
@@ -15,6 +22,7 @@ import { getSession, returnRedirect } from '../../middlewares/auth'
 import s from '../../styles/pages/results.module.scss'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
+import 'react-virtualized/styles.css'
 
 type OptionHackerResultsProps = {
   tickers: string[]
@@ -28,13 +36,13 @@ type HeaderOption = { key: string; label: string }
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const [noCache, setNoCache] = useState(false)
   const [sortByKey, setSortByKey] = useState(null)
-  const [sortDirection, setSortDirection] = useState<'DESC' | 'ASC' | null>('DESC')
+  const [sortDirection, setSortDirection] = useState<SortDirectionType>(SortDirection.DESC)
 
-  const handleSort = (key: string) => {
-    if (sortByKey === key) {
-      if (sortDirection === 'DESC') setSortDirection('ASC')
+  const handleSort = (sortBy: string) => {
+    if (sortByKey === sortBy) {
+      if (sortDirection === SortDirection.DESC) setSortDirection(SortDirection.ASC)
 
-      if (sortDirection === 'ASC') {
+      if (sortDirection === SortDirection.ASC) {
         setSortDirection(null)
         setSortByKey(null)
       }
@@ -42,8 +50,8 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       return
     }
 
-    setSortDirection('DESC')
-    setSortByKey(key)
+    setSortDirection(SortDirection.DESC)
+    setSortByKey(sortBy)
   }
 
   const { data, error } = useRequest<HackerResult, string>({
@@ -56,6 +64,8 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const isPrettyLoading = usePrettyLoading(2000)
 
   const options = useMemo(() => {
+    if (sortDirection === null) return data?.options
+
     const sorted = sorter(data?.options, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
@@ -71,7 +81,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const tickersTitle = generateTickersTitle(props.tickers)
 
   return (
-    <div className="content">
+    <div className={`content ${s.content}`}>
       <Head>
         <title>Thoughtful Fish | {tickersTitle} Results</title>
       </Head>
@@ -116,7 +126,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
             <OptionTable
               headers={displayHeaders}
               options={options}
-              sortByKey={sortByKey}
+              sortBy={sortByKey}
               onSort={handleSort}
               sortDirection={sortDirection}
             />
@@ -151,79 +161,140 @@ function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<
 type OptionTableProps = {
   headers: TableHeader[]
   options: Partial<OptionExtension>[]
-  sortByKey: string
+  sortBy: string
   sortDirection: 'ASC' | 'DESC' | null
-  onSort: (key: string) => void
+  onSort: (sortBy: string) => void
 }
 type TableHeader = { label: string; key: string }
 
 function OptionTable(props: OptionTableProps) {
-  const { headers, options, sortByKey, onSort, sortDirection } = props
+  const { headers, options, sortBy, onSort, sortDirection } = props
 
-  const router = useRouter()
+  const cellMinWidth = headers.length * getPixelNumber(s.cellMinWidth)
+  const wrapperRef = useRef(null)
 
-  function chartOption(symbol: string) {
-    router.push(`/chart/${symbol}`)
+  // Needed to prevent a bug where overflow changing hides columns
+  useEffect(() => {
+    wrapperRef.current?.scrollTo(0, 0)
+  }, [wrapperRef.current?.isScrollable])
+
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({})
+
+  /** Resets column widths on header added */
+  useEffect(() => {
+    setColumnWidths(
+      headers.reduce(
+        (p, a) => ({
+          ...p,
+          [a.key]: 1 / headers.length,
+        }),
+        {}
+      )
+    )
+  }, [headers.length])
+
+  type HeaderRendererProps = {
+    dataKey: string
+    label: string
+    columnData: { totalWidth: number; index: number }
+  }
+
+  function HeaderRenderer(props: HeaderRendererProps) {
+    const { dataKey, label, columnData } = props
+
+    const resizeRow = ({ dataKey, deltaX }) => {
+      const percentDelta = deltaX / columnData.totalWidth
+
+      const nextDataKey = headers[columnData.index + 1].key
+
+      setColumnWidths({
+        ...columnWidths,
+        [dataKey]: columnWidths[dataKey] + percentDelta,
+        [nextDataKey]: columnWidths[nextDataKey] - percentDelta,
+      })
+    }
+
+    return (
+      <Fragment key={dataKey}>
+        <div className={s.headerTruncated}>{label}</div>
+        {sortBy === dataKey ? (
+          sortDirection === SortDirection.ASC ? (
+            <ArrowDropUpSharp />
+          ) : (
+            <ArrowDropDownSharp />
+          )
+        ) : null}
+
+        {columnData.index !== headers.length - 1 && (
+          <Draggable
+            axis="x"
+            defaultClassName={s.dragHandle}
+            defaultClassNameDragging={s.dragHandleActive}
+            onDrag={(event, { deltaX }) =>
+              resizeRow({
+                dataKey,
+                deltaX,
+              })
+            }
+            position={{ x: 0, y: 0 }}
+          >
+            <DragIndicator className={s.dragHandleIcon} />
+          </Draggable>
+        )}
+      </Fragment>
+    )
   }
 
   return (
-    <table>
-      <thead>
-        <tr style={{ minWidth: '49px' }}>
-          {headers.map(({ label, key }) => (
-            <th
-              className={key !== sortByKey ? s.noSort : undefined}
-              key={`Header/${label}`}
-              onClick={() => onSort(key)}
+    <div className={s.table} ref={wrapperRef}>
+      <AutoSizer>
+        {({ width, height }) => {
+          // This is needed to prevent a bug where overflow is changed and the scrollbar is stuck
+          if (width < cellMinWidth) wrapperRef.current.isScrollable = true
+          else wrapperRef.current.isScrollable = false
+
+          return (
+            <Table
+              // Subtract of 5 to account for border thickness causing unnecessary scroll
+              width={width < cellMinWidth ? cellMinWidth : width - 5}
+              height={height}
+              headerHeight={parseInt(s.headerHeight)}
+              onHeaderClick={(h) => h.dataKey}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              sort={({ sortBy }) => onSort(sortBy)}
+              rowCount={options.length}
+              rowHeight={getPixelNumber(s.rowHeight)}
+              rowGetter={({ index }) => options[index]}
+              className={s.tableGrid}
+              headerClassName={s.header}
             >
-              {label}
-              <SortIcon isActive={key === sortByKey} direction={sortDirection} />
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {
-          /* Header logic: Loop over every option and generate a row.
-           * Inside each row, generate table data by taking each given header key and
-           * accessing the option value for that key
-           */
-          options.map((option, i) => (
-            <tr key={`Row/${i}`}>
-              {headers.map(({ key }) => (
-                <td
-                  onClick={() => key === 'symbol' && chartOption(option.symbol)}
-                  className={key === 'symbol' ? s.symbol : undefined}
-                  key={`RowData/${i}/${key}`}
-                >
-                  {key === 'symbol' && option.inTheMoney ? <div className={s.itm}>ITM</div> : null}
+              {headers.map(({ key, label }, index) => (
+                <Column
+                  className={`${s.cell} ${sortBy === key ? s.sortingBy : undefined}`}
+                  label={label}
+                  width={columnWidths[key] * width}
+                  dataKey={key}
+                  columnData={{ totalWidth: width, index }}
+                  headerRenderer={HeaderRenderer}
+                  headerClassName={sortBy === key ? s.sortingBy : undefined}
+                  cellRenderer={({ rowData: option }) => (
+                    <span className={key === 'symbol' ? s.symbol : undefined}>
+                      {key === 'symbol' && option.inTheMoney ? (
+                        <div className={s.itm}>ITM</div>
+                      ) : null}
 
-                  {option[key]?.toString()}
-                </td>
+                      {option[key]}
+                    </span>
+                  )}
+                  key={`Column/${key}`}
+                />
               ))}
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  )
-}
-
-function SortIcon(props: { isActive: boolean; direction: string }) {
-  const { isActive, direction } = props
-
-  return (
-    <span className="icon">
-      {isActive ? (
-        direction === 'DESC' ? (
-          <ArrowDropDownSharp />
-        ) : (
-          <ArrowDropUpSharp />
-        )
-      ) : (
-        <div style={{ height: '24px', display: 'inline-block' }}></div>
-      )}
-    </span>
+            </Table>
+          )
+        }}
+      </AutoSizer>
+    </div>
   )
 }
 
@@ -246,6 +317,8 @@ const generateTickersTitle = (tickers: string[]) => {
 
   return `${tickers.slice(0, MAX_SHOWN).join(', ')} and ${tickers.length - MAX_SHOWN} more`
 }
+
+const getPixelNumber = (px: string) => parseFloat(px.match(/(\d*)px/)?.[1]) || null
 
 export async function getServerSideProps(ctx: NextPageContext) {
   const session = getSession(ctx)

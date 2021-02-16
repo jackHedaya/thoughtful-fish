@@ -3,6 +3,8 @@
 
 @import './fonts/sitara.scss';
 
+@import './library-override.scss';
+
 html,
 body {
   padding: 0;
@@ -27,17 +29,6 @@ h3,
 h4,
 h5 {
   margin: 0;
-}
-
-#nprogress {
-  .bar {
-    background: $signature-red !important;
-  }
-
-  .spinner-icon {
-    border-top-color: $signature-red !important;
-    border-left-color: $signature-red !important;
-  }
 }
 
 .app {
