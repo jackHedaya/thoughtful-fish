@@ -2,38 +2,12 @@
 
 The beautiful portal to help you invest
 
-## Development
+**This branch is used to analyze Nextjs builds**
 
-### Install needed dependencies
+This could be done with the following commands
 
-- `$ brew install mkcert nss`
-
-### Setup repository
-
-#### Cloning
-
-- `stable`: `$ git clone --branch master https://github.com/jackHedaya/thoughtful-fish`
-- `develop`: `$ git clone https://github.com/jackHedaya/thoughtful-fish`
-
-#### Dependencies
-
+- `$ git clone --branch webpack-analyze https://github.com/jackHedaya/thoughtful-fish`
 - `$ cd thoughtful-fish && yarn`
-
-### Setup development server
-
-These steps are needed to configure SSL on localhost
-
-- `$ mkcert -install`
-- `$ cd dev-server && mkcert localhost`
-- `$ cp "$(mkcert -CAROOT)/rootCA.pem" ./`
-
-### Configure `.env.local`
-
-- `$ touch .env.local`
-- Populate `.env.local` with `CONSUMER_KEY`, `JWT_SECRET`, and `NODE_TLS_REJECT_UNAUTHORIZED=0`
-
-### Running
-
-_Make sure you are in root folder at this point_
-
-- `$ yarn dev`
+- `$ ANALYZE=true yarn build`
+- `$ cd .next/analyze && npx http-server'
+- Navigate to url
