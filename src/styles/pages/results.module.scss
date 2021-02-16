@@ -28,6 +28,12 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
   rowHeight: $row-height;
 }
 
+.content {
+  // All content goes in here
+  display: flex;
+  flex-direction: column;
+}
+
 .resultsTitle {
   margin-top: 10px;
   margin-bottom: 20px;
@@ -58,9 +64,11 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 
 .results {
   padding-left: $content-indent;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 
   width: 100%;
-  height: 80%;
 
   .loader,
   .errorMessage {
@@ -81,6 +89,8 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
     width: 100%;
     height: 100%;
 
+    flex: 1;
+
     .tableGrid,
     &:focus {
       outline: none !important;
@@ -94,11 +104,6 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
       border: $header-border-thickness solid $soft-black;
       text-align: center;
 
-      flex-grow: 1;
-
-      min-width: 110px;
-      overflow: hidden;
-
       align-items: center;
     }
 
@@ -109,11 +114,6 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 
       padding: $header-padding-height $header-padding-width;
       padding-right: 0;
-
-      flex-grow: 1;
-
-      min-width: 110px;
-      overflow: hidden;
 
       .itm {
         position: absolute;
@@ -128,6 +128,14 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
         font-size: 0.75em;
         font-weight: bold;
       }
+    }
+
+    .header,
+    .cell {
+      flex-grow: 1;
+
+      min-width: 110px;
+      overflow: hidden;
     }
   }
 }

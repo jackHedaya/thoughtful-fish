@@ -87,7 +87,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const tickersTitle = generateTickersTitle(props.tickers)
 
   return (
-    <div className="content">
+    <div className={`content ${s.content}`}>
       <Head>
         <title>Thoughtful Fish | {tickersTitle} Results</title>
       </Head>
