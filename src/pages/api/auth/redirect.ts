@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import q from 'querystring'
+
+import { NextApiRequest, NextApiResponse } from 'next'
 
 import ameritrade from '../../../lib/ameritrade'
 

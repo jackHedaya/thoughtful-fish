@@ -1,6 +1,8 @@
 import moment from 'moment'
 
 declare global {
+  // Needed to augment global
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
       cache: ThoughtfulCache
@@ -9,9 +11,7 @@ declare global {
 }
 
 class ThoughtfulCache {
-  private cache: { [key: string]: { value: any; expiration: string } } = {}
-
-  constructor() {}
+  private cache: { [key: string]: { value: unknown; expiration: string } } = {}
 
   get(key: string) {
     const cached = this.cache[key]
@@ -21,7 +21,7 @@ class ThoughtfulCache {
     return cached.value
   }
 
-  set(key: string, value: any, expiration?: string) {
+  set(key: string, value: unknown, expiration?: string) {
     if (this.isExpired(expiration)) throw 'Unable to set expiration to past values'
 
     this.cache[key] = { value, expiration }

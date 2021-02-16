@@ -9,8 +9,8 @@ class Bubble {
   posX: number
   posY: number
 
-  movementX: any
-  movementY: any
+  movementX: number
+  movementY: number
 
   size: number
 
@@ -83,7 +83,10 @@ export default class Background {
   }
 
   animate() {
-    let self = this
+    // Not really sure how this animation process works so silencing linter
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this
+
     self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height)
     self.bubblesList.forEach(function (bubble) {
       bubble.update()
@@ -106,7 +109,10 @@ export default class Background {
   }
 
   generateBubbles() {
-    let self = this
+    // Not really sure how this animation process works so silencing linter
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this
+
     for (let i = 0; i < self.bubbleDensity(); i++) {
       self.addBubble(new Bubble(self.canvas.width, self.canvas.height, self.color))
     }

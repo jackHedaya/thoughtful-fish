@@ -1,11 +1,12 @@
 import { NextPageContext } from 'next'
 import Head from 'next/head'
+
+import { authOrPassSession } from '../middlewares/auth'
 import styles from '../styles/pages/home.module.scss'
-import getSession from '../services/getSession'
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <div className="content">
       <Head>
         <title>Thoughtful Fish</title>
         <link rel="icon" href="/favicon.ico" />
@@ -13,62 +14,39 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to <div>Thoughtful Fish</div>
         </h1>
 
         <p className={styles.description}>
-          Get started by editing <code className={styles.code}>pages/index.js</code>
+          Thoughtful Fish is a collection of tools to help manage, find, and profit off of options
         </p>
-
         <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a href="https://github.com/vercel/next.js/tree/master/examples" className={styles.card}>
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
+          <Card
+            to="/option-hacker"
+            title="Find Options"
+            description="Find options based off of expressions, target prices, or other presets."
+          />
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
     </div>
   )
 }
 
+type CardProps = {
+  to: string
+  title: string
+  description: string
+}
+
+function Card(props: CardProps) {
+  return (
+    <a href={props.to} className={styles.card}>
+      <h3>{props.title} &rarr;</h3>
+      <p>{props.description}</p>
+    </a>
+  )
+}
+
 export async function getServerSideProps(ctx: NextPageContext) {
-  const session = getSession(ctx)
-
-  if (session === null)
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/login?route=/${ctx.req.url}`,
-      },
-    }
-
-  return { props: { session } }
+  return authOrPassSession(ctx)
 }

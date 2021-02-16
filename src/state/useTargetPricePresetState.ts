@@ -1,4 +1,5 @@
 import { useReducer } from 'react'
+
 import { PresetActionBase, presetReducerBase, PresetStateBase } from './presetBase'
 
 export type TargetPricePresetState = PresetStateBase & {

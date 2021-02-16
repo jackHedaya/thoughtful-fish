@@ -1,6 +1,6 @@
-import React, { CSSProperties } from 'react'
-import useAutocomplete from '@material-ui/lab/useAutocomplete'
 import { CircularProgress, TextField, TextFieldProps } from '@material-ui/core'
+import useAutocomplete from '@material-ui/lab/useAutocomplete'
+import React, { CSSProperties } from 'react'
 
 import s from '../styles/components/signature-autocomplete.module.scss'
 
@@ -14,7 +14,7 @@ type SignatureAutocomplete = {
   onChange?: (option: DropdownOption) => void
 }
 
-type DropdownOption = { group: string; value: any; label: string }
+type DropdownOption = { group: string; value: unknown; label: string }
 
 export default function SignatureAutocomplete(props: SignatureAutocomplete) {
   const {
@@ -65,6 +65,7 @@ export default function SignatureAutocomplete(props: SignatureAutocomplete) {
               return (
                 <React.Fragment key={`Label/${group.group}`}>
                   <div className={s.groupTitle}>{group.group}</div>
+                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                   {/* @ts-ignore */}
                   {group.options.map((option) => {
                     indexIncrement++

@@ -1,7 +1,7 @@
-import NumberFormat from 'react-number-format'
 import { TextField, TextFieldProps } from '@material-ui/core'
+import NumberFormat, { NumberFormatProps } from 'react-number-format'
 
-function NumberFormatCustom(props) {
+function NumberFormatCustom(props: NumberFormatProps) {
   const { inputRef, onChange, ...other } = props
 
   return (
@@ -11,10 +11,11 @@ function NumberFormatCustom(props) {
       onValueChange={(values) => {
         onChange({
           target: {
-            name: props.name,
             value: values.value,
           },
-        })
+
+          // Little sloppy here: not an actual event. Definitely should fix later
+        } as React.ChangeEvent<HTMLInputElement>)
       }}
       thousandSeparator
       isNumericString
@@ -22,6 +23,7 @@ function NumberFormatCustom(props) {
     />
   )
 }
+
 export default function DollarTextField(props: TextFieldProps) {
   return (
     <TextField

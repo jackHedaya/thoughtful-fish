@@ -37,10 +37,12 @@ h5 {
   height: 100vh;
 
   grid-template-columns: auto 1fr;
+  grid-template-areas: 'nav content';
 }
 
 .content {
   padding: 20px 40px;
+  grid-area: content;
 }
 
 .page-title {
@@ -53,4 +55,19 @@ h5 {
 .icon {
   vertical-align: middle;
   display: inline-block;
+}
+
+@media only screen and (max-width: 400px) {
+  .app {
+    grid-template-areas:
+      'content'
+      'nav';
+    grid-template-columns: unset;
+    grid-template-rows: 1fr auto;
+  }
+
+  .content {
+    padding: 10px 20px;
+    overflow: scroll;
+  }
 }

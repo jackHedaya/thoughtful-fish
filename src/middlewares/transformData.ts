@@ -1,4 +1,4 @@
-type GenericTransformer = { key: string; transformer: (str: string) => any }
+type GenericTransformer = { key: string; transformer: (str: string) => unknown }
 type TypeTransformer = { key: string; type: Type }
 type Type = 'number' | 'boolean'
 
@@ -9,13 +9,13 @@ const typeToTransformer = {
 
 export default async (req: NextApiRequest, keys: (GenericTransformer | TypeTransformer)[]) => {
   const isGet = req.method === 'GET'
-  let data = isGet ? req.query : req.body
+  const data = isGet ? req.query : req.body
 
   keys.forEach((t) => {
     const transformer = isTypeTransformer(t) ? typeToTransformer[t.type] : t.transformer
     const key = t.key
 
-    if (isGet) req.query[key] = transformer(data[key])
+    if (isGet) req.query[key] = transformer(data[key]) as string | string[]
   })
 }
 

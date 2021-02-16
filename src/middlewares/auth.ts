@@ -1,6 +1,4 @@
-import { MIDDLEWARE_ERROR } from '.'
-import { isNextPageContext } from '../types/assertions'
-
+import ameritrade from '../lib/ameritrade'
 import {
   getAccessToken,
   getProfile,
@@ -9,7 +7,7 @@ import {
   writeProfile,
 } from '../lib/thoughtful-fish/session'
 
-import ameritrade from '../lib/ameritrade'
+import { MIDDLEWARE_ERROR } from '.'
 
 declare module 'http' {
   interface IncomingMessage {
@@ -17,14 +15,12 @@ declare module 'http' {
   }
 }
 
-export default async (ctxOrReq: ContextOrRequest, res: NextApiResponse) => {
-  const req = isNextPageContext(ctxOrReq) ? ctxOrReq.req : ctxOrReq
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const refreshToken = getRefreshToken(req)
 
-  const refreshToken = getRefreshToken(ctxOrReq)
+  let accessToken = getAccessToken(req)
 
-  let accessToken = getAccessToken(ctxOrReq)
-
-  let profile = getProfile(ctxOrReq)
+  let profile = getProfile(req)
 
   if (refreshToken && !accessToken) {
     try {
@@ -47,4 +43,42 @@ export default async (ctxOrReq: ContextOrRequest, res: NextApiResponse) => {
   }
 
   req.session = { refreshToken, accessToken, profile }
+}
+
+export function authOrPassSession(ctx: NextPageContext) {
+  const session = getSession(ctx)
+
+  if (!session) return returnRedirect(ctx)
+
+  return { props: { session } }
+}
+
+export function getSession(ctx: ContextOrRequest): Session {
+  if (process.env.SKIP_AUTH)
+    return {
+      accessToken: '',
+      refreshToken: '',
+      profile: { userId: '', primaryAccountId: '', accounts: [] },
+    }
+
+  const accessToken = getAccessToken(ctx)
+  const refreshToken = getRefreshToken(ctx)
+  const profile = getProfile(ctx)
+
+  if (!accessToken || !refreshToken) return null
+
+  return { accessToken, refreshToken, profile }
+}
+
+export function returnRedirect(ctx: NextPageContext) {
+  return {
+    redirect: {
+      permanent: false,
+      destination: redirectUrl(ctx.req.url),
+    },
+  }
+}
+
+export function redirectUrl(route: string) {
+  return `/login?route=${route}`
 }

@@ -1,14 +1,11 @@
 import { TextField } from '@material-ui/core'
 
+import { PresetProps } from '../../pages/option-hacker'
+import useTargetPricePresetState from '../../state/useTargetPricePresetState'
+import s from '../../styles/components/option-preset.module.scss'
+import DollarTextField from '../DollarTextField'
 import SignatureAccordion from '../SignatureAccordion'
 import SignatureButton from '../SignatureButton'
-import DollarTextField from '../DollarTextField'
-
-import { PresetProps } from '../../pages/option-hacker'
-
-import useTargetPricePresetState from '../../state/useTargetPricePresetState'
-
-import s from '../../styles/components/option-preset.module.scss'
 
 export default function TargetPricePreset(props: PresetProps) {
   const [state, dispatch] = useTargetPricePresetState()
@@ -20,14 +17,16 @@ export default function TargetPricePreset(props: PresetProps) {
   }
 
   return (
-    <div>
+    <div onKeyPress={(e) => (e.key === 'Enter' ? onNext() : false)}>
       <SignatureAccordion
         title="Setup"
+        style={{ position: 'relative' }}
         expanded={state._accordionsOpen.setup}
         onChange={(_, b) => dispatch({ type: 'set_accordion_open', accordion: 'setup', open: b })}
       >
-        <div className={s.watchlistSection}>
+        <div className={s.setupSection}>
           <TextField
+            className={s.setupField}
             value={state.tickers[0] || ''}
             onChange={(e) =>
               dispatch({ type: 'set_tickers', tickers: [e.currentTarget.value.toUpperCase()] })
@@ -39,6 +38,7 @@ export default function TargetPricePreset(props: PresetProps) {
           />
           <DollarTextField
             value={state.targetPrice}
+            className={s.setupField}
             onChange={(e) => {
               dispatch({
                 type: 'set_target_price',
@@ -65,23 +65,14 @@ export default function TargetPricePreset(props: PresetProps) {
             }}
             label="Days Left"
             placeholder="Days Left"
-            style={{ width: '200px', marginTop: '15px' }}
+            className={s.setupField}
             variant="outlined"
             inputProps={{
               inputMode: 'numeric',
               pattern: '[0-9]*',
             }}
           />
-          <SignatureButton
-            className={s.nextButton}
-            onClick={() => {
-              dispatch({
-                type: 'set_accordion_open',
-                accordion: 'setup',
-                open: false,
-              })
-            }}
-          >
+          <SignatureButton className={s.nextButton} onClick={() => onNext()}>
             Finish
           </SignatureButton>
         </div>

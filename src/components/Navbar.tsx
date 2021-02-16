@@ -1,10 +1,9 @@
-import Router, { useRouter } from 'next/router'
-
-import { OverridableComponent } from '@material-ui/core/OverridableComponent'
 import { SvgIconTypeMap } from '@material-ui/core'
+import { OverridableComponent } from '@material-ui/core/OverridableComponent'
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined'
-import ShowChartOutlinedIcon from '@material-ui/icons/ShowChartOutlined'
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined'
+import ShowChartOutlinedIcon from '@material-ui/icons/ShowChartOutlined'
+import Router, { useRouter } from 'next/router'
 
 export default function Navbar() {
   return (
@@ -17,7 +16,7 @@ export default function Navbar() {
 }
 
 function NavItem(props: {
-  Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
+  Icon: OverridableComponent<SvgIconTypeMap<unknown, 'svg'>>
   to: string
 }) {
   const { Icon, to } = props
@@ -27,10 +26,7 @@ function NavItem(props: {
   const isSelected = router.asPath === to
 
   return (
-    <div
-      className={`item ${isSelected ? 'selected' : ''}`}
-      onClick={() => Router.push(to)}
-    >
+    <div className={`item ${isSelected ? 'selected' : ''}`} onClick={() => Router.push(to)}>
       <Icon className="icon" />
     </div>
   )

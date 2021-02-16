@@ -1,5 +1,5 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/styles'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -30,11 +30,7 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link
-            rel="shortcut icon"
-            type="image/png"
-            href="../static/favicon.ico"
-          />
+          <link rel="shortcut icon" type="image/png" href="../static/favicon.ico" />
         </Head>
         <body>
           <Main />

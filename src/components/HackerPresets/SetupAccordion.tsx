@@ -1,14 +1,13 @@
-import { useState } from 'react'
 import { TextField } from '@material-ui/core'
-import SignatureAccordion from '../SignatureAccordion'
-import SignatureSelect from '../SignatureSelect'
-import SignatureAutocomplete from '../SignatureAutocomplete'
-import SignatureButton from '../SignatureButton'
+import { useState } from 'react'
 
 import useRequest from '../../hooks/useRequest'
 import useSession from '../../hooks/useSession'
-
 import s from '../../styles/components/option-preset.module.scss'
+import SignatureAccordion from '../SignatureAccordion'
+import SignatureAutocomplete from '../SignatureAutocomplete'
+import SignatureButton from '../SignatureButton'
+import SignatureSelect from '../SignatureSelect'
 
 type SetupAccordionProps = {
   expanded: boolean
@@ -59,7 +58,7 @@ export default function SetupAccordion(props: SetupAccordionProps) {
       expanded={props.expanded}
       onChange={(_, b) => props.onExpandedChange(b)}
     >
-      <div className={s.watchlistSection}>
+      <div className={s.setupSection}>
         <SignatureSelect
           label="Watchlist / List"
           className={s.watchlistOrList}
@@ -77,7 +76,9 @@ export default function SetupAccordion(props: SetupAccordionProps) {
               value: watchlistField,
               onChange: (e) => setWatchlistField(e.currentTarget.value),
             }}
-            onChange={(option) => props.setTickers(getTickersFromWatchlist(option.value))}
+            onChange={(option) =>
+              props.setTickers(getTickersFromWatchlist(option.value as Watchlist))
+            }
             loading={!error && !response}
           />
         ) : (

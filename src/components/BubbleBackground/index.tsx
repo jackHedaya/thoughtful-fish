@@ -1,8 +1,7 @@
 // Sourced from https://github.com/webdocgroup/Bubbles
 
-
 import React, { useEffect, useRef } from 'react'
-import Background from './core'
+// import Background from './core'
 
 import s from '../../styles/components/bubble-background.module.scss'
 
@@ -20,13 +19,14 @@ type BubbleBackgroundProps = {
 }
 
 export default function BubbleBackground(props: BubbleBackgroundProps) {
-  const { id = 'wd-floating-bubbles', color = 'black' } = props
+  const { id = 'wd-floating-bubbles' } = props
+  // const { color = 'black' } = props
 
-  let resizeTimeout = null
+  // const resizeTimeout = null
 
   const ref = useRef()
 
-  let background: Background
+  // let background: Background
 
   /*
    * Initialises the core JS that controls the animation
@@ -34,10 +34,8 @@ export default function BubbleBackground(props: BubbleBackgroundProps) {
    */
 
   useEffect(() => {
-    background = new Background(id, color)
-
+    // background = new Background(id, color)
     // Figure out resizing here
-
     // const resizeCanvas = flexCanvas(ref.current)
     // window.addEventListener('resize', resizeCanvas)
     // return () => window.removeEventListener('resize', resizeCanvas)

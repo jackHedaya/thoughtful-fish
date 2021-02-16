@@ -1,7 +1,8 @@
 import { NextApiResponse } from 'next'
-import { auth } from '../../middlewares'
+
 import ameritrade from '../../lib/ameritrade'
-import getSession from '../../services/getSession'
+import { auth } from '../../middlewares'
+import { getSession } from '../../middlewares/auth'
 
 export default async function watchlists(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -11,7 +12,7 @@ export default async function watchlists(req: NextApiRequest, res: NextApiRespon
 
     const accountNumbers = [profile.primaryAccountId, ...profile.accounts.map((x) => x.accountId)]
 
-    let accountToWatchlist: { [num: string]: Watchlist[] } = {}
+    const accountToWatchlist: { [num: string]: Watchlist[] } = {}
 
     const promises = accountNumbers.map((accountNumber) =>
       ameritrade.watchlist
