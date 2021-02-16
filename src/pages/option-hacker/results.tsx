@@ -178,6 +178,7 @@ function OptionTable(props: OptionTableProps) {
 
   const router = useRouter()
 
+  const cellMinWidth = headers.length * getPixelNumber(s.cellMinWidth)
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({})
 
   /** Resets column widths on header added */
@@ -243,7 +244,7 @@ function OptionTable(props: OptionTableProps) {
         {({ width, height }) => {
           return (
             <Table
-              width={width}
+              width={width < cellMinWidth ? cellMinWidth : width}
               height={height}
               headerHeight={parseInt(s.headerHeight)}
               rowCount={options.length}
