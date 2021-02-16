@@ -37,7 +37,7 @@ export default function Login() {
             <h2>We're excited to have you here</h2>
             <h3>Sign in with</h3>
             <div className={s.button} onClick={() => Router.push('/api/auth/redirect')}>
-              <img src="/ameritrade-logo.png" />
+              <img src="/ameritrade-logo.png" width="200px" height="38px" />
             </div>
             {didError && <div className={s.error}>Something went wrong</div>}
           </>
