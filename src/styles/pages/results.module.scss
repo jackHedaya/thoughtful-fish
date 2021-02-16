@@ -96,6 +96,8 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 
     flex: 1;
 
+    overflow-x: scroll;
+
     .tableGrid,
     &:focus {
       outline: none !important;
