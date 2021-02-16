@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react'
 import q from 'querystring'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { Table, Column, CellMeasurer, CellMeasurerCache } from 'react-virtualized'
+import { Table, Column, SortDirection, SortDirectionType } from 'react-virtualized'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import Draggable from 'react-draggable'
 import { TextField, Tooltip } from '@material-ui/core'
@@ -38,13 +38,13 @@ type HeaderOption = { key: string; label: string }
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const [noCache, setNoCache] = useState(false)
   const [sortByKey, setSortByKey] = useState(null)
-  const [sortDirection, setSortDirection] = useState<'DESC' | 'ASC' | null>('DESC')
+  const [sortDirection, setSortDirection] = useState<SortDirectionType>(SortDirection.DESC)
 
-  const handleSort = (key: string) => {
-    if (sortByKey === key) {
-      if (sortDirection === 'DESC') setSortDirection('ASC')
+  const handleSort = (sortBy: string) => {
+    if (sortByKey === sortBy) {
+      if (sortDirection === SortDirection.DESC) setSortDirection(SortDirection.ASC)
 
-      if (sortDirection === 'ASC') {
+      if (sortDirection === SortDirection.ASC) {
         setSortDirection(null)
         setSortByKey(null)
       }
@@ -52,8 +52,8 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       return
     }
 
-    setSortDirection('DESC')
-    setSortByKey(key)
+    setSortDirection(SortDirection.DESC)
+    setSortByKey(sortBy)
   }
 
   const { data, error } = useRequest<HackerResult, string>({
@@ -64,6 +64,9 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   })
 
   const options = useMemo(() => {
+    console.log(sortDirection)
+    if (sortDirection === null) return data?.options
+
     let sorted = sorter(data?.options, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
@@ -132,7 +135,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
             <OptionTable
               headers={displayHeaders}
               options={options}
-              sortByKey={sortByKey}
+              sortBy={sortByKey}
               onSort={handleSort}
               sortDirection={sortDirection}
             />
@@ -167,14 +170,14 @@ function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<
 type OptionTableProps = {
   headers: TableHeader[]
   options: Partial<OptionExtension>[]
-  sortByKey: string
+  sortBy: string
   sortDirection: 'ASC' | 'DESC' | null
-  onSort: (key: string) => void
+  onSort: (sortBy: string) => void
 }
 type TableHeader = { label: string; key: string }
 
 function OptionTable(props: OptionTableProps) {
-  const { headers, options, sortByKey, onSort, sortDirection } = props
+  const { headers, options, sortBy, onSort, sortDirection } = props
 
   const router = useRouter()
 
@@ -247,6 +250,10 @@ function OptionTable(props: OptionTableProps) {
               width={width < cellMinWidth ? cellMinWidth : width}
               height={height}
               headerHeight={parseInt(s.headerHeight)}
+              onHeaderClick={(h) => h.dataKey}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              sort={({ sortBy }) => onSort(sortBy)}
               rowCount={options.length}
               rowHeight={getPixelNumber(s.rowHeight)}
               rowGetter={({ index }) => options[index]}
