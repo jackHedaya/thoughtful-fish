@@ -178,13 +178,20 @@ function OptionTable(props: OptionTableProps) {
 
   const router = useRouter()
 
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
-    headers.reduce((p, a) => ({ ...p, [a.key]: 1 / headers.length }), {})
-  )
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({})
 
-  function chartOption(symbol: string) {
-    router.push(`/chart/${symbol}`)
-  }
+  /** Resets column widths on header added */
+  useEffect(() => {
+    setColumnWidths(
+      headers.reduce(
+        (p, a) => ({
+          ...p,
+          [a.key]: 1 / headers.length,
+        }),
+        {}
+      )
+    )
+  }, [headers.length])
 
   type HeaderRendererProps = {
     dataKey: string

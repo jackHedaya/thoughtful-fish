@@ -17,6 +17,8 @@ $header-padding-height: 10px;
 $header-border-thickness: 1px;
 $header-font-size: 17px;
 
+$header-drag-position: 15px;
+
 // Calculated variables for use in virtualized table
 
 $header-height: ($header-padding-height * 2) + ($header-border-thickness * 2) + $header-font-size;
@@ -99,6 +101,8 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
     .header {
       padding: $header-padding-height $header-padding-width;
 
+      padding-right: $header-padding-width + $header-drag-position;
+
       color: $signature-red;
       height: $header-height;
       border: $header-border-thickness solid $soft-black;
@@ -108,7 +112,6 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
     }
 
     .cell {
-      position: relative;
       align-items: stretch;
       border: $cell-border-thickness solid $soft-black;
 
@@ -132,7 +135,8 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 
     .header,
     .cell {
-      flex-grow: 1;
+      flex-grow: 1 !important;
+      position: relative;
 
       min-width: 110px;
       overflow: hidden;
@@ -143,11 +147,16 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 $drag-handle-size: 30px;
 
 .dragHandle {
+  position: absolute;
+  right: $header-drag-position;
+  transform: translate(15px, 1.5px);
   flex: 0 0 $drag-handle-size;
   z-index: 2;
-  cursor: col-resize;
+
   color: #0085ff;
-  transform: translate(15px, 1.5px);
+  background-color: white;
+
+  cursor: col-resize;
 
   &:hover {
     color: $signature-red;
