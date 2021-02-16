@@ -19,10 +19,9 @@ import usePrettyLoading from '../../hooks/usePrettyLoading'
 import useRequest from '../../hooks/useRequest'
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import { getSession, returnRedirect } from '../../middlewares/auth'
-import s from '../../styles/pages/results.module.scss'
+
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
-import useRequest from '../../hooks/useRequest'
 
 import 'react-virtualized/styles.css'
 import s from '../../styles/pages/results.module.scss'
