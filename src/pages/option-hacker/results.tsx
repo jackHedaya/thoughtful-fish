@@ -179,8 +179,6 @@ type TableHeader = { label: string; key: string }
 function OptionTable(props: OptionTableProps) {
   const { headers, options, sortBy, onSort, sortDirection } = props
 
-  const router = useRouter()
-
   const cellMinWidth = headers.length * getPixelNumber(s.cellMinWidth)
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({})
 
