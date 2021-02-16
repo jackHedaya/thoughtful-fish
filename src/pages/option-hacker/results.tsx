@@ -219,6 +219,14 @@ function OptionTable(props: OptionTableProps) {
     return (
       <Fragment key={dataKey}>
         <div className={s.headerTruncated}>{label}</div>
+        {sortBy === dataKey ? (
+          sortDirection === SortDirection.ASC ? (
+            <ArrowDropUpSharp />
+          ) : (
+            <ArrowDropDownSharp />
+          )
+        ) : null}
+
         {columnData.index !== headers.length - 1 && (
           <Draggable
             axis="x"
@@ -260,12 +268,13 @@ function OptionTable(props: OptionTableProps) {
             >
               {headers.map(({ key, label }, index) => (
                 <Column
-                  className={s.cell}
+                  className={`${s.cell} ${sortBy === key ? s.sortingBy : undefined}`}
                   label={label}
                   width={columnWidths[key] * width}
                   dataKey={key}
                   columnData={{ totalWidth: width, index }}
                   headerRenderer={HeaderRenderer}
+                  headerClassName={sortBy === key ? s.sortingBy : undefined}
                   cellRenderer={({ rowData: option }) => (
                     <span className={key === 'symbol' ? s.symbol : undefined}>
                       {key === 'symbol' && option.inTheMoney ? (

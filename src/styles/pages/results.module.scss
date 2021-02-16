@@ -103,15 +103,16 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 
     .header {
       padding: $header-padding-height $header-padding-width;
-
       padding-right: $header-padding-width + $header-drag-position;
 
-      color: $signature-red;
       height: $header-height;
       border: $header-border-thickness solid $soft-black;
-      text-align: center;
 
+      text-align: center;
       align-items: center;
+
+      color: $signature-red;
+      user-select: none;
     }
 
     .cell {
@@ -142,7 +143,12 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
       position: relative;
 
       min-width: $cell-min-width;
+      outline: none !important;
       overflow: hidden;
+
+      &.sortingBy {
+        min-width: 150px;
+      }
     }
   }
 }
