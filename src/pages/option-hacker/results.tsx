@@ -1,7 +1,6 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import q from 'querystring'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { Table, Column, SortDirection, SortDirectionType } from 'react-virtualized'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import Draggable from 'react-draggable'
@@ -173,6 +172,13 @@ function OptionTable(props: OptionTableProps) {
   const { headers, options, sortBy, onSort, sortDirection } = props
 
   const cellMinWidth = headers.length * getPixelNumber(s.cellMinWidth)
+  const wrapperRef = useRef(null)
+
+  // Needed to prevent a bug where overflow changing hides columns
+  useEffect(() => {
+    wrapperRef.current?.scrollTo(0, 0)
+  }, [wrapperRef.current?.isScrollable])
+
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({})
 
   /** Resets column widths on header added */
@@ -241,12 +247,17 @@ function OptionTable(props: OptionTableProps) {
   }
 
   return (
-    <div className={s.table}>
+    <div className={s.table} ref={wrapperRef}>
       <AutoSizer>
         {({ width, height }) => {
+          // This is needed to prevent a bug where overflow is changed and the scrollbar is stuck
+          if (width < cellMinWidth) wrapperRef.current.isScrollable = true
+          else wrapperRef.current.isScrollable = false
+
           return (
             <Table
-              width={width < cellMinWidth ? cellMinWidth : width}
+              // Subtract of 5 to account for border thickness causing unnecessary scroll
+              width={width < cellMinWidth ? cellMinWidth : width - 5}
               height={height}
               headerHeight={parseInt(s.headerHeight)}
               onHeaderClick={(h) => h.dataKey}

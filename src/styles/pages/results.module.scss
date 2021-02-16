@@ -30,7 +30,7 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
 :export {
   headerHeight: $header-height;
   rowHeight: $row-height;
-  cellMinWidth: $cell-min-width;
+  cellMinWidth: $cell-min-width + $cell-border-thickness * 2;
 }
 
 .content {
@@ -97,6 +97,7 @@ $row-height: ($cell-padding-height * 2) + ($cell-border-thickness * 2) + $cell-f
     flex: 1;
 
     overflow-x: scroll;
+    overflow-y: hidden;
 
     .tableGrid,
     &:focus {
