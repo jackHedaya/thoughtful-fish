@@ -9,6 +9,7 @@ const PRESET_TO_COMPONENT = {
 export default function InstructionPanel(props: { preset: string }) {
   const Component = PRESET_TO_COMPONENT[props.preset]
 
+  // Explicitly add padding to prevent layout shift
   if (!Component) return <div style={{ padding: '17px' }}></div>
 
   return <Component />
