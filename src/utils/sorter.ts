@@ -8,11 +8,11 @@ export default function sorter<T extends Record<string, unknown>>(array: T[], ke
     const genericValue = outArr[0][key]
 
     if (typeof genericValue === 'string') {
-      const getDecimalMatch = (str: string) => parseFloat(str.match(/^(\d+)%?$/)?.[1])
+      const getPercentMatch = (str: string) => parseFloat(str.match(/^(\d+)%?$/)?.[1])
 
       // Capture decimal in string
-      if (getDecimalMatch(genericValue))
-        return (a, b) => getDecimalMatch(b[key]) - getDecimalMatch(a[key])
+      if (getPercentMatch(genericValue))
+        return (a, b) => getPercentMatch(b[key]) - getPercentMatch(a[key])
 
       // Last resort sort alphabetically
       return (a, b) => a[key].localeCompare(b[key])
