@@ -59,9 +59,15 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const isPrettyLoading = usePrettyLoading(2000)
 
   const options = useMemo(() => {
-    if (sortDirection === null) return data?.options
+    // Replaces "Infinity%" with "N/A"
+    const ops = data?.options.map((o) => ({
+      ...o,
+      returnOnTarget: o.returnOnTarget === 'Infinity%' ? 'N/A' : o.returnOnTarget,
+    }))
 
-    const sorted = sorter(data?.options, sortByKey)
+    if (sortDirection === null) return ops
+
+    const sorted = sorter(ops, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
   }, [data?.options, sortByKey, sortDirection])

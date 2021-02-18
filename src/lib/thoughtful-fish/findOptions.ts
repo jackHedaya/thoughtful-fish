@@ -150,7 +150,13 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
           // Formatted return on target
           returnOnTarget: calcReturnOnTarget(x, targetPrice).toFixed(2) + '%',
         }))
-        .sort((a, b) => b.rot - a.rot)
+        .sort((a, b) => {
+          // Prevents a mark of 0 causing Infinity to come up as the highest possible return
+          if (a.rot === Infinity) return 1
+          if (b.rot === Infinity) return -1
+
+          return b.rot - a.rot
+        })
         .filter((val) => includeUnprofitable || val.rot > 0)
 
         // Removes rot key from output as it is only used internally for sorting and filtering
