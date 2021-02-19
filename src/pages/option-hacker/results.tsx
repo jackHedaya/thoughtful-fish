@@ -1,6 +1,6 @@
 import q from 'querystring'
 
-import { TextField, Tooltip } from '@material-ui/core'
+import { LinearProgress, TextField, Tooltip } from '@material-ui/core'
 import { InfoOutlined } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import dynamic from 'next/dynamic'
@@ -9,8 +9,8 @@ import { useMemo, useState } from 'react'
 import { SortDirection, SortDirectionType } from 'react-virtualized'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
+import useInfiniteRequest from '../../hooks/useInfiniteRequest'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
-import useRequest from '../../hooks/useRequest'
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import { getSession, returnRedirect } from '../../middlewares/auth'
 import s from '../../styles/pages/results.module.scss'
@@ -29,6 +29,8 @@ type OptionHackerResultsProps = {
 type HeaderOption = { key: string; label: string }
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
+  const BATCH_SIZE = 5
+
   const [noCache, setNoCache] = useState(false)
   const [sortByKey, setSortByKey] = useState(null)
   const [sortDirection, setSortDirection] = useState<SortDirectionType>(SortDirection.DESC)
@@ -49,28 +51,42 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     setSortByKey(sortBy)
   }
 
-  const { data, error } = useRequest<HackerResult, string>({
-    url: '/api/find_options',
-    method: 'GET',
-    params: { ...props, noCache },
-    paramsSerializer: (d) => q.stringify(d),
-  })
+  const { data, error, size, setSize } = useInfiniteRequest<HackerResult, string>(
+    (pageIndex, previousPageData) => {
+      // Reached the end
+      if (previousPageData && !previousPageData.data?.options.length) return null
+      return {
+        url: `/api/find_options`,
+        method: 'GET',
+        params: { ...props, noCache, page: pageIndex, limit: BATCH_SIZE },
+        paramsSerializer: (d) => q.stringify(d),
+      }
+    },
+    { initialSize: 1 }
+  )
 
   const isPrettyLoading = usePrettyLoading(2000)
 
   const options = useMemo(() => {
-    // Replaces "Infinity%" with "N/A"
-    const ops = data?.options.map((o) => ({
-      ...o,
-      returnOnTarget: o.returnOnTarget === 'Infinity%' ? 'N/A' : o.returnOnTarget,
-    }))
+    // Combines the multiple responses into one array
+    const ops = data
+      ?.reduce((a, c) => ({ ...a, options: [...a.options, ...c.options] }), {
+        meta: data?.[0].meta,
+        options: [],
+      })
+      // Replaces "Infinity%" with "N/A"
+      .options.map((o) => ({
+        ...o,
+        returnOnTarget: o.returnOnTarget === 'Infinity%' ? 'N/A' : o.returnOnTarget,
+      }))
 
     if (sortDirection === null) return ops
 
     const sorted = sorter(ops, sortByKey)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
-  }, [data?.options, sortByKey, sortDirection])
+  }, [data, sortByKey, sortDirection])
+  const meta = data?.[0].meta
 
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, setDisplayHeaders] = useState(
@@ -88,13 +104,16 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       </Head>
       <div className="page-title">Option Hacker</div>
       {loadingDone && !error && (
-        <h2 className={s.resultsTitle}>
-          Results for {tickersTitle} {data.meta.cached && <CachedTooltip setNoCache={setNoCache} />}
-        </h2>
+        <>
+          <LinearProgress value={size / props.tickers.length} variant="determinate" />
+          <h2 className={s.resultsTitle}>
+            Results for {tickersTitle} {meta.cached && <CachedTooltip setNoCache={setNoCache} />}
+          </h2>
+        </>
       )}
       <div className={s.results}>
         {error && !isPrettyLoading ? (
-          <div className={s.errorMessage}>{error.response.data || error.message}</div>
+          <div className={s.errorMessage}>{error?.response?.data || error?.message}</div>
         ) : !loadingDone ? (
           <div className={s.loader}>
             <LoadingAnimation />
