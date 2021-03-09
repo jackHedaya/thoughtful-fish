@@ -61,7 +61,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       return {
         url: `/api/find_options`,
         method: 'GET',
-        params: { ...props, noCache, page: pageIndex, limit: BATCH_SIZE },
+        params: { ...props, noCache: state.noCache, page: pageIndex, limit: BATCH_SIZE },
         paramsSerializer: (d) => q.stringify(d),
       }
     },
