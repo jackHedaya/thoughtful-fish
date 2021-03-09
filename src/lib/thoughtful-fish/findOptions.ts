@@ -28,7 +28,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
 
   if (tickers.length < 1) throw 'No tickers given'
 
-  const pagedTickers = tickers.slice(limit * page, limit * (page + 1))
+  const pagedTickers = limit && page ? tickers.slice(limit * page, limit * (page + 1)) : tickers
 
   // Combines expressions if given as array
   const expression = typeof exp === 'string' ? exp : exp.join(' && ')
