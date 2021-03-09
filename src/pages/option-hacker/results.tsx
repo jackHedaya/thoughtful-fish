@@ -13,6 +13,7 @@ import useInfiniteRequest from '../../hooks/useInfiniteRequest'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import { getSession, returnRedirect } from '../../middlewares/auth'
+import useResultsState from '../../state/useResultsState'
 import s from '../../styles/pages/results.module.scss'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
@@ -31,24 +32,26 @@ type HeaderOption = { key: string; label: string }
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const BATCH_SIZE = 5
 
-  const [noCache, setNoCache] = useState(false)
-  const [sortByKey, setSortByKey] = useState(null)
-  const [sortDirection, setSortDirection] = useState<SortDirectionType>(SortDirection.DESC)
+  const [state, dispatch] = useResultsState()
 
   const handleSort = (sortBy: string) => {
+    const { sortBy: sortByKey, sortDirection } = state
+    const setSortDirection = (direction) => dispatch({ type: 'set_sort_direction', direction })
+    const setSortBy = (sortBy) => dispatch({ type: 'set_sort_by_key', sortBy })
+
     if (sortByKey === sortBy) {
       if (sortDirection === SortDirection.DESC) setSortDirection(SortDirection.ASC)
 
       if (sortDirection === SortDirection.ASC) {
         setSortDirection(null)
-        setSortByKey(null)
+        setSortBy(null)
       }
 
       return
     }
 
     setSortDirection(SortDirection.DESC)
-    setSortByKey(sortBy)
+    setSortBy(sortBy)
   }
 
   const { data, error, size, setSize } = useInfiniteRequest<HackerResult, string>(
@@ -68,6 +71,8 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const isPrettyLoading = usePrettyLoading(2000)
 
   const options = useMemo(() => {
+    const { results, sortDirection, sortBy } = state
+
     // Combines the multiple responses into one array
     const ops = data
       ?.reduce((a, c) => ({ ...a, options: [...a.options, ...c.options] }), {
@@ -82,11 +87,12 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
     if (sortDirection === null) return ops
 
-    const sorted = sorter(ops, sortByKey)
+    const sorted = sorter(ops, sortBy)
 
     return sortDirection === 'ASC' ? sorted.reverse() : sorted
-  }, [data, sortByKey, sortDirection])
-  const meta = data?.[0].meta
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.results, state.sortBy, state.sortDirection])
 
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, setDisplayHeaders] = useState(
@@ -105,9 +111,11 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       <div className="page-title">Option Hacker</div>
       {loadingDone && !error && (
         <>
-          <LinearProgress value={size / props.tickers.length} variant="determinate" />
           <h2 className={s.resultsTitle}>
-            Results for {tickersTitle} {meta.cached && <CachedTooltip setNoCache={setNoCache} />}
+            Results for {tickersTitle}{' '}
+            {state.isCached && (
+              <CachedTooltip setNoCache={() => dispatch({ type: 'set_no_cache', noCache: true })} />
+            )}
           </h2>
         </>
       )}
@@ -146,9 +154,9 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
             <OptionTable
               headers={displayHeaders}
               options={options}
-              sortBy={sortByKey}
+              sortBy={state.sortBy}
               onSort={handleSort}
-              sortDirection={sortDirection}
+              sortDirection={state.sortDirection}
             />
           </>
         )}
