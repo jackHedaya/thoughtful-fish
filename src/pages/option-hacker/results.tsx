@@ -68,8 +68,6 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     { initialSize: 1 }
   )
 
-  const isPrettyLoading = usePrettyLoading(2000)
-
   const options = useMemo(() => {
     const { results, sortDirection, sortBy } = state
 
@@ -94,12 +92,12 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.results, state.sortBy, state.sortDirection])
 
+  const isLoading = usePrettyLoading(!options, 2000)
+
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, setDisplayHeaders] = useState(
     passedHeaders || defaultPresetHeaders[props.preset]
   )
-
-  const loadingDone = options && !isPrettyLoading
 
   const tickersTitle = generateTickersTitle(props.tickers)
 
@@ -109,7 +107,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
         <title>Thoughtful Fish | {tickersTitle} Results</title>
       </Head>
       <div className="page-title">Option Hacker</div>
-      {loadingDone && !error && (
+      {!isLoading && !error && (
         <>
           <h2 className={s.resultsTitle}>
             Results for {tickersTitle}{' '}
@@ -120,9 +118,9 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
         </>
       )}
       <div className={s.results}>
-        {error && !isPrettyLoading ? (
+        {error && !isLoading ? (
           <div className={s.errorMessage}>{error?.response?.data || error?.message}</div>
-        ) : !loadingDone ? (
+        ) : isLoading ? (
           <div className={s.loader}>
             <LoadingAnimation />
           </div>
