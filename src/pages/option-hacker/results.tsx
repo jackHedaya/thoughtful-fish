@@ -3,18 +3,21 @@ import q from 'querystring'
 import { LinearProgress, TextField, Tooltip } from '@material-ui/core'
 import { InfoOutlined } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
+import { AxiosError } from 'axios'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
-import { useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { SortDirection, SortDirectionType } from 'react-virtualized'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
 import useInfiniteRequest from '../../hooks/useInfiniteRequest'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
+import useRequest from '../../hooks/useRequest'
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import { getSession, returnRedirect } from '../../middlewares/auth'
-import useResultsState from '../../state/useResultsState'
+import useResultsState, { Action } from '../../state/useResultsState'
 import s from '../../styles/pages/results.module.scss'
+import chunk from '../../utils/chunk'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
 
@@ -32,7 +35,7 @@ type HeaderOption = { key: string; label: string }
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const BATCH_SIZE = 5
 
-  const [state, dispatch] = useResultsState()
+  const [state, dispatch] = useResultsState({ totalTickerCount: props.tickers.length })
 
   const handleSort = (sortBy: string) => {
     const { sortBy: sortByKey, sortDirection } = state
@@ -54,31 +57,12 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     setSortBy(sortBy)
   }
 
-  const { data, error, size, setSize } = useInfiniteRequest<HackerResult, string>(
-    (pageIndex, previousPageData) => {
-      // Reached the end
-      if (previousPageData && !previousPageData.data?.options.length) return null
-      return {
-        url: `/api/find_options`,
-        method: 'GET',
-        params: { ...props, noCache: state.noCache, page: pageIndex, limit: BATCH_SIZE },
-        paramsSerializer: (d) => q.stringify(d),
-      }
-    },
-    { initialSize: 1 }
-  )
-
   const options = useMemo(() => {
     const { results, sortDirection, sortBy } = state
 
     // Combines the multiple responses into one array
-    const ops = data
-      ?.reduce((a, c) => ({ ...a, options: [...a.options, ...c.options] }), {
-        meta: data?.[0].meta,
-        options: [],
-      })
-      // Replaces "Infinity%" with "N/A"
-      .options.map((o) => ({
+    const ops = results // Replaces "Infinity%" with "N/A"
+      .map((o) => ({
         ...o,
         returnOnTarget: o.returnOnTarget === 'Infinity%' ? 'N/A' : o.returnOnTarget,
       }))
@@ -92,7 +76,12 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.results, state.sortBy, state.sortDirection])
 
-  const isLoading = usePrettyLoading(!options, 2000)
+  const isLoading = usePrettyLoading(
+    state.loadedTickers.length === 0 && state.erroredTickers.length !== state.totalTickerCount,
+    2000
+  )
+
+  const isErrored = state.erroredTickers.length === state.totalTickerCount
 
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, setDisplayHeaders] = useState(
@@ -101,25 +90,33 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const tickersTitle = generateTickersTitle(props.tickers)
 
+  if (!isLoading) console.log(state.loadedTickers.length)
+
   return (
     <div className={`content ${s.content}`}>
       <Head>
         <title>Thoughtful Fish | {tickersTitle} Results</title>
       </Head>
       <div className="page-title">Option Hacker</div>
-      {!isLoading && !error && (
+      {!isLoading && !isErrored && (
         <>
           <h2 className={s.resultsTitle}>
             Results for {tickersTitle}{' '}
-            {state.isCached && (
-              <CachedTooltip setNoCache={() => dispatch({ type: 'set_no_cache', noCache: true })} />
+            {state.cachedCount !== 0 && (
+              <CachedTooltip
+                setNoCache={() => dispatch({ type: 'set_no_cache', noCache: true })}
+                cachedCount={state.cachedCount}
+              />
             )}
           </h2>
         </>
       )}
       <div className={s.results}>
-        {error && !isLoading ? (
-          <div className={s.errorMessage}>{error?.response?.data || error?.message}</div>
+        {isErrored && !isLoading ? (
+          <div className={s.errorMessage}>
+            <div>Failed to find options with the following error:</div>
+            <div>{state.errors[0].message}</div>
+          </div>
         ) : isLoading ? (
           <div className={s.loader}>
             <LoadingAnimation />
@@ -128,7 +125,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
           <>
             <Autocomplete
               className={s.tableHeaderSelection}
-              options={Object.keys(options[0]).map((key) => ({
+              options={Object.keys(options?.[0] || {}).map((key) => ({
                 key,
                 label: camelCaseToTitle(key),
               }))}
@@ -156,6 +153,12 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
               onSort={handleSort}
               sortDirection={state.sortDirection}
             />
+            <QueryTickers
+              tickers={props.tickers}
+              batchSize={BATCH_SIZE}
+              presetData={{ preset: props.preset, expressions: props.expressions }}
+              dispatch={dispatch}
+            />
           </>
         )}
       </div>
@@ -163,12 +166,81 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   )
 }
 
-function CachedTooltip(props: { setNoCache: React.Dispatch<React.SetStateAction<boolean>> }) {
+type QueryTickersProps = {
+  tickers: string[]
+  presetData: {
+    preset: string
+    expressions: string[]
+  }
+  dispatch: React.Dispatch<Action>
+  batchSize: number
+}
+
+function QueryTickersNM(props: QueryTickersProps) {
+  const { dispatch, batchSize, presetData } = props
+
+  return (
+    <>
+      {chunk(props.tickers, batchSize).map((tickers) => (
+        <QueryTicker
+          tickers={tickers}
+          key={`Batch/${tickers.join(',')}`}
+          onResult={(data: HackerResult) => props.dispatch({ type: 'add_results', tickers, data })}
+          onError={(error) =>
+            dispatch({ type: 'add_error', tickers, message: error.response?.data || error.message })
+          }
+          presetData={presetData}
+        />
+      ))}
+    </>
+  )
+}
+
+const QueryTickers = memo(QueryTickersNM, () => true)
+
+type QueryTickerProps = Omit<QueryTickersProps, 'tickers' | 'dispatch' | 'batchSize'> & {
+  tickers: string[]
+  onResult?: (data: HackerResult) => void
+  onError?: (error: AxiosError) => void
+}
+
+function QueryTickerNM(props: QueryTickerProps) {
+  const { data, error } = useRequest<HackerResult>({
+    url: `/api/find_options`,
+    method: 'GET',
+    params: { ...props.presetData, tickers: props.tickers, preset: 'Expression' },
+    paramsSerializer: (d) => q.stringify(d),
+  })
+
+  console.log('rendering ' + props.tickers.join(','))
+
+  useEffect(() => {
+    if (!data && !error) return
+
+    if (!data && error) {
+      props.onError?.(error)
+      return
+    }
+
+    props.onResult?.(data)
+  }, [data, error, props])
+
+  return <></>
+}
+
+const QueryTicker = memo(QueryTickerNM, () => true)
+
+type CachedTooltipProps = {
+  setNoCache: React.Dispatch<React.SetStateAction<boolean>>
+  cachedCount: number
+}
+
+function CachedTooltip(props: CachedTooltipProps) {
   return (
     <Tooltip
       title={
         <span className={s.cachedTooltip}>
-          These results come from cached prices. To reload press{' '}
+          Some of these results come from {props.cachedCount} cached prices. To reload press{' '}
           <span onClick={() => props.setNoCache(true)}>here</span>
         </span>
       }
