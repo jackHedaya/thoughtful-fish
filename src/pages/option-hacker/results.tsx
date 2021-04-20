@@ -10,7 +10,6 @@ import { memo, useEffect, useMemo, useState } from 'react'
 import { SortDirection, SortDirectionType } from 'react-virtualized'
 
 import LoadingAnimation from '../../components/LoadingAnimation'
-import useInfiniteRequest from '../../hooks/useInfiniteRequest'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
 import useRequest from '../../hooks/useRequest'
 import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
@@ -18,6 +17,7 @@ import { getSession, returnRedirect } from '../../middlewares/auth'
 import useResultsState, { Action } from '../../state/useResultsState'
 import s from '../../styles/pages/results.module.scss'
 import chunk from '../../utils/chunk'
+import pluralize from '../../utils/pluralize'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
 
@@ -39,13 +39,14 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const handleSort = (sortBy: string) => {
     const { sortBy: sortByKey, sortDirection } = state
-    const setSortDirection = (direction) => dispatch({ type: 'set_sort_direction', direction })
+
+    const setSortDirection = (sortDirection) =>
+      dispatch({ type: 'set_sort_direction', sortDirection })
     const setSortBy = (sortBy) => dispatch({ type: 'set_sort_by_key', sortBy })
 
     if (sortByKey === sortBy) {
       if (sortDirection === SortDirection.DESC) setSortDirection(SortDirection.ASC)
-
-      if (sortDirection === SortDirection.ASC) {
+      else if (sortDirection === SortDirection.ASC) {
         setSortDirection(null)
         setSortBy(null)
       }
@@ -153,15 +154,15 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
               onSort={handleSort}
               sortDirection={state.sortDirection}
             />
-            <QueryTickers
-              tickers={props.tickers}
-              batchSize={BATCH_SIZE}
-              presetData={{ preset: props.preset, expressions: props.expressions }}
-              dispatch={dispatch}
-            />
           </>
         )}
       </div>
+      <QueryTickers
+        tickers={props.tickers}
+        batchSize={BATCH_SIZE}
+        presetData={{ preset: props.preset, expressions: props.expressions }}
+        dispatch={dispatch}
+      />
     </div>
   )
 }
@@ -240,7 +241,8 @@ function CachedTooltip(props: CachedTooltipProps) {
     <Tooltip
       title={
         <span className={s.cachedTooltip}>
-          Some of these results come from {props.cachedCount} cached prices. To reload press{' '}
+          Some of these results come from {props.cachedCount} cached{' '}
+          {pluralize('price', props.cachedCount)}. To reload press{' '}
           <span onClick={() => props.setNoCache(true)}>here</span>
         </span>
       }
