@@ -5,13 +5,13 @@ import { useEffect, useState } from 'react'
  * @param milliseconds Milliseconds to load
  */
 export default function usePrettyLoading(isLoading: boolean, milliseconds: number) {
-  const [isTimedOut, setIsTimedOut] = useState(true)
+  const [isWaiting, setIsWaiting] = useState(true)
 
   useEffect(() => {
-    const s = setTimeout(() => setIsTimedOut(false), milliseconds)
+    const s = setTimeout(() => setIsWaiting(false), milliseconds)
 
     return () => clearTimeout(s)
   }, [milliseconds])
 
-  return isLoading && isTimedOut
+  return isLoading || isWaiting
 }
