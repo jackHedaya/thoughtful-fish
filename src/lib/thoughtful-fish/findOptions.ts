@@ -98,7 +98,7 @@ function queryDateMap(query: QueryParams): OptionExtension[] {
       try {
         if (safeEval(expression, { underlying, option, Math })) out.push(option)
       } catch (e) {
-        throw `Error in given expression: ${e.message}`
+        throw { error: `Error in given expression: ${e.message}`, status: 400 }
       }
     })
   })
