@@ -18,12 +18,12 @@ export default function Login() {
   const redirectRoute = (Router.query.route as string) || '/home'
 
   const { error, response } = useRequest({ url: '/api/auth/validate' })
-  const isPrettyLoading = usePrettyLoading(1000)
 
-  let loading = (!error && !response) || isPrettyLoading
+  let forceIsLoading = false // Needed to prevent loading flash (I think)
+  const isLoading = usePrettyLoading((!response && !error) || forceIsLoading, 1000)
 
-  if (!loading && response?.status === 201) {
-    loading = true
+  if (!isLoading && response?.status === 201) {
+    forceIsLoading = true
 
     Router.push(redirectRoute)
   }
@@ -32,7 +32,7 @@ export default function Login() {
     <div className={s.login}>
       <Bubbles color="#ff6767" />
       <Paper className={s.main}>
-        {!loading ? (
+        {!isLoading ? (
           <>
             <h2>We're excited to have you here</h2>
             <h3>Sign in with</h3>
