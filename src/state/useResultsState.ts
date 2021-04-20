@@ -23,7 +23,7 @@ export type Action =
   | ({ type: 'add_error' } & ErrorData)
   | { type: 'set_no_cache'; noCache: boolean }
   | { type: 'set_sort_by_key'; sortBy: string }
-  | { type: 'set_sort_direction'; direction: string }
+  | { type: 'set_sort_direction'; sortDirection: SortDirectionType }
   | { type: 'set_total_ticker_count'; totalTickerCount: number }
 
 type ErrorData = { tickers: string[]; message: string }
