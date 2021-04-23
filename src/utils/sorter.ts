@@ -1,6 +1,6 @@
 export default function sorter<T extends Record<string, unknown>>(array: T[], key: string) {
   if (array === undefined) return undefined
-  if (key === null) return array
+  if (key === null || array.length === 0) return array
 
   const outArr = [...array]
 
