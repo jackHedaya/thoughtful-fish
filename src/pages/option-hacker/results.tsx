@@ -17,6 +17,7 @@ import { getSession, returnRedirect } from '../../middlewares/auth'
 import useResultsState, { Action } from '../../state/useResultsState'
 import s from '../../styles/pages/results.module.scss'
 import chunk from '../../utils/chunk'
+import generateTickersTitle from '../../utils/generateTickersTitle'
 import pluralize from '../../utils/pluralize'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
@@ -263,19 +264,6 @@ const camelCaseToTitle = (str: string) => {
   const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
 
   return finalResult
-}
-
-const generateTickersTitle = (tickers: string[]) => {
-  const MAX_SHOWN = 6
-
-  if (tickers.length < 2) return tickers[0]
-
-  const lastElement = tickers[tickers.length - 1]
-  const excludingLast = tickers.slice(0, tickers.length - 1).join(', ')
-
-  if (tickers.length < MAX_SHOWN) return `${excludingLast} and ${lastElement}`
-
-  return `${tickers.slice(0, MAX_SHOWN).join(', ')} and ${tickers.length - MAX_SHOWN} more`
 }
 
 export async function getServerSideProps(ctx: NextPageContext) {
