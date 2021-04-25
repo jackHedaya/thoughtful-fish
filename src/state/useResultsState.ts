@@ -63,6 +63,17 @@ export class ResultsState {
     Object.entries(others).forEach(([k, v]) => (this[k] = v))
   }
 
+  /**
+   * Forces a rerender for dependent components because an equality check with falsely
+   * succeed if a new object is not returned
+   *
+   * @param state The new result state
+   * @returns {ResultState} A new state object with the same values
+   */
+  rerender(state?: ResultsState) {
+    return new ResultsState(state ?? this)
+  }
+
   pushResult(...r: OptionExtension[]) {
     this.resultsSet.add(...r)
   }
@@ -111,7 +122,7 @@ function reducer(state: ResultsState, action: Action): ResultsState {
 
       state.pushResult(...action.data.options)
 
-      return state
+      return state.rerender()
     }
 
     case 'add_error': {
@@ -119,7 +130,7 @@ function reducer(state: ResultsState, action: Action): ResultsState {
 
       state.errors = [...state.errors, { tickers: action.tickers, message: action.message }]
 
-      return state
+      return state.rerender()
     }
 
     case 'set_no_cache':
@@ -131,7 +142,7 @@ function reducer(state: ResultsState, action: Action): ResultsState {
     case 'set_total_ticker_count':
       Object.entries(actionParams).forEach(([k, v]) => (state[k] = v))
 
-      return state
+      return state.rerender()
 
     default:
       throw new Error()
