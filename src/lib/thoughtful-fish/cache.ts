@@ -28,7 +28,7 @@ class ThoughtfulCache {
   }
 
   private isExpired(timestamp: string): boolean {
-    if (!timestamp) return false
+    if (!timestamp) return true
 
     return moment(timestamp).isBefore(moment.now())
   }
