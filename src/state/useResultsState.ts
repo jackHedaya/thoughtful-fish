@@ -68,7 +68,7 @@ export class ResultsState {
    * succeed if a new object is not returned
    *
    * @param state The new result state
-   * @returns {ResultState} A new state object with the same values
+   * @returns {ResultsState} A new state object with the same values
    */
   rerender(state?: ResultsState) {
     return new ResultsState(state ?? this)
@@ -121,6 +121,8 @@ function reducer(state: ResultsState, action: Action): ResultsState {
       if (action.data.meta.cached) state.pushCachedTickers(...action.tickers)
 
       state.pushResult(...action.data.options)
+
+      console.log('adding result')
 
       return state.rerender()
     }
