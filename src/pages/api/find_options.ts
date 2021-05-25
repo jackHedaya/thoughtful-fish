@@ -23,7 +23,11 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
       },
     ])
 
-    await transformData(req, [{ key: 'noCache', type: 'boolean' }])
+    await transformData(req, [
+      { key: 'noCache', type: 'boolean' },
+      { key: 'page', type: 'number' },
+      { key: 'limit', type: 'number' },
+    ])
 
     const { preset, tickers, ...otherData } = req.query
 

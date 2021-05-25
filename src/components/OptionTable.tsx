@@ -39,7 +39,7 @@ export default function OptionTable(props: OptionTableProps) {
         {}
       )
     )
-  }, [headers.length])
+  }, [headers, headers.length])
 
   type HeaderRendererProps = {
     dataKey: string

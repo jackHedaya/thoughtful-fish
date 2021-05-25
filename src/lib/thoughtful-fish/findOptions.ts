@@ -3,9 +3,10 @@ import safeEval from 'safe-eval'
 import ameritrade from '../ameritrade'
 
 export type PresetParams = {
-  page: number
   type: 'CALL' | 'PUT' | 'ALL'
   accessToken: string
+  page: number
+  limit?: number
   noCache?: boolean
 }
 
@@ -18,6 +19,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
   const {
     type: queryOptionType = 'ALL',
     page = 1,
+    limit = 5,
     noCache,
     onQueryComplete = (e) => e,
     accessToken,
@@ -26,7 +28,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
 
   if (tickers.length < 1) throw 'No tickers given'
 
-  const pagedTickers = tickers.slice(100 * (page - 1), 100 * page)
+  const pagedTickers = limit && page ? tickers.slice(limit * page, limit * (page + 1)) : tickers
 
   // Combines expressions if given as array
   const expression = typeof exp === 'string' ? exp : exp.join(' && ')
@@ -96,7 +98,7 @@ function queryDateMap(query: QueryParams): OptionExtension[] {
       try {
         if (safeEval(expression, { underlying, option, Math })) out.push(option)
       } catch (e) {
-        throw `Error in given expression: ${e.message}`
+        throw { error: `Error in given expression: ${e.message}`, status: 400 }
       }
     })
   })

@@ -15,7 +15,7 @@ module.exports = {
   globals: {
     React: 'writeable',
   },
-  plugins: ['import'],
+  plugins: ['react-hooks', 'import'],
   extends: [
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
@@ -31,5 +31,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'import/order': ['warn', { 'newlines-between': 'always', alphabetize: { order: 'asc' } }],
     'sort-imports': ['warn', { ignoreDeclarationSort: true, ignoreCase: true }],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
   },
 }
