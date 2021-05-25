@@ -3,96 +3,29 @@ import { SortDirection, SortDirectionType } from 'react-virtualized'
 
 import GeneralSet from '../utils/GeneralSet'
 
-export class ResultsState {
-  private resultsSet: GeneralSet<OptionExtension> = new GeneralSet((i) => i.symbol)
-  private loadedTickersSet: Set<string> = new Set()
-  private cachedTickersSet: Set<string> = new Set()
-  private erroredTickersSet: Set<string> = new Set()
+type ResultsState = Omit<
+  InternalResultsState,
+  'resultsSet' | 'loadedTickersSet' | 'erroredTickersSet' | 'cachedTickersSet'
+> & {
+  results: OptionExtension[]
+  loadedTickers: string[]
+  erroredTickers: string[]
+  cachedTickers: string[]
+}
 
-  public errors: ErrorData[] = []
-  public meta: HackerMeta
-  public totalTickerCount: number
-  public noCache: boolean
-  public sortBy: string
-  public sortDirection: SortDirectionType = SortDirection.DESC
+type InternalResultsState = {
+  // These properties will not be available externally
+  resultsSet: GeneralSet<OptionExtension>
+  loadedTickersSet: Set<string>
+  erroredTickersSet: Set<string>
+  cachedTickersSet: Set<string>
 
-  get results() {
-    return Array.from(this.resultsSet.values())
-  }
-
-  set results(r: OptionExtension[]) {
-    this.resultsSet.clear()
-    this.resultsSet.add(...r)
-  }
-
-  get loadedTickers() {
-    return Array.from(this.loadedTickersSet.values())
-  }
-
-  set loadedTickers(t: string[]) {
-    this.loadedTickersSet.clear()
-    t.forEach((ticker) => this.loadedTickersSet.add(ticker))
-  }
-
-  get cachedTickers() {
-    return Array.from(this.cachedTickersSet.values())
-  }
-
-  set cachedTickers(t: string[]) {
-    this.cachedTickersSet.clear()
-    t.forEach((ticker) => this.cachedTickersSet.add(ticker))
-  }
-
-  get erroredTickers() {
-    return Array.from(this.erroredTickersSet.values())
-  }
-
-  set erroredTickers(t: string[]) {
-    this.erroredTickersSet.clear()
-    t.forEach((ticker) => this.erroredTickersSet.add(ticker))
-  }
-
-  constructor(args: Partial<ResultsState>) {
-    const { results, loadedTickers, cachedTickers, erroredTickers, ...others } = args
-
-    if (results) this.pushResult(...results)
-    if (loadedTickers) this.pushLoadedTickers(...loadedTickers)
-    if (cachedTickers) this.pushCachedTickers(...cachedTickers)
-    if (erroredTickers) this.pushErroredTickers(...erroredTickers)
-
-    Object.entries(others).forEach(([k, v]) => (this[k] = v))
-  }
-
-  /**
-   * Forces a rerender for dependent components because an equality check with falsely
-   * succeed if a new object is not returned
-   *
-   * @param state The new result state
-   * @returns {ResultsState} A new state object with the same values
-   */
-  rerender(state?: ResultsState) {
-    return new ResultsState(state ?? this)
-  }
-
-  pushResult(...r: OptionExtension[]) {
-    this.resultsSet.add(...r)
-  }
-
-  pushLoadedTickers(...t: string[]) {
-    this._pushTickerSet(this.loadedTickersSet, t)
-  }
-
-  pushCachedTickers(...t: string[]) {
-    this._pushTickerSet(this.cachedTickersSet, t)
-  }
-
-  pushErroredTickers(...t: string[]) {
-    this._pushTickerSet(this.erroredTickersSet, t)
-  }
-
-  private _pushTickerSet(set: Set<string>, t: string[]) {
-    t.forEach((ticker) => set.add(ticker))
-  }
+  errors: ErrorData[]
+  meta: HackerMeta
+  totalTickerCount: number
+  noCache: boolean
+  sortBy: string
+  sortDirection: SortDirectionType
 }
 
 export type Action =
@@ -109,42 +42,65 @@ export type Action =
 
 type ErrorData = { tickers: string[]; message: string }
 
-function reducer(state: ResultsState, action: Action): ResultsState {
-  // Must disable because TypeScript cannot undertand switch type for some reason
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { type, ...actionParams } = action
+const defaultState: (totalTickerCount: number) => InternalResultsState = (totalTickerCount) => ({
+  resultsSet: new GeneralSet((o) => o.symbol),
+  loadedTickersSet: new Set(),
+  erroredTickersSet: new Set(),
+  cachedTickersSet: new Set(),
 
+  noCache: false,
+  errors: [],
+  sortDirection: SortDirection.DESC,
+  sortBy: null,
+  meta: { cached: false },
+  totalTickerCount,
+})
+
+const transformState: (state: InternalResultsState) => ResultsState = (state) => {
+  const { resultsSet, loadedTickersSet, erroredTickersSet, cachedTickersSet, ...rest } = state
+
+  return {
+    ...rest,
+    results: resultsSet.toArray(),
+    loadedTickers: Array.from(loadedTickersSet.values()),
+    erroredTickers: Array.from(erroredTickersSet.values()),
+    cachedTickers: Array.from(cachedTickersSet.values()),
+  }
+}
+
+function reducer(state: InternalResultsState, action: Action): InternalResultsState {
   switch (action.type) {
     case 'add_results': {
-      state.pushLoadedTickers(...action.tickers)
+      action.tickers.forEach((ticker) => {
+        state.loadedTickersSet.add(ticker)
 
-      if (action.data.meta.cached) state.pushCachedTickers(...action.tickers)
+        if (action.data.meta.cached) state.cachedTickersSet.add(ticker)
+      })
 
-      state.pushResult(...action.data.options)
+      state.resultsSet.add(...action.data.options)
 
-      console.log('adding result')
-
-      return state.rerender()
+      return { ...state }
     }
 
     case 'add_error': {
-      state.pushErroredTickers(...action.tickers)
+      action.tickers.forEach((ticker) => state.erroredTickersSet.add(ticker))
 
-      state.errors = [...state.errors, { tickers: action.tickers, message: action.message }]
-
-      return state.rerender()
+      return {
+        ...state,
+        errors: [...state.errors, { tickers: action.tickers, message: action.message }],
+      }
     }
 
     case 'set_no_cache':
-      state.cachedTickers = []
-    // Implicitly falls through to return statement
+      return { ...state, cachedTickersSet: new Set(), noCache: action.noCache }
 
     case 'set_sort_by_key':
     case 'set_sort_direction':
     case 'set_total_ticker_count':
-      Object.entries(actionParams).forEach(([k, v]) => (state[k] = v))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { type, ...actionParams } = action
 
-      return state.rerender()
+      return { ...state, ...actionParams }
 
     default:
       throw new Error()
@@ -153,6 +109,10 @@ function reducer(state: ResultsState, action: Action): ResultsState {
 
 type InitialArgs = { totalTickerCount: number }
 
-export default function useResultsState({ totalTickerCount }: InitialArgs) {
-  return useReducer(reducer, new ResultsState({ totalTickerCount }))
+export default function useResultsState({
+  totalTickerCount,
+}: InitialArgs): [ResultsState, React.Dispatch<Action>] {
+  const [state, dispatch] = useReducer(reducer, defaultState(totalTickerCount))
+
+  return [transformState(state), dispatch]
 }
