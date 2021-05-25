@@ -101,8 +101,6 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const tickersTitle = generateTickersTitle(props.tickers)
 
-  console.log('Rendering')
-
   return (
     <div className={`content ${s.content}`}>
       <Head>
