@@ -26,7 +26,8 @@
     "react-virtualized-auto-sizer": "^1.0.4",
     "safe-eval": "^0.4.1",
     "sass": "^1.32.0",
-    "swr": "^0.3.11"
+    "swr": "^0.3.11",
+    "vm2": "^3.9.3"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
