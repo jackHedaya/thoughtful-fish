@@ -1,6 +1,6 @@
-import safeEval from 'safe-eval'
-
 import ameritrade from '../ameritrade'
+
+import safeEval from './safeEval'
 
 export type PresetParams = {
   type: 'CALL' | 'PUT' | 'ALL'
