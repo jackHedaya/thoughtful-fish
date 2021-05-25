@@ -93,3 +93,9 @@ export function InstructionPanel() {
     </div>
   )
 }
+
+export type TargetPriceProps = {
+  tickers: string | string[]
+  targetPrice: number
+  daysLeft?: number
+}

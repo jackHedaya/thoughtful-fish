@@ -10,6 +10,8 @@ import { memo, useEffect, useMemo, useState } from 'react'
 import { SortDirection } from 'react-virtualized'
 
 import CategoryLoadingBar from '../../components/CategoryLoadingBar'
+import { ExpressionProps } from '../../components/HackerPresets/ExpressionPreset'
+import { TargetPriceProps } from '../../components/HackerPresets/TargetPricePreset'
 import LoadingAnimation from '../../components/LoadingAnimation'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
 import useRequest from '../../hooks/useRequest'
@@ -34,17 +36,19 @@ const OptionTable = dynamic(() => import('../../components/OptionTable'), {
 })
 
 type OptionHackerResultsProps = {
-  tickers: string[]
-  expressions?: string[]
   preset: string
   headers?: string[]
-}
+  tickers: string[]
+} & (ExpressionProps | TargetPriceProps)
 
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const BATCH_SIZE = 5
-  const defaultHeaders: HeaderOption[] = defaultPresetHeaders[props.preset]
 
-  const [state, dispatch] = useResultsState({ totalTickerCount: props.tickers.length })
+  const { headers: _passedHeaders, ...presetData } = props
+
+  const defaultHeaders: HeaderOption[] = defaultPresetHeaders[presetData.preset]
+
+  const [state, dispatch] = useResultsState({ totalTickerCount: presetData.tickers.length })
 
   const handleSort = (sortBy: string) => {
     const { sortBy: sortByKey, sortDirection } = state
@@ -93,7 +97,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const isErrored = state.erroredTickers.length === state.totalTickerCount
 
-  const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
+  const passedHeaders = _passedHeaders?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, _setDisplayHeaders] = useState<HeaderOption[]>(
     passedHeaders || defaultHeaders
   )
@@ -179,7 +183,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       <QueryTickers
         tickers={props.tickers}
         batchSize={BATCH_SIZE}
-        presetData={{ preset: props.preset, expressions: props.expressions }}
+        presetData={presetData}
         dispatch={dispatch}
       />
     </div>
@@ -188,10 +192,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
 type QueryTickersProps = {
   tickers: string[]
-  presetData: {
-    preset: string
-    expressions: string[]
-  }
+  presetData: Omit<OptionHackerResultsProps, 'headers'>
   dispatch: React.Dispatch<Action>
   batchSize: number
 }
@@ -228,7 +229,7 @@ function QueryTickerNM(props: QueryTickerProps) {
   const { data, error } = useRequest<HackerResult>({
     url: `/api/find_options`,
     method: 'GET',
-    params: { ...props.presetData, tickers: props.tickers, preset: 'Expression' },
+    params: props.presetData,
     paramsSerializer: (d) => q.stringify(d),
   })
 

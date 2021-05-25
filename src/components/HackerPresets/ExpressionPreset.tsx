@@ -138,3 +138,7 @@ export function InstructionPanel() {
     </div>
   )
 }
+
+export type ExpressionProps = {
+  expressions: string
+}
