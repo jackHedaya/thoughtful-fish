@@ -1,14 +1,15 @@
 import q from 'querystring'
 
-import { LinearProgress, TextField, Tooltip } from '@material-ui/core'
+import { TextField, Tooltip } from '@material-ui/core'
 import { InfoOutlined } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import { AxiosError } from 'axios'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import { memo, useEffect, useMemo, useState } from 'react'
-import { SortDirection, SortDirectionType } from 'react-virtualized'
+import { SortDirection } from 'react-virtualized'
 
+import CategoryLoadingBar from '../../components/CategoryLoadingBar'
 import LoadingAnimation from '../../components/LoadingAnimation'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
 import useRequest from '../../hooks/useRequest'
@@ -22,7 +23,15 @@ import pluralize from '../../utils/pluralize'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
 
-const OptionTable = dynamic(() => import('../../components/OptionTable'))
+const DynamicLoader = () => (
+  <div style={{ margin: 'auto' }}>
+    <LoadingAnimation />
+  </div>
+)
+
+const OptionTable = dynamic(() => import('../../components/OptionTable'), {
+  loading: DynamicLoader,
+})
 
 type OptionHackerResultsProps = {
   tickers: string[]
@@ -92,7 +101,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const tickersTitle = generateTickersTitle(props.tickers)
 
-  if (!isLoading) console.log(state.loadedTickers.length)
+  console.log('Rendering')
 
   return (
     <div className={`content ${s.content}`}>
@@ -101,17 +110,24 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
       </Head>
       <div className="page-title">Option Hacker</div>
       {!isLoading && !isErrored && (
-        <>
-          <h2 className={s.resultsTitle}>
-            Results for {tickersTitle}{' '}
-            {state.cachedCount !== 0 && (
-              <CachedTooltip
-                setNoCache={() => dispatch({ type: 'set_no_cache', noCache: true })}
-                cachedCount={state.cachedCount}
+        <div className={s.resultsHeader}>
+          <h2 className={s.resultsTitle}>Results for {tickersTitle} </h2>
+          <div className={s.right}>
+            {state.loadedTickers.length !== state.totalTickerCount && (
+              <CategoryLoadingBar
+                successTickers={state.loadedTickers}
+                errorTickers={state.erroredTickers}
+                totalCount={state.totalTickerCount}
               />
             )}
-          </h2>
-        </>
+            {state.cachedTickers.length !== 0 && (
+              <CachedTooltip
+                setNoCache={() => dispatch({ type: 'set_no_cache', noCache: true })}
+                cachedCount={state.cachedTickers.length}
+              />
+            )}
+          </div>
+        </div>
       )}
       <div className={s.results}>
         {isErrored && !isLoading ? (
@@ -213,8 +229,6 @@ function QueryTickerNM(props: QueryTickerProps) {
     params: { ...props.presetData, tickers: props.tickers, preset: 'Expression' },
     paramsSerializer: (d) => q.stringify(d),
   })
-
-  console.log('rendering ' + props.tickers.join(','))
 
   useEffect(() => {
     if (!data && !error) return
