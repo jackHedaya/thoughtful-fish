@@ -31,4 +31,8 @@ export default class GeneralSet<E> {
   clear() {
     this.map.clear()
   }
+
+  toArray() {
+    return Array.from(this.values())
+  }
 }
