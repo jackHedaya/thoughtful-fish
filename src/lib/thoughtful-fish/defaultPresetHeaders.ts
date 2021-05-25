@@ -15,3 +15,5 @@ export default {
     { label: 'Days to Expiration', key: 'daysToExpiration' },
   ],
 }
+
+export type HeaderOption = { key: string; label: string }

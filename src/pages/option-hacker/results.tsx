@@ -13,7 +13,7 @@ import CategoryLoadingBar from '../../components/CategoryLoadingBar'
 import LoadingAnimation from '../../components/LoadingAnimation'
 import usePrettyLoading from '../../hooks/usePrettyLoading'
 import useRequest from '../../hooks/useRequest'
-import defaultPresetHeaders from '../../lib/thoughtful-fish/defaultPresetHeaders'
+import defaultPresetHeaders, { HeaderOption } from '../../lib/thoughtful-fish/defaultPresetHeaders'
 import { getSession, returnRedirect } from '../../middlewares/auth'
 import useResultsState, { Action } from '../../state/useResultsState'
 import s from '../../styles/pages/results.module.scss'
@@ -40,10 +40,9 @@ type OptionHackerResultsProps = {
   headers?: string[]
 }
 
-type HeaderOption = { key: string; label: string }
-
 export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const BATCH_SIZE = 5
+  const defaultHeaders: HeaderOption[] = defaultPresetHeaders[props.preset]
 
   const [state, dispatch] = useResultsState({ totalTickerCount: props.tickers.length })
 
@@ -95,9 +94,14 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
   const isErrored = state.erroredTickers.length === state.totalTickerCount
 
   const passedHeaders = props?.headers?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
-  const [displayHeaders, setDisplayHeaders] = useState(
-    passedHeaders || defaultPresetHeaders[props.preset]
+  const [displayHeaders, _setDisplayHeaders] = useState<HeaderOption[]>(
+    passedHeaders || defaultHeaders
   )
+
+  const setDisplayHeaders = (headers: HeaderOption[]) => {
+    _setDisplayHeaders(headers as HeaderOption[])
+    setQuerystring('headers', headers.map((h) => h.key).join(','))
+  }
 
   const tickersTitle = generateTickersTitle(props.tickers)
 
@@ -148,9 +152,9 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
               getOptionLabel={(option) => option.label}
               getOptionSelected={(o, n) => o.key === n.key}
               value={displayHeaders}
-              onChange={(_, headers) => {
-                setDisplayHeaders(headers as HeaderOption[])
-                setQuerystring('headers', (headers as HeaderOption[]).map((h) => h.key).join(','))
+              onChange={(_, headers, reason) => {
+                if (reason === 'clear') setDisplayHeaders(defaultHeaders)
+                else setDisplayHeaders(headers as HeaderOption[])
               }}
               renderInput={(params) => (
                 <TextField
