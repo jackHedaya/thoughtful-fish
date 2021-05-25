@@ -112,8 +112,8 @@ function queryDateMap(query: QueryParams): OptionExtension[] {
 
 type ExpressionPresetOptions = PresetParams & { expressions: string[] }
 
-export function expressionPreset(tickers: string[], options: ExpressionPresetOptions) {
-  return findOptions(tickers, options)
+export function expressionPreset(tickers: string | string[], options: ExpressionPresetOptions) {
+  return findOptions(typeof tickers === 'string' ? [tickers] : tickers, options)
 }
 
 type TargetPricePresetOptions = PresetParams & {
@@ -122,7 +122,7 @@ type TargetPricePresetOptions = PresetParams & {
   includeUnprofitable: boolean
 }
 
-export function targetPricePreset(ticker: string | [string], options: TargetPricePresetOptions) {
+export function targetPricePreset(ticker: string | string[], options: TargetPricePresetOptions) {
   const { daysLeft = 0, includeUnprofitable = false, targetPrice } = options
 
   const tickerStr = typeof ticker === 'string' ? ticker : ticker[0]
