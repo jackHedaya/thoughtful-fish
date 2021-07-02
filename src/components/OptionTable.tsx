@@ -8,7 +8,7 @@ import s from '../styles/components/option-table.module.scss'
 
 type OptionTableProps = {
   headers: TableHeader[]
-  options: Partial<OptionExtension>[]
+  options: OptionExtension[]
   sortBy: string
   sortDirection: 'ASC' | 'DESC' | null
   onSort: (sortBy: string) => void
