@@ -12,9 +12,8 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - name: "Build & test"
-      
       - uses: actions/checkout@v2
+      - name: "Build & test"
       - uses: actions/setup-node@v2
       
         run: |
