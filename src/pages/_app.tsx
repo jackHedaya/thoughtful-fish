@@ -33,6 +33,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       MuiButtonBase: {
         disableRipple: true,
       },
+      MuiLinearProgress: {
+        style: { borderRadius: 5, height: 10 },
+      },
     },
   })
 

@@ -21,3 +21,5 @@ export default {
     { label: 'Expiration Date', key: 'formattedExpirationDate' },
   ],
 }
+
+export type HeaderOption = { key: string; label: string }

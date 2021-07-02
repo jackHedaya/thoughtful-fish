@@ -41,7 +41,7 @@ function reducer(state: TargetPricePresetState, action: Action): TargetPricePres
   }
 }
 
-export default function presetReducer() {
+export default function useTargetPricePresetState() {
   return useReducer(reducer, {
     tickers: [],
     targetPrice: undefined,

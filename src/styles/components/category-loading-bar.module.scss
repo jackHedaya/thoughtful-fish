@@ -1,0 +1,35 @@
+@import '../colors.scss';
+
+$border-radius: 100px;
+
+:export {
+  borderRadius: $border-radius;
+}
+
+.loadingBar {
+  display: flex;
+  flex-basis: auto;
+  min-width: 200px;
+  height: 12px;
+  background-color: rgba($signature-red, 0.1);
+  border: 1px solid $signature-red;
+  border-radius: 100px;
+
+  div {
+    transition: all 1s;
+  }
+
+  .success {
+    background-color: $signature-red;
+
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+  }
+
+  .errored {
+    background-color: $back-gray;
+
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+  }
+}

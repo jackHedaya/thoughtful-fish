@@ -1,12 +1,14 @@
 import moment from 'moment'
-import safeEval from 'safe-eval'
 
 import ameritrade from '../ameritrade'
 
+import safeEval from './safeEval'
+
 export type PresetParams = {
-  page: number
   type: 'CALL' | 'PUT' | 'ALL'
   accessToken: string
+  page: number
+  limit?: number
   noCache?: boolean
 }
 
@@ -19,6 +21,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
   const {
     type: queryOptionType = 'ALL',
     page = 1,
+    limit = 5,
     noCache,
     onQueryComplete = (e) => e,
     accessToken,
@@ -27,7 +30,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
 
   if (tickers.length < 1) throw 'No tickers given'
 
-  const pagedTickers = tickers.slice(100 * (page - 1), 100 * page)
+  const pagedTickers = limit && page ? tickers.slice(limit * page, limit * (page + 1)) : tickers
 
   // Combines expressions if given as array
   const expression = typeof exp === 'string' ? exp : exp.join(' && ')
@@ -42,7 +45,6 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
     const p = ameritrade.symbol
       .getOptionChain({ symbol: ticker, type: options.type, accessToken, noCache })
       .then((data) => {
-        console.log('Recieved chain')
         // This symbol does not have options available
         if (data.status === 'FAILED') return
 
@@ -98,7 +100,7 @@ function queryDateMap(query: QueryParams): OptionExtension[] {
       try {
         if (safeEval(expression, { underlying, option, Math })) out.push(option)
       } catch (e) {
-        throw `Error in given expression: ${e.message}`
+        throw { error: `Error in given expression: ${e.message}`, status: 400 }
       }
     })
   })
@@ -112,8 +114,8 @@ function queryDateMap(query: QueryParams): OptionExtension[] {
 
 type ExpressionPresetOptions = PresetParams & { expressions: string[] }
 
-export function expressionPreset(tickers: string[], options: ExpressionPresetOptions) {
-  return findOptions(tickers, options)
+export function expressionPreset(tickers: string | string[], options: ExpressionPresetOptions) {
+  return findOptions(typeof tickers === 'string' ? [tickers] : tickers, options)
 }
 
 type TargetPricePresetOptions = PresetParams & {
@@ -122,7 +124,7 @@ type TargetPricePresetOptions = PresetParams & {
   includeUnprofitable: boolean
 }
 
-export function targetPricePreset(ticker: string | [string], options: TargetPricePresetOptions) {
+export function targetPricePreset(ticker: string | string[], options: TargetPricePresetOptions) {
   const { daysLeft = 0, includeUnprofitable = false, targetPrice } = options
 
   const tickerStr = typeof ticker === 'string' ? ticker : ticker[0]
@@ -152,7 +154,13 @@ export function targetPricePreset(ticker: string | [string], options: TargetPric
           // Formatted return on target
           returnOnTarget: calcReturnOnTarget(x, targetPrice).toFixed(2) + '%',
         }))
-        .sort((a, b) => b.rot - a.rot)
+        .sort((a, b) => {
+          // Prevents a mark of 0 causing Infinity to come up as the highest possible return
+          if (a.rot === Infinity) return 1
+          if (b.rot === Infinity) return -1
+
+          return b.rot - a.rot
+        })
         .filter((val) => includeUnprofitable || val.rot > 0)
 
         // Removes rot key from output as it is only used internally for sorting and filtering

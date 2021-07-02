@@ -1,6 +1,7 @@
 import { Paper } from '@material-ui/core'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 const Bubbles = dynamic(() => import('../components/BubbleBackground'), {
   ssr: false,
@@ -18,12 +19,13 @@ export default function Login() {
   const redirectRoute = (Router.query.route as string) || '/home'
 
   const { error, response } = useRequest({ url: '/api/auth/validate' })
-  const isPrettyLoading = usePrettyLoading(1000)
 
-  let loading = (!error && !response) || isPrettyLoading
+  // Needed to prevent a login flash when redirecting
+  const [forceIsLoading, setForceIsLoading] = useState(false)
+  const isLoading = usePrettyLoading((!response && !error) || forceIsLoading, 1000)
 
-  if (!loading && response?.status === 201) {
-    loading = true
+  if (!isLoading && response?.status === 201) {
+    setForceIsLoading(true)
 
     Router.push(redirectRoute)
   }
@@ -32,12 +34,12 @@ export default function Login() {
     <div className={s.login}>
       <Bubbles color="#ff6767" />
       <Paper className={s.main}>
-        {!loading ? (
+        {!isLoading && !forceIsLoading ? (
           <>
             <h2>We're excited to have you here</h2>
             <h3>Sign in with</h3>
             <div className={s.button} onClick={() => Router.push('/api/auth/redirect')}>
-              <img src="/ameritrade-logo.png" />
+              <img src="/ameritrade-logo.png" width="200px" height="38px" />
             </div>
             {didError && <div className={s.error}>Something went wrong</div>}
           </>
