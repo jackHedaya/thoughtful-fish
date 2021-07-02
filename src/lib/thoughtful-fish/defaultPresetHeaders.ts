@@ -14,6 +14,10 @@ export default {
     { label: 'Return On Target', key: 'returnOnTarget' },
     { label: 'Days to Expiration', key: 'daysToExpiration' },
   ],
+  Volatility: [
+    { label: 'Symbol', key: 'symbol' },
+    { label: 'Implied Volatility', key: 'impliedVolatility' },
+  ],
 }
 
 export type HeaderOption = { key: string; label: string }

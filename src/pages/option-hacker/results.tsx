@@ -75,11 +75,14 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
     const { results, sortDirection, sortBy } = state
 
     // Combines the multiple responses into one array
-    const ops = results // Replaces "Infinity%" with "N/A"
-      .map((o) => ({
-        ...o,
-        returnOnTarget: o.returnOnTarget === 'Infinity%' ? 'N/A' : o.returnOnTarget,
-      }))
+    const ops =
+      props.preset === 'Target Price'
+        ? results // Replaces "Infinity%" with "N/A"
+            .map((o) => ({
+              ...o,
+              returnOnTarget: o.returnOnTarget === 'Infinity%' ? 'N/A' : o.returnOnTarget,
+            }))
+        : results
 
     if (sortDirection === null) return ops
 

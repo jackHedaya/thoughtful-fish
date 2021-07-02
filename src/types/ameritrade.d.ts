@@ -224,6 +224,8 @@ type Option = {
   markPercentChange: number
 }
 
+type OptionStrikeRange = 'ITM' | 'OTM' | 'ATM' | 'SAK' | 'SBK' | 'SNK' | 'ALL'
+
 type Underlying = {
   ask: number
   askSize: number

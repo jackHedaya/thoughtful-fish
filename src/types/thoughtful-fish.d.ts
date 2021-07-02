@@ -1,5 +1,9 @@
-type OptionListManipulator = (options: Option[]) => OptionExtension[]
-type OptionExtension = { [key: string]: unknown } & Option
+type OptionListManipulator = (options: OptionExtension[]) => OptionExtension[]
+type OptionExtension = Partial<
+  Option & {
+    underlyingSymbol?: string
+  } & { [key: string]: unknown }
+>
 
 type HackerResult = { options: OptionExtension[]; meta: HackerMeta }
 type HackerMeta = { cached: boolean }

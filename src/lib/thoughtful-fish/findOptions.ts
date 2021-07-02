@@ -1,13 +1,11 @@
-import ameritrade from '../ameritrade'
+import formatPercent from '../../utils/formatPercent'
+import ameritrade, { GetOptionChainParams } from '../ameritrade'
 
 import safeEval from './safeEval'
 
-export type PresetParams = {
-  type: 'CALL' | 'PUT' | 'ALL'
-  accessToken: string
+export type PresetParams = GetOptionChainParams & {
   page: number
   limit?: number
-  noCache?: boolean
 }
 
 type FindCommandOptions = PresetParams & {
@@ -24,6 +22,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
     onQueryComplete = (e) => e,
     accessToken,
     expressions: exp,
+    ...params
   } = options
 
   if (tickers.length < 1) throw 'No tickers given'
@@ -33,7 +32,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
   // Combines expressions if given as array
   const expression = typeof exp === 'string' ? exp : exp.join(' && ')
 
-  const foundOptions: Option[] = []
+  const foundOptions: OptionExtension[] = []
 
   const promises = []
 
@@ -41,7 +40,7 @@ async function findOptions(tickers: string[], options: FindCommandOptions) {
 
   for (const ticker of pagedTickers) {
     const p = ameritrade.symbol
-      .getOptionChain({ symbol: ticker, type: options.type, accessToken, noCache })
+      .getOptionChain({ symbol: ticker, accessToken, noCache, type: queryOptionType, ...params })
       .then((data) => {
         // This symbol does not have options available
         if (data.status === 'FAILED') return
@@ -90,13 +89,21 @@ type QueryParams = {
 
 function queryDateMap(query: QueryParams): OptionExtension[] {
   const { underlying, expression } = query
+  const { symbol: underlyingSymbol } = underlying
 
-  const out: Option[] = []
+  const out: OptionExtension[] = []
 
   Object.entries(query.expDateMap).forEach(([, strikes]) => {
     Object.entries(strikes).forEach(([, [option]]) => {
+      // Possibly remove an unneeded sandbox load
+      if (expression === 'true') {
+        out.push({ ...option, underlyingSymbol })
+        return
+      }
+
       try {
-        if (safeEval(expression, { underlying, option, Math })) out.push(option)
+        if (safeEval(expression, { underlying, option, Math }))
+          out.push({ ...option, underlyingSymbol })
       } catch (e) {
         throw { error: `Error in given expression: ${e.message}`, status: 400 }
       }
@@ -127,7 +134,7 @@ export function targetPricePreset(ticker: string | string[], options: TargetPric
 
   const tickerStr = typeof ticker === 'string' ? ticker : ticker[0]
 
-  const calcReturnOnTarget = (op: Option, t: string | number) => {
+  const calcReturnOnTarget = (op: OptionExtension, t: string | number) => {
     const pt = typeof t === 'string' ? parseFloat(t) : t
 
     let ret: number
@@ -150,7 +157,7 @@ export function targetPricePreset(ticker: string | string[], options: TargetPric
           rot: calcReturnOnTarget(x, targetPrice),
 
           // Formatted return on target
-          returnOnTarget: calcReturnOnTarget(x, targetPrice).toFixed(2) + '%',
+          returnOnTarget: formatPercent(calcReturnOnTarget(x, targetPrice)),
         }))
         .sort((a, b) => {
           // Prevents a mark of 0 causing Infinity to come up as the highest possible return
@@ -166,4 +173,44 @@ export function targetPricePreset(ticker: string | string[], options: TargetPric
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(({ rot, ...o }) => (o as unknown) as OptionExtension),
   })
+}
+
+export function volatilityPreset(tickers: string | string[], options: PresetParams) {
+  return findOptions(typeof tickers === 'string' ? [tickers] : tickers, {
+    ...options,
+    strikeCount: 1,
+    range: 'ATM',
+    expressions: 'true',
+  }).then(({ options, meta }) => ({
+    meta,
+    options: Object.entries(
+      options.reduce<{ [key: string]: { iv: number; avgCount: number } }>((acc, option) => {
+        // Incremental averaging as seen here https://math.stackexchange.com/a/106720
+        const { volatility, underlyingSymbol: symbol } = option
+
+        if (!acc[symbol]) {
+          acc[symbol] = {
+            iv: option.volatility,
+            avgCount: 1,
+          }
+
+          return acc
+        }
+
+        const { avgCount, iv } = acc[symbol]
+
+        if (isNaN(volatility)) return acc
+
+        acc[symbol].iv += (volatility - iv) / avgCount
+        acc[symbol].avgCount++
+
+        return acc
+      }, {})
+    )
+      .sort(([, iv1], [, iv2]) => iv2.iv - iv1.iv)
+      .map(([symbol, { iv }]) => ({
+        symbol,
+        impliedVolatility: isNaN(iv) ? 'N/A' : formatPercent(iv),
+      })),
+  }))
 }

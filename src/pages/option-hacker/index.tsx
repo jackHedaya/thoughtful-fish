@@ -6,6 +6,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 
 import ExpressionPreset from '../../components/HackerPresets/ExpressionPreset'
 import TargetPricePreset from '../../components/HackerPresets/TargetPricePreset'
+import VolatilityPreset from '../../components/HackerPresets/VolatilityPreset'
 import InstructionPanel from '../../components/InstructionPanel'
 import SignatureRadio from '../../components/SignatureRadio'
 import { authOrPassSession } from '../../middlewares/auth'
@@ -15,6 +16,7 @@ import s from '../../styles/pages/option-hacker.module.scss'
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
   Expression: ExpressionPreset,
   'Target Price': TargetPricePreset,
+  Volatility: VolatilityPreset,
 }
 
 export type PresetProps = {
@@ -86,7 +88,7 @@ function PresetSetup(props: { preset: string; setPreset: Dispatch<SetStateAction
     <div className={s.preset}>
       <h3>Preset</h3>
       <SignatureRadio
-        items={['Expression', 'Target Price']}
+        items={Object.keys(PRESET_TO_COMPONENT)}
         onSelect={(i) => setPreset(i)}
         selectedElement={preset}
       />
