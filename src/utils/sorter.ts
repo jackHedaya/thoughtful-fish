@@ -8,11 +8,17 @@ export default function sorter<T extends Record<string, unknown>>(array: T[], ke
     const genericValue = outArr[0][key]
 
     if (typeof genericValue === 'string') {
-      const getPercentMatch = (str: string) => parseFloat(str.match(/^(\d+)%?$/)?.[1])
+      if (isPercentString(genericValue))
+        // Capture decimal in string
+        return (a, b) => {
+          const percentA = getPercentMatch(a[key])
+          const percentB = getPercentMatch(b[key])
 
-      // Capture decimal in string
-      if (getPercentMatch(genericValue))
-        return (a, b) => getPercentMatch(b[key]) - getPercentMatch(a[key])
+          if (isNaN(percentA)) return 1
+          if (isNaN(percentB)) return -1
+
+          return percentB - percentA
+        }
 
       // Last resort sort alphabetically
       return (a, b) => a[key].localeCompare(b[key])
@@ -23,3 +29,6 @@ export default function sorter<T extends Record<string, unknown>>(array: T[], ke
 
   return outArr.sort(sortFn)
 }
+
+const isPercentString = (str: string) => str[str.length - 1] === '%'
+const getPercentMatch = (str: string) => parseFloat(str.substring(0, str.length - 1))
