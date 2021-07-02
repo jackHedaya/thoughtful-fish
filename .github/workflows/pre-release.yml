@@ -12,17 +12,13 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v2
       - name: "Build & test"
-      - uses: actions/setup-node@v2
-      
-        run: |
-          yarn --production
-          yarn build
-
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: true
           title: "Development Build"
+        run: |
+          yarn --production
+          yarn build
