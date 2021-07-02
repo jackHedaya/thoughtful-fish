@@ -7,6 +7,12 @@ import DollarTextField from '../DollarTextField'
 import SignatureAccordion from '../SignatureAccordion'
 import SignatureButton from '../SignatureButton'
 
+export type TargetPriceProps = {
+  tickers: string | string[]
+  targetPrice: number
+  daysLeft?: number
+}
+
 export default function TargetPricePreset(props: PresetProps) {
   const [state, dispatch] = useTargetPricePresetState()
 
@@ -92,10 +98,4 @@ export function InstructionPanel() {
       </div>
     </div>
   )
-}
-
-export type TargetPriceProps = {
-  tickers: string | string[]
-  targetPrice: number
-  daysLeft?: number
 }

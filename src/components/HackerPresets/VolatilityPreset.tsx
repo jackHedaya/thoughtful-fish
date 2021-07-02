@@ -1,5 +1,6 @@
 import { PresetProps } from '../../pages/option-hacker'
 import useExpressionPresetState from '../../state/useExpressionPresetState'
+import s from '../../styles/components/option-preset.module.scss'
 
 import SetupAccordion from './SetupAccordion'
 
@@ -14,7 +15,7 @@ export default function VolatilityPreset(props: PresetProps) {
   }
 
   return (
-    <div>
+    <div onKeyPress={(e) => (e.key === 'Enter' ? onNext() : false)}>
       <SetupAccordion
         expanded={state._accordionsOpen.setup}
         onExpandedChange={(b) =>
@@ -22,20 +23,20 @@ export default function VolatilityPreset(props: PresetProps) {
         }
         tickers={state.tickers}
         setTickers={(tickers: string[]) => dispatch({ type: 'set_tickers', tickers })}
-        onNext={() => {
-          dispatch({
-            type: 'set_accordion_open',
-            accordion: 'setup',
-            open: false,
-          })
-          dispatch({
-            type: 'set_accordion_open',
-            accordion: 'expressions',
-            open: true,
-          })
-        }}
+        onNext={() => onNext()}
       />
       <props.navigationButtons BackButtonProps={{ disabled: true }} onNext={onNext} />
+    </div>
+  )
+}
+
+export function InstructionPanel() {
+  return (
+    <div className={s.instructions}>
+      <h2>How to use</h2>
+      <div className={s.how}>
+        This hacker preset will get the implied volatility of a list of tickers to then be sorted.
+      </div>
     </div>
   )
 }
