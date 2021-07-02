@@ -103,23 +103,27 @@ function quote(params: QuoteParams): Promise<Quote> {
   }).then((res) => res.data[symbol])
 }
 
-type GetOptionChainParams = {
+export type GetOptionChainParams = {
   symbol: string
   accessToken: string
   type: 'CALL' | 'PUT' | 'ALL'
   noCache?: boolean
+  strikeCount?: number
+  range?: OptionStrikeRange
 }
 
 async function getOptionChain(params: GetOptionChainParams) {
-  const { symbol, accessToken, noCache } = params
+  const { symbol, accessToken, noCache, ...otherParams } = params
 
-  const cacheKey = `optionChain.${symbol}`
+  const cacheKey = `optionChain.${symbol}.${cache.hashObj(
+    (otherParams as unknown) as Record<string, unknown>
+  )}`
 
   const cachedChain: OptionChain = cache.get(cacheKey) as OptionChain
 
   if (cachedChain && !noCache) return { ...cachedChain, _cached: true }
 
-  const newChain = await requestOptionChain(params)
+  const newChain = await requestOptionChain({ symbol, accessToken, ...otherParams })
 
   const marketHours = await getMarketHours({ accessToken, noCache })
 
@@ -129,15 +133,14 @@ async function getOptionChain(params: GetOptionChainParams) {
   return { ...newChain, _cached: false }
 }
 
-function requestOptionChain(params: GetOptionChainParams): Promise<OptionChain> {
-  const { symbol, accessToken, type } = params
+function requestOptionChain(params: Omit<GetOptionChainParams, 'noCache'>): Promise<OptionChain> {
+  const { accessToken, ...sendParams } = params
 
   return axios({
     method: 'GET',
     url: `/marketdata/chains?${q.encode({
-      symbol,
-      type,
       includeQuotes: 'TRUE',
+      ...sendParams,
     })}`,
     headers: bearerHeader(accessToken),
   }).then((x) => x.data)

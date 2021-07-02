@@ -1,4 +1,5 @@
 import moment from 'moment'
+import hash from 'object-hash'
 
 declare global {
   // Needed to augment global
@@ -25,6 +26,10 @@ class ThoughtfulCache {
     if (this.isExpired(expiration)) throw 'Unable to set expiration to past values'
 
     this.cache[key] = { value, expiration }
+  }
+
+  hashObj(obj: Record<string, unknown>) {
+    return hash(obj, { respectType: false, unorderedArrays: true })
   }
 
   private isExpired(timestamp: string): boolean {
