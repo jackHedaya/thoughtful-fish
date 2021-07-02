@@ -15,10 +15,8 @@ export default {
     { label: 'Days to Expiration', key: 'daysToExpiration' },
   ],
   Volatility: [
-    { label: 'Underlying Symbol', key: 'underlyingSymbol' },
     { label: 'Symbol', key: 'symbol' },
-    { label: 'Volatility', key: 'volatility' },
-    { label: 'Expiration Date', key: 'formattedExpirationDate' },
+    { label: 'Implied Volatility', key: 'impliedVolatility' },
   ],
 }
 
