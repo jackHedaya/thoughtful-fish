@@ -69,7 +69,7 @@ function reducer(state: ExpressionPresetState, action: Action): ExpressionPreset
   }
 }
 
-export default function presetReducer() {
+export default function useExpressionPresetState() {
   return useReducer(reducer, {
     tickers: [],
     expressions: [''],

@@ -134,7 +134,7 @@ export function targetPricePreset(ticker: string | string[], options: TargetPric
 
   const tickerStr = typeof ticker === 'string' ? ticker : ticker[0]
 
-  const calcReturnOnTarget = (op: Option, t: string | number) => {
+  const calcReturnOnTarget = (op: OptionExtension, t: string | number) => {
     const pt = typeof t === 'string' ? parseFloat(t) : t
 
     let ret: number
