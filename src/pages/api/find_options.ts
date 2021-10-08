@@ -51,10 +51,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
 
     res.json(options)
   } catch (e) {
-    const {
-      status = e?.response?.status || e.status,
-      error = e?.response?.statusText || e.error,
-    } = e
+    const { status = e?.response?.status || e.status, error = e?.response?.statusText || e.error } =
+      e
 
     if (process.env.NODE_ENV === 'development') console.log(e)
 

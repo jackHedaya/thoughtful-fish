@@ -17,31 +17,26 @@ type SignatureAutocomplete = {
 type DropdownOption = { group: string; value: unknown; label: string }
 
 export default function SignatureAutocomplete(props: SignatureAutocomplete) {
-  const {
-    getRootProps,
-    getInputProps,
-    getListboxProps,
-    getOptionProps,
-    groupedOptions,
-  } = useAutocomplete({
-    autoComplete: true,
-    options: props.loading ? [{ group: '', label: 'Loading...', value: '' }] : props.options,
-    groupBy: (x) => x.group,
-    getOptionLabel: (x) => x.label,
-    getOptionSelected: (option, value) =>
-      option.group === value.group && option.label === option.label,
-    onChange: (_, option: DropdownOption) => {
-      if (option.value === '') return
+  const { getRootProps, getInputProps, getListboxProps, getOptionProps, groupedOptions } =
+    useAutocomplete({
+      autoComplete: true,
+      options: props.loading ? [{ group: '', label: 'Loading...', value: '' }] : props.options,
+      groupBy: (x) => x.group,
+      getOptionLabel: (x) => x.label,
+      getOptionSelected: (option, value) =>
+        option.group === value.group && option.label === option.label,
+      onChange: (_, option: DropdownOption) => {
+        if (option.value === '') return
 
-      props.onChange?.(option)
+        props.onChange?.(option)
 
-      // Create fake event that contains option label
-      // This is done to allow input to be controlled by parent
-      props.TextFieldProps?.onChange?.({
-        currentTarget: { value: option.label },
-      } as React.ChangeEvent<HTMLInputElement>)
-    },
-  })
+        // Create fake event that contains option label
+        // This is done to allow input to be controlled by parent
+        props.TextFieldProps?.onChange?.({
+          currentTarget: { value: option.label },
+        } as React.ChangeEvent<HTMLInputElement>)
+      },
+    })
 
   let indexIncrement = -1
 

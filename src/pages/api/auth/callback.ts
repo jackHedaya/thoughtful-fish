@@ -14,12 +14,8 @@ export default async function callback(req: NextApiRequest, res: NextApiResponse
   }
 
   try {
-    const {
-      accessToken,
-      refreshToken,
-      expiresIn,
-      refreshTokenExpiresIn,
-    } = await ameritrade.auth.authenticateViaCode({ code })
+    const { accessToken, refreshToken, expiresIn, refreshTokenExpiresIn } =
+      await ameritrade.auth.authenticateViaCode({ code })
 
     const profile = await ameritrade.account.getProfile({ accessToken })
 
