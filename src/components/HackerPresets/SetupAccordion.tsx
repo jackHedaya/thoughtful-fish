@@ -22,7 +22,11 @@ export default function SetupAccordion(props: SetupAccordionProps) {
   const [watchlistField, setWatchlistField] = useState('')
   const session = useSession()
 
-  const { data = {}, response, error } = useRequest<{
+  const {
+    data = {},
+    response,
+    error,
+  } = useRequest<{
     [accountId: string]: Watchlist[]
   }>({
     url: '/api/watchlists',

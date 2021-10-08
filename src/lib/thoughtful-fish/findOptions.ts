@@ -171,7 +171,7 @@ export function targetPricePreset(ticker: string | string[], options: TargetPric
         // Removes rot key from output as it is only used internally for sorting and filtering
         // Disable eslint for this line because defining variable for exclusion
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .map(({ rot, ...o }) => (o as unknown) as OptionExtension),
+        .map(({ rot, ...o }) => o as unknown as OptionExtension),
   })
 }
 

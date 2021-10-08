@@ -116,7 +116,7 @@ async function getOptionChain(params: GetOptionChainParams) {
   const { symbol, accessToken, noCache, ...otherParams } = params
 
   const cacheKey = `optionChain.${symbol}.${cache.hashObj(
-    (otherParams as unknown) as Record<string, unknown>
+    otherParams as unknown as Record<string, unknown>
   )}`
 
   const cachedChain: OptionChain = cache.get(cacheKey) as OptionChain
