@@ -25,6 +25,7 @@
     "react-number-format": "^4.4.4",
     "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.4",
+    "redis": "^3.1.2",
     "sass": "^1.32.0",
     "swr": "^0.3.11",
     "vm2": "^3.9.3"
@@ -37,6 +38,7 @@
     "@types/react": "^17.0.0",
     "@types/react-virtualized": "^9.21.11",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/redis": "^2.8.32",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
     "eslint": "^7.19.0",
