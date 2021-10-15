@@ -12,9 +12,9 @@ const PRESET_TO_FUNCTION: {
     options: Record<string, unknown>
   ) => Promise<HackerResult>
 } = {
-  'Target Price': targetPricePreset,
-  Expression: expressionPreset,
-  Volatility: volatilityPreset,
+  target_price: targetPricePreset,
+  expression: expressionPreset,
+  volatility: volatilityPreset,
 }
 
 export default async function findOptions(req: NextApiRequest, res: NextApiResponse) {

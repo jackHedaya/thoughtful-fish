@@ -1,12 +1,12 @@
 export default {
-  Expression: [
+  expression: [
     { label: 'Symbol', key: 'symbol' },
     { label: 'Type', key: 'putCall' },
     { label: 'Strike', key: 'strikePrice' },
     { label: 'Mark', key: 'mark' },
     { label: 'Days to Expiration', key: 'daysToExpiration' },
   ],
-  'Target Price': [
+  target_price: [
     { label: 'Symbol', key: 'symbol' },
     { label: 'Type', key: 'putCall' },
     { label: 'Strike', key: 'strikePrice' },
@@ -14,7 +14,7 @@ export default {
     { label: 'Return On Target', key: 'returnOnTarget' },
     { label: 'Days to Expiration', key: 'daysToExpiration' },
   ],
-  Volatility: [
+  volatility: [
     { label: 'Symbol', key: 'symbol' },
     { label: 'Implied Volatility', key: 'impliedVolatility' },
   ],
