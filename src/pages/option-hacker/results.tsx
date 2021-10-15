@@ -21,6 +21,7 @@ import useResultsState, { Action } from '../../state/useResultsState'
 import s from '../../styles/pages/results.module.scss'
 import chunk from '../../utils/chunk'
 import generateTickersTitle from '../../utils/generateTickersTitle'
+import { JsonMap, reparseNextQuery } from '../../utils/jsonUri'
 import pluralize from '../../utils/pluralize'
 import setQuerystring from '../../utils/setQuerystring'
 import sorter from '../../utils/sorter'
@@ -102,7 +103,7 @@ export default function OptionHackerResults(props: OptionHackerResultsProps) {
 
   const passedHeaders = _passedHeaders?.map((h) => ({ key: h, label: camelCaseToTitle(h) }))
   const [displayHeaders, _setDisplayHeaders] = useState<HeaderOption[]>(
-    passedHeaders || defaultHeaders
+    passedHeaders ?? defaultHeaders ?? []
   )
 
   const setDisplayHeaders = (headers: HeaderOption[]) => {
@@ -291,17 +292,19 @@ export async function getServerSideProps(ctx: NextPageContext) {
 
   if (!session) return returnRedirect(ctx)
 
-  // Hacker query will come in encoded JSON form... It will be parsed to this form
-  // '{"tickers":["NCLH"],"expressions":[""]': ''
-  // This will get the key and decode it to JSON
+  // Hacker query will come in a semi decoded... object and arrays will not be decoded right
   let props = {}
 
+  const query = reparseNextQuery(ctx.query) as JsonMap
+
+  console.log(query)
+
   // Table headers are passed in comma separated into query string
-  const headers = (ctx.query.headers as string)?.split(',')
+  const headers = (query.headers as string)?.split(',')
 
   try {
     // Header spread needs to be done because getServerSideProps throws if a property is undefined
-    props = { ...JSON.parse(Object.keys(ctx.query)[0]), ...(headers ? { headers } : {}) }
+    props = { ...query, ...(headers ? { headers } : {}) }
   } catch (e) {}
 
   return { props }

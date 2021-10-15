@@ -13,7 +13,7 @@ import SignatureRadio from '../../components/SignatureRadio'
 import { authOrPassSession } from '../../middlewares/auth'
 import { PresetState } from '../../state/presetBase'
 import s from '../../styles/pages/option-hacker.module.scss'
-import encodeJsonToUri, { Json } from '../../utils/encodeJsonToUri'
+import { encodeJsonToUri, Json } from '../../utils/jsonUri'
 
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
   expression: ExpressionPreset,
