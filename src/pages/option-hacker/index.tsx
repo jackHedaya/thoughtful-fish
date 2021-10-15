@@ -1,6 +1,6 @@
 import { IconButton, IconButtonProps, Slide } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
-import { startCase } from 'lodash'
+import startCase from 'lodash.startcase'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { Dispatch, SetStateAction, useState } from 'react'

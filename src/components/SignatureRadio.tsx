@@ -17,7 +17,7 @@ export default function SignatureRadio(props: SignatureRadioProps) {
           onClick={() => props.onSelect(item.value)}
           type={props.selectedElement === item.value ? 'fill' : 'outlined'}
         >
-          {item}
+          {item.title}
         </SignatureButton>
       ))}
     </div>
