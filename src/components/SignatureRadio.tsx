@@ -5,7 +5,7 @@ import SignatureButton from './SignatureButton'
 type SignatureRadioProps = {
   selectedElement: string
   onSelect: (s: string) => void
-  items: string[]
+  items: { title: string; value: string }[]
 }
 
 export default function SignatureRadio(props: SignatureRadioProps) {
@@ -14,8 +14,8 @@ export default function SignatureRadio(props: SignatureRadioProps) {
       {props.items.map((item) => (
         <SignatureButton
           key={`SignatureRadio/${item}`}
-          onClick={() => props.onSelect(item)}
-          type={props.selectedElement === item ? 'fill' : 'outlined'}
+          onClick={() => props.onSelect(item.value)}
+          type={props.selectedElement === item.value ? 'fill' : 'outlined'}
         >
           {item}
         </SignatureButton>

@@ -40,8 +40,8 @@ export default async function findOptions(req: NextApiRequest, res: NextApiRespo
 
     if (!presetFn) throw 'Invalid preset'
 
-    if (preset === 'Target Price') await requiredData(req, [{ key: 'targetPrice', type: 'number' }])
-    else if (preset === 'Expression')
+    if (preset === 'target_price') await requiredData(req, [{ key: 'targetPrice', type: 'number' }])
+    else if (preset === 'expression')
       await requiredData(req, [{ key: 'expressions', validator: stringOrStringArray }])
     // Other preset required data goes here
 

@@ -1,5 +1,6 @@
 import { IconButton, IconButtonProps, Slide } from '@material-ui/core'
 import { ArrowBack, ArrowForward } from '@material-ui/icons'
+import { startCase } from 'lodash'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { Dispatch, SetStateAction, useState } from 'react'
@@ -14,9 +15,9 @@ import { PresetState } from '../../state/presetBase'
 import s from '../../styles/pages/option-hacker.module.scss'
 
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
-  Expression: ExpressionPreset,
-  'Target Price': TargetPricePreset,
-  Volatility: VolatilityPreset,
+  expression: ExpressionPreset,
+  target_price: TargetPricePreset,
+  volatility: VolatilityPreset,
 }
 
 export type PresetProps = {
@@ -88,7 +89,10 @@ function PresetSetup(props: { preset: string; setPreset: Dispatch<SetStateAction
     <div className={s.preset}>
       <h3>Preset</h3>
       <SignatureRadio
-        items={Object.keys(PRESET_TO_COMPONENT)}
+        items={Object.keys(PRESET_TO_COMPONENT).map((title) => ({
+          title,
+          value: startCase(title),
+        }))}
         onSelect={(i) => setPreset(i)}
         selectedElement={preset}
       />

@@ -3,9 +3,9 @@ import { InstructionPanel as TP } from './HackerPresets/TargetPricePreset'
 import { InstructionPanel as V } from './HackerPresets/VolatilityPreset'
 
 const PRESET_TO_COMPONENT = {
-  Expression: E,
-  'Target Price': TP,
-  Volatility: V,
+  expression: E,
+  target_price: TP,
+  volatility: V,
 }
 
 export default function InstructionPanel(props: { preset: string }) {
