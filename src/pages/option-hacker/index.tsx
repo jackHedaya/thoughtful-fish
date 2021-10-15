@@ -13,6 +13,7 @@ import SignatureRadio from '../../components/SignatureRadio'
 import { authOrPassSession } from '../../middlewares/auth'
 import { PresetState } from '../../state/presetBase'
 import s from '../../styles/pages/option-hacker.module.scss'
+import encodeJsonToUri, { Json } from '../../utils/encodeJsonToUri'
 
 const PRESET_TO_COMPONENT: { [k: string]: (p: PresetProps) => JSX.Element } = {
   expression: ExpressionPreset,
@@ -30,7 +31,7 @@ type SendData = PresetState & { preset: string }
 export default function OptionHacker() {
   const router = useRouter()
 
-  const [preset, setPreset] = useState('Expression')
+  const [preset, setPreset] = useState('expression')
   const [sendData, setSendData] = useState<{ [key: string]: unknown }>()
 
   const PresetComponent = PRESET_TO_COMPONENT[preset]
@@ -49,9 +50,10 @@ export default function OptionHacker() {
   }
 
   function getResults() {
+    console.log(encodeJsonToUri(sendData as Json))
     router.push({
       pathname: '/option-hacker/results',
-      query: encodeURIComponent(JSON.stringify(sendData)),
+      query: encodeJsonToUri(sendData as Json),
     })
   }
 
@@ -89,9 +91,9 @@ function PresetSetup(props: { preset: string; setPreset: Dispatch<SetStateAction
     <div className={s.preset}>
       <h3>Preset</h3>
       <SignatureRadio
-        items={Object.keys(PRESET_TO_COMPONENT).map((title) => ({
-          title,
-          value: startCase(title),
+        items={Object.keys(PRESET_TO_COMPONENT).map((value) => ({
+          title: startCase(value),
+          value,
         }))}
         onSelect={(i) => setPreset(i)}
         selectedElement={preset}
