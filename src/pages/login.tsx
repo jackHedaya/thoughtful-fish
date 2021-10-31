@@ -2,6 +2,7 @@ import { Paper } from '@material-ui/core'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import Image from 'next/image'
 
 const Bubbles = dynamic(() => import('../components/BubbleBackground'), {
   ssr: false,
@@ -39,7 +40,7 @@ export default function Login() {
             <h2>We're excited to have you here</h2>
             <h3>Sign in with</h3>
             <div className={s.button} onClick={() => Router.push('/api/auth/redirect')}>
-              <img src="/ameritrade-logo.png" width="200px" height="38px" />
+              <Image src="/ameritrade-logo.png" width="200px" height="38px" />
             </div>
             {didError && <div className={s.error}>Something went wrong</div>}
           </>
