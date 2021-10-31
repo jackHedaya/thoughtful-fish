@@ -1,8 +1,8 @@
 import { Paper } from '@material-ui/core'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Image from 'next/image'
 
 const Bubbles = dynamic(() => import('../components/BubbleBackground'), {
   ssr: false,
