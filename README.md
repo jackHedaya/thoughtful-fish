@@ -1,6 +1,10 @@
 # Thoughtful Fish
 
 The beautiful portal to help you invest
+<p align="center">
+<img width="800" alt="Screenshot 2023-08-15 at 3 59 53 PM" src="https://github.com/jackHedaya/thoughtful-fish/assets/20172754/9afb67b2-2499-4d17-b3c8-a4298b7ea9a8">
+</p>
+
 
 ## Development
 
